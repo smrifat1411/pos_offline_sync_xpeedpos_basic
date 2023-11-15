@@ -1,8 +1,8 @@
 import ProductSec from 'renderer/features/products/components/Product';
-import { useUser } from '../context/UserContextProvider';
+
 
 const Home: React.FC = () => {
-  const { user } = useUser();
+  // const { user } = useUser();
 
   async function getAllTODOS() {
     const data = await window.electron;
@@ -18,16 +18,16 @@ const Home: React.FC = () => {
           <ProductSec />
         </div>
         <div className="col-span-12 md:col-span-5 order-1 md:order-2">
-          {user?.role === 'manager' || user?.role === 'admin' ? (
+          {/* {user?.role === 'manager' || user?.role === 'admin' ? (
             <>
               <h2 className="text-center text-xl">Cart</h2>
-              {/* <Cart /> */}
+
             </>
           ) : (
             <h2 className="text-center text-xl text-orange-500 capitalize">
               Please Contact to your admin
             </h2>
-          )}
+          )} */}
         </div>
       </div>
     </>

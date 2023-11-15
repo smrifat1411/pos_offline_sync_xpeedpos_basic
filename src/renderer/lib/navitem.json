@@ -12,7 +12,7 @@
     {
         "id": 3,
         "name": "Orders",
-        "svgPath": "/icon/orders.svg",
+        "svgPath": "../assets/icon/orders.svg",
         "link": "/orders",
         "type": "private"
     },

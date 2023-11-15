@@ -19,10 +19,10 @@ const SideNavItem = ({ name, link, svgPath }: Props) => {
           "ab" === link ? "bg-gray-800 text-white" : ""
         } transition-colors ease-out duration-500`}
       >
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 ">
           <img
-            // width={40}
-            // height={40}
+            width={20}
+            height={20}
             src={svgPath}
             alt={name}
             // sizes="100vw"

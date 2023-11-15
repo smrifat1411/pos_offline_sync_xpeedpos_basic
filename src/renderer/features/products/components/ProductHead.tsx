@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import ProductCreateForm from './ProductCreateForm';
-import { useUser } from '../../../context/UserContextProvider';
+
 import Button from 'renderer/components/Button';
 import Modal from 'renderer/components/Modal';
+import { UserContext, useUserContext } from 'renderer/context/UserContextProvider';
 
 type Props = {};
 
 const ProductHead = (props: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { user } = useUser();
+  const { loggedInUser:user }:any = useUserContext();
 
   const openModal = () => {
     setModalIsOpen(true);

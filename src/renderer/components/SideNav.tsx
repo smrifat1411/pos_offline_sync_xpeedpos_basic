@@ -2,7 +2,7 @@ import { Divider } from '@mui/material';
 import navData from '../lib/navitem.json';
 import SideNavItem from './SideNavItem';
 
-import { useUser } from '../context/UserContextProvider';
+
 import logo from '../assets/images/logo.png';
 // Import SVG paths dynamically
 import homeSvgPath from '../assets/icon/home.svg';
@@ -12,12 +12,13 @@ import salarySvgPath from '../assets/icon/salary.svg';
 import reportSvgPath from '../assets/icon/report.svg';
 import usersSvgPath from '../assets/icon/users.svg';
 import settingSvgPath from '../assets/icon/setting.svg';
+import { useUserContext } from 'renderer/context/UserContextProvider';
 
 interface Item {
   id: number;
   name: string;
   link: string;
-  svgPath: string;
+
   type: string;
 }
 
@@ -27,18 +28,18 @@ const svgPaths: { [key: string]: string } = {
   home: homeSvgPath,
   orders: ordersSvgPath,
   inventory: inventorySvgPath,
-  salary: salarySvgPath,
+  employeesalary: salarySvgPath,
   report: reportSvgPath,
   users: usersSvgPath,
-  setting: settingSvgPath,
+  settings: settingSvgPath,
 };
 
 const SideNav = (props: Props) => {
-  const { user } = useUser();
+  const { loggedInUser } = useUserContext();
+  let user:any = loggedInUser
 
   const verifyUserRoute = (item: Item, index: number, type: string) => {
-    const svgPath = svgPaths[item.name.toLowerCase()];
-    if (item.type === type)
+const svgPath = svgPaths[item.name.toLowerCase().replace(/\s/g, '')];    if (item.type === type)
       return (
         <SideNavItem
           name={item.name}
@@ -49,17 +50,20 @@ const SideNav = (props: Props) => {
       );
   };
 
+  console.log(loggedInUser);
+
+
   return (
     <div className="flex flex-col gap-3 p-2 bg-gray-50 min-h-full h-fit sticky left-0 top-0">
-      <div id="imageWrapper" className="w-20 mx-auto">
-        <img src={logo} alt="Brand Logo" className="h-full w-full rounded" />
+      <div id="imageWrapper" className="w-24 mx-auto">
+        <img src={logo} alt="Brand Logo" className=" rounded" />
       </div>
       <Divider></Divider>
       {navData.map((item: Item, i) => verifyUserRoute(item, i, 'public'))}
-      {(user?.role === 'manager' || user?.role === 'admin') &&
+      {(user?.role === 'manager' || user?.role === '') &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'private'))}
-      {user?.role &&
-        user.role === 'admin' &&
+      {
+        user.role === '' &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'protected'))}
     </div>
   );

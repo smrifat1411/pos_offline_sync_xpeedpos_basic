@@ -1,4 +1,3 @@
-"use client";
 import React, { createContext, useState, useContext, useEffect, SetStateAction, Dispatch } from "react";
 import { CartItem, Product } from "../types/product";
 

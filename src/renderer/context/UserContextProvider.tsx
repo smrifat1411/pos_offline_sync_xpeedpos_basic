@@ -1,83 +1,60 @@
-"use client";
-import {
-  useEffect,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  createContext,
-  useContext,
-  useState,
-} from "react";
-import { UserType } from "../types/user.type";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { UserType } from 'renderer/types/user.type';
 
-import { toast } from "react-toastify";
+
 
 type UserContextType = {
-  user?: UserType;
-  setUser?: Dispatch<SetStateAction<UserType>>;
-  allUsers?: UserType[];
-  reFetchUsers?: () => void;
+  loggedInUser: UserType | null;
+  setLoggedInUser: React.Dispatch<React.SetStateAction<UserType | null>>;
+  authToken: string | null;
+  setAuthToken: React.Dispatch<React.SetStateAction<string | null>>;
+  checkUserLoggedIn: () => void;
+  getLoggedInUser: () => UserType | null;
+  signOutUser: () => void;
 };
 
-const USER_CONTEXT = createContext<UserContextType>({});
+export const UserContext = createContext<UserContextType | undefined>(
+  undefined,
+);
 
-export const useUser = () => useContext(USER_CONTEXT);
-
-const UserContextProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserType>({
+export const UserContextProvider = ({ children }: any) => {
+  const [loggedInUser, setLoggedInUser] = useState<UserType | null>({
     role:""
   });
-  const [allUsers, setAllUsers] = useState<UserType[]>([]);
+  const [authToken, setAuthToken] = useState<string | null>(null);
 
+  const checkUserLoggedIn = () => {
+    // Implement this if needed
+  };
 
-  useEffect(() => {
-    const authenticate = () => {
-      // if (!user.role && pathName != "/login" && pathName != "/signup") {
-      //   // router.push("/login");
-      // }
+  const signOutUser = () => {
+    // Implement this if needed
+  };
 
-      document.addEventListener("selectstart", (e) => e.preventDefault());
-      document.addEventListener("contextmenu", (e) => e.preventDefault());
+  const getLoggedInUser = () => {
+    // Implement this if needed
+    return null;
+  };
 
-      function ctrlShiftKey(e: KeyboardEvent, keyCode: string) {
-        return e.ctrlKey && e.shiftKey && e.code === keyCode;
-      }
-
-      document.onkeydown = (e) => {
-        if (
-          e.key === "F12" ||
-          ctrlShiftKey(e, "KeyI") ||
-          ctrlShiftKey(e, "KeyJ") ||
-          ctrlShiftKey(e, "KeyC") ||
-          (e.ctrlKey && e.code === "KeyU")
-        )
-          return false;
-      };
-    };
-
-    authenticate();
-
-    return () => {
-      authenticate();
-    };
-  }, [user]);
-
-  useEffect(() => {
-    if (user.role === "admin") {
-    }
-  }, [user]);
-
-  const reFetchUsers = () => {
-    if (user.role === "admin") {
-
-    }
+  const contextValue: UserContextType = {
+    loggedInUser,
+    setLoggedInUser,
+    authToken,
+    setAuthToken,
+    checkUserLoggedIn,
+    getLoggedInUser,
+    signOutUser,
   };
 
   return (
-    <USER_CONTEXT.Provider value={{ user, setUser, allUsers, reFetchUsers }}>
-      {children}
-    </USER_CONTEXT.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 };
 
-export default UserContextProvider;
+export const useUserContext = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUserContext must be used within a UserContextProvider');
+  }
+  return context;
+};
