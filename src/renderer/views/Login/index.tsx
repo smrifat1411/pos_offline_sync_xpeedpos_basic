@@ -25,7 +25,7 @@ const LoginPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.loginBox}>
-        <h1>Login</h1>
+        <h1 className='text-yellow-600 text-3xl'>Login</h1>
         <form>
           <input
             className={styles.inputField}

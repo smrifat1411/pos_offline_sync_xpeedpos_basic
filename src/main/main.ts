@@ -24,13 +24,7 @@ import {
 } from './services/Database.service';
 import { getUser, login, register } from './services/Auth.service';
 
-class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
+
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -116,9 +110,6 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
 };
 
 /**

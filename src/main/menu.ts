@@ -4,7 +4,10 @@ import {
   shell,
   BrowserWindow,
   MenuItemConstructorOptions,
+  dialog,
 } from 'electron';
+import fs from 'fs';
+import path from 'path';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -48,8 +51,35 @@ export default class MenuBuilder {
             this.mainWindow.webContents.inspectElement(x, y);
           },
         },
+        {
+          label: 'Export Database',
+          click: () => {
+            this.exportDatabase();
+          },
+        },
       ]).popup({ window: this.mainWindow });
     });
+  }
+
+  exportDatabase() {
+    const isDevelopment =
+      process.env.NODE_ENV === 'development' ||
+      process.env.DEBUG_PROD === 'true';
+    const sourcePath = isDevelopment
+      ? path.join(__dirname, '../../', 'release/app', 'database.db')
+      : path
+          .join(__dirname, '../../database.db')
+          .replace('app.asar', 'app.asar.unpacked');
+    const userChosenPath = dialog.showSaveDialogSync({
+      title: 'Export Database',
+      defaultPath: 'database_copy.db',
+      filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+    });
+
+    if (userChosenPath) {
+      fs.copyFileSync(sourcePath, userChosenPath);
+      console.log('Database exported successfully.');
+    }
   }
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
@@ -124,6 +154,14 @@ export default class MenuBuilder {
             this.mainWindow.webContents.toggleDevTools();
           },
         },
+        // Add the "Export Database" menu item
+        {
+          label: 'Export Database',
+          accelerator: 'Ctrl+Command+E',
+          click: () => {
+            this.exportDatabase();
+          },
+        },
       ],
     };
     const subMenuViewProd: MenuItemConstructorOptions = {
@@ -134,6 +172,13 @@ export default class MenuBuilder {
           accelerator: 'Ctrl+Command+F',
           click: () => {
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
+          },
+        },
+        {
+          label: 'Export Database',
+          accelerator: 'Ctrl+Command+E',
+          click: () => {
+            this.exportDatabase();
           },
         },
       ],
@@ -164,7 +209,7 @@ export default class MenuBuilder {
           label: 'Documentation',
           click() {
             shell.openExternal(
-              'https://github.com/electron/electron/tree/main/docs#readme'
+              'https://github.com/electron/electron/tree/main/docs#readme',
             );
           },
         },
@@ -228,7 +273,7 @@ export default class MenuBuilder {
                   accelerator: 'F11',
                   click: () => {
                     this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen()
+                      !this.mainWindow.isFullScreen(),
                     );
                   },
                 },
@@ -239,6 +284,14 @@ export default class MenuBuilder {
                     this.mainWindow.webContents.toggleDevTools();
                   },
                 },
+                // Add the "Export Database" menu item
+                {
+                  label: 'Export Database',
+                  accelerator: 'Ctrl+Shift+E',
+                  click: () => {
+                    this.exportDatabase();
+                  },
+                },
               ]
             : [
                 {
@@ -246,7 +299,7 @@ export default class MenuBuilder {
                   accelerator: 'F11',
                   click: () => {
                     this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen()
+                      !this.mainWindow.isFullScreen(),
                     );
                   },
                 },
@@ -265,7 +318,7 @@ export default class MenuBuilder {
             label: 'Documentation',
             click() {
               shell.openExternal(
-                'https://github.com/electron/electron/tree/main/docs#readme'
+                'https://github.com/electron/electron/tree/main/docs#readme',
               );
             },
           },
