@@ -1,10 +1,17 @@
-'use client';
 import { Divider } from '@mui/material';
 import navData from '../lib/navitem.json';
 import SideNavItem from './SideNavItem';
 
 import { useUser } from '../context/UserContextProvider';
 import logo from '../assets/images/logo.png';
+// Import SVG paths dynamically
+import homeSvgPath from '../assets/icon/home.svg';
+import ordersSvgPath from '../assets/icon/orders.svg';
+import inventorySvgPath from '../assets/icon/inventory.svg';
+import salarySvgPath from '../assets/icon/salary.svg';
+import reportSvgPath from '../assets/icon/report.svg';
+import usersSvgPath from '../assets/icon/users.svg';
+import settingSvgPath from '../assets/icon/setting.svg';
 
 interface Item {
   id: number;
@@ -16,16 +23,27 @@ interface Item {
 
 type Props = {};
 
+const svgPaths: { [key: string]: string } = {
+  home: homeSvgPath,
+  orders: ordersSvgPath,
+  inventory: inventorySvgPath,
+  salary: salarySvgPath,
+  report: reportSvgPath,
+  users: usersSvgPath,
+  setting: settingSvgPath,
+};
+
 const SideNav = (props: Props) => {
   const { user } = useUser();
 
   const verifyUserRoute = (item: Item, index: number, type: string) => {
+    const svgPath = svgPaths[item.name.toLowerCase()];
     if (item.type === type)
       return (
         <SideNavItem
           name={item.name}
           link={item.link}
-          svgPath={item.svgPath}
+          svgPath={svgPath}
           key={index}
         />
       );
