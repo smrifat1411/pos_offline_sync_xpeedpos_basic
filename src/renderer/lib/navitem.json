@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "name": "Home",
+        "svgPath": "/icon/home.svg",
+        "link": "/",
+        "type": "public"
+    },
+
+    {
+        "id": 3,
+        "name": "Orders",
+        "svgPath": "/icon/orders.svg",
+        "link": "/orders",
+        "type": "private"
+    },
+    {
+        "id": 4,
+        "name": "Inventory",
+        "svgPath": "/icon/inventory.svg",
+        "link": "/inventory",
+        "type": "private"
+    },
+    {
+        "id": 5,
+        "name": "Employee Salary",
+        "svgPath": "/icon/salary.svg",
+        "link": "/employee-salary",
+        "type": "protected"
+    },
+    {
+        "id": 6,
+        "name": "Report",
+        "svgPath": "/icon/report.svg",
+        "link": "/report",
+        "type": "protected"
+    },
+    {
+        "id": 7,
+        "name": "Users",
+        "svgPath": "/icon/users.svg",
+        "link": "/users",
+        "type": "protected"
+    },
+    {
+        "id": 8,
+        "name": "Settings",
+        "svgPath": "/icon/setting.svg",
+        "link": "/settings",
+        "type": "protected"
+    }
+]
