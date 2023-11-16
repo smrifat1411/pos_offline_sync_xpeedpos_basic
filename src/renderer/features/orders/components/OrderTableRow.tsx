@@ -10,7 +10,7 @@ import { useState } from "react";
 import OrderViewModal from "./OrderViewModal";
 import OrderPaymentModal from "./OrderPaymentModal";
 
-type Props = { order: { _data: Order } };
+type Props = { order: Order  };
 
 const OrderTableRow = ({ order }: Props) => {
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
@@ -36,13 +36,13 @@ const OrderTableRow = ({ order }: Props) => {
   }));
 
   return (
-    <StyledTableRow key={order?._data?.kot}>
+    <StyledTableRow key={order?.kot}>
       <StyledTableCell component="th" scope="row">
         <div className="flex justify-center items-start flex-col w-full h-full">
-          <p className="capitalize text-lg">{order?._data?.kot}</p>
+          <p className="capitalize text-lg">{order?.kot}</p>
           <p className="capitalize text-gray-400 text-xs">
             Time:{" "}
-            {new Date(order?._data?.orderTime).toLocaleString("en-BD", {
+            {new Date(order?.orderTime).toLocaleString("en-BD", {
               hour12: true,
             })}
           </p>
@@ -52,7 +52,7 @@ const OrderTableRow = ({ order }: Props) => {
         <div className="flex justify-center items-end flex-col w-full h-full">
           <p className="text-lg flex flex-wrap items-center justify-center">
             <FontAwesomeIcon icon={faBangladeshiTakaSign} className="mr-0.5 w-3" />
-            {order?._data?.netPayable.toFixed(2)}
+            {order?.netPayable.toFixed(2)}
           </p>
           <p className="capitalize text-gray-400 text-xs">
             {/* Tables: {order?._data?.tables.toString()} */}
@@ -62,18 +62,18 @@ const OrderTableRow = ({ order }: Props) => {
       <StyledTableCell align="right">
         <div className="flex justify-center items-end flex-col w-full h-full">
           <Chip
-            label={order?._data?.paymentStatus}
+            label={order?.paymentStatus}
             color={
-              order?._data?.paymentStatus === "payment due"
+              order?.paymentStatus === "payment due"
                 ? "error"
                 : "primary"
             }
-            variant={order?._data?.paymentStatus === "canceled"
+            variant={order?.paymentStatus === "canceled"
             ? "outlined"
             : "filled"}
           />
           <p className="capitalize text-gray-400 text-xs text-center">
-            Pay With: {order?._data?.paymentMethod}
+            Pay With: {order?.paymentMethod}
           </p>
         </div>
       </StyledTableCell>
@@ -100,11 +100,11 @@ const OrderTableRow = ({ order }: Props) => {
         setIsOpenViewModal={setIsOpenViewModal}
         order={order}
       />
-      <OrderPaymentModal
+      {/* <OrderPaymentModal
         isOpenPaymentModal={isOpenPaymentModal}
         setIsOpenPaymentModal={setIsOpenPaymentModal}
         order={order}
-      />
+      /> */}
     </StyledTableRow>
   );
 };

@@ -7,7 +7,7 @@ const Home: React.FC = () => {
   async function getAllTODOS() {
     const data = await window.electron;
 
-    console.log(window.electron);
+
   }
   getAllTODOS();
 

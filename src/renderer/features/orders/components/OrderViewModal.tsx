@@ -1,11 +1,11 @@
 import { useOrders } from "../../../context/OrderContextProvider";
-
-import { Order } from "../../../types/order.type";
-import { CartItem, Product } from "../../../types/product";
-import getDropdownOptions from "../../../utils/getDropdownOptions.utils";
 import { CSSObject } from "@emotion/serialize";
 import { faBangladeshiTakaSign } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CloseTwoTone, Print } from "@mui/icons-material";
+import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
+import PrintTwoToneIcon from "@mui/icons-material/PrintTwoTone";
+import SaveAsTwoToneIcon from "@mui/icons-material/SaveAsTwoTone";
 import {
   Box,
   Button,
@@ -15,28 +15,24 @@ import {
   Modal,
 } from "@mui/material";
 import {
-  Dispatch,
-  SetStateAction,
   CSSProperties,
+  Dispatch,
   FunctionComponent,
-  useState,
+  SetStateAction,
   useEffect,
-  FormEventHandler,
+  useState
 } from "react";
-import Select, { ClearIndicatorProps } from "react-select";
-import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
-import SaveAsTwoToneIcon from "@mui/icons-material/SaveAsTwoTone";
-import PrintTwoToneIcon from "@mui/icons-material/PrintTwoTone";
-import { CloseTwoTone, Print } from "@mui/icons-material";
+import { ClearIndicatorProps } from "react-select";
 import { useSettings } from "../../../context/settingsContextProvider";
-import { printChefSlip, printCustomerSlip } from "../../../utils/print.utils";
+import { Order } from "../../../types/order.type";
+import { CartItem } from "../../../types/product";
 
 import { Select as MuiSelect, SelectChangeEvent } from "@mui/material/";
 
 type Props = {
   isOpenViewModal: boolean;
   setIsOpenViewModal: Dispatch<SetStateAction<boolean>>;
-  order: { _data: Order };
+  order: Order;
 };
 
 type DropdownOption = { value: string; label: string };
@@ -46,34 +42,27 @@ const OrderViewModal = ({
   setIsOpenViewModal,
   order,
 }: Props) => {
-
   const { updateOrder, cancleOrder } = useOrders();
-  const { settings } = useSettings();
+  // const { settings } = useSettings();
 
   const [products, setProducts] = useState<any[]>([]);
-
 
   const handleCollectionChange = async (data: any) => {
     setProducts(data);
   };
 
-
   const [updatedOrder, setUpdatedOrder] = useState(order);
-  const [updatedItems, setUpdatedItems] = useState(order._data.items);
+  const [updatedItems, setUpdatedItems] = useState(order.items);
 
   const handleTableSelectionChange = (newValue: any) => {
-    const updatedTables = newValue.map((t: DropdownOption) => t?.value);
-    const ordernewdata = { ...updatedOrder?._data, tables: updatedTables };
-    setUpdatedOrder({ _data: ordernewdata });
+    const ordernewdata = { ...updatedOrder };
+    setUpdatedOrder(ordernewdata);
   };
 
   useEffect(() => {
     // setUpdatedOrder(order);
-    // setUpdatedItems(order._data.items);
-
-
-
-  }, [ order]);
+    // setUpdatedItems(order.items);
+  }, [order]);
 
   const CustomClearText: FunctionComponent = () => <>clear all</>;
   const ClearIndicator = (props: ClearIndicatorProps<any, true>) => {
@@ -109,8 +98,8 @@ const OrderViewModal = ({
 
   const addToCart = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    let product = products.find((p) => p?._data?.name == newProduct);
-    product = product._data;
+    let product = products.find((p) => p?.name === newProduct);
+
     setUpdatedItems((prevCart: any[]) => {
       const existingItem = prevCart.find(
         (item: { name: string }) => item.name === product.name
@@ -164,20 +153,19 @@ const OrderViewModal = ({
     (prev, curr) => prev + curr.discountedPrice * curr.quantity,
     0
   );
-  const discount = (settings[0]?._data?.discount * subTotal) / 100;
-  const vat = (settings[0]?._data?.vat * subTotal) / 100;
-  const netPayable = subTotal - discount + vat;
+  // const discount = (settings[0]?.discount * subTotal) / 100;
+  // const vat = (settings[0]?.vat * subTotal) / 100;
+  // const netPayable = subTotal - discount + vat;
 
   const handleOrderChanges = () => {
-    let newUpdatedOrder = { ...updatedOrder._data, items: updatedItems };
+    let newUpdatedOrder = { ...updatedOrder, items: updatedItems };
     newUpdatedOrder.subTotal = updatedItems.reduce(
       (prev, curr) => prev + curr.discountedPrice * curr.quantity,
       0
     );
     newUpdatedOrder.discount =
-      (settings[0]?._data?.discount * newUpdatedOrder.subTotal) / 100;
-    newUpdatedOrder.vat =
-      (settings[0]?._data?.vat * newUpdatedOrder.subTotal) / 100;
+      // (settings[0]?.discount * newUpdatedOrder.subTotal) / 100;
+    // newUpdatedOrder.vat = (settings[0]?.vat * newUpdatedOrder.subTotal) / 100;
     newUpdatedOrder.netPayable =
       newUpdatedOrder.subTotal - newUpdatedOrder.discount + newUpdatedOrder.vat;
     updateOrder(newUpdatedOrder);
@@ -186,8 +174,7 @@ const OrderViewModal = ({
   };
 
   const handleCalcleOrder = () => {
-    cancleOrder(order._data.kot);
-
+    cancleOrder(order.kot);
   };
 
   return (
@@ -204,35 +191,27 @@ const OrderViewModal = ({
         >
           <CloseTwoTone />
         </button>
-        <h4 className="text-3xl text-green-600">
-          Order KOT: {order._data.kot}
-        </h4>
+        <h4 className="text-3xl text-green-600">Order KOT: {order.kot}</h4>
         <div className="text-start mx-auto mt-3" id="slipArea">
           <div className=" flex flex-wrap justify-evenly">
             <p className="capitalize text-gray-400 text-xs">
-              Time:{" "}
-              {new Date(order._data.orderTime).toLocaleString("en-BD", {
-                hour12: true,
-              })}
+              Time: {new Date(order.orderTime).toLocaleString("en-BD", { hour12: true })}
             </p>
             <p className="text-lg flex">
-              <FontAwesomeIcon
-                icon={faBangladeshiTakaSign}
-                className="mr-0.5 w-3"
-              />
-              {netPayable.toFixed(2)}
+              <FontAwesomeIcon icon={faBangladeshiTakaSign} className="mr-0.5 w-3" />
+              {/* {netPayable.toFixed(2)} */}
             </p>
             <p
               className={`capitalize text-base text-center px-2 py-1 ${
-                order?._data?.paymentStatus === "payment due"
+                order?.paymentStatus === "payment due"
                   ? "bg-amber-600"
                   : "bg-green-600"
               } text-white rounded`}
             >
-              {order?._data?.paymentStatus}
+              {order?.paymentStatus}
             </p>
             <p className="capitalize text-gray-400 text-xs text-center">
-              Pay With: {order?._data?.paymentMethod}
+              Pay With: {order?.paymentMethod}
             </p>
           </div>
           <form onSubmit={addToCart} className="flex py-2">
@@ -249,14 +228,14 @@ const OrderViewModal = ({
                   <em>None</em>
                 </MenuItem>
                 {products.map((p) => (
-                  <MenuItem key={p?._data?.id} value={p?._data?.name}>
-                    {p?._data?.name} -{" "}
-                    {p?._data?.discountable ? (
+                  <MenuItem key={p?.id} value={p?.name}>
+                    {p?.name} -{" "}
+                    {p?.discountable ? (
                       <>
-                        <span className="line-through text-xs text-gray-400 mx-2">{p?._data?.price}</span> {p?._data?.price - (p?._data?.price * p?._data?.discount) / 100}
+                        <span className="line-through text-xs text-gray-400 mx-2">{p?.price}</span> {p?.price - (p?.price * p?.discount) / 100}
                       </>
                     ) : (
-                      p?._data?.price
+                      p?.price
                     )}{" "}
                     TK
                   </MenuItem>
@@ -284,7 +263,7 @@ const OrderViewModal = ({
                       <div className="mx-auto flex h-8 items-stretch text-gray-600">
                         <button
                           className="flex items-center justify-center rounded-l-md bg-gray-200 px-4 transition hover:bg-black hover:text-white"
-                          onClick={() => item.id &&decreaseQuantity(item.id)}
+                          onClick={() => item.id && decreaseQuantity(item.id)}
                         >
                           -
                         </button>
@@ -293,7 +272,7 @@ const OrderViewModal = ({
                         </div>
                         <button
                           className="flex items-center justify-center rounded-r-md bg-gray-200 px-4 transition hover:bg-black hover:text-white"
-                          onClick={() => item.id &&increaseQuantity(item.id)}
+                          onClick={() => item.id && increaseQuantity(item.id)}
                         >
                           +
                         </button>
@@ -330,8 +309,8 @@ const OrderViewModal = ({
                           {item.discount}% =
                         </>
                       )}{" "}
-                      {item.discountedPrice.toFixed(2)} X {item.quantity} ={" "}
-                      {getItemTotalPrice(item).toFixed(2)}
+                      {/* {item.discountedPrice.toFixed(2)} X {item.quantity} ={" "} */}
+                      {/* {getItemTotalPrice(item).toFixed(2)} */}
                     </p>
                   </div>
                 </div>
@@ -341,7 +320,7 @@ const OrderViewModal = ({
         </div>
         <div className="w-full flex justify-center flex-wrap gap-2 mt-2">
           <Button
-            onClick={() => printChefSlip(order)}
+            // onClick={() => printChefSlip(order)}
             component="label"
             variant="outlined"
             color="success"
@@ -349,7 +328,7 @@ const OrderViewModal = ({
           >
             Print Slip for Chef
           </Button>
-          {order._data.paymentStatus === "payment due" &&
+          {order.paymentStatus === "payment due" &&
             updatedItems?.length !== 0 && (
               <>
                 <Button
@@ -359,7 +338,7 @@ const OrderViewModal = ({
                   color="warning"
                   startIcon={<CancelTwoToneIcon />}
                 >
-                  Cancle Order
+                  Cancel Order
                 </Button>
                 <Button
                   onClick={handleOrderChanges}
@@ -372,9 +351,9 @@ const OrderViewModal = ({
                 </Button>
               </>
             )}
-          {order._data.paymentStatus === "payment done" && (
+          {order.paymentStatus === "payment done" && (
             <Button
-              onClick={() => printCustomerSlip(order)}
+              // onClick={() => printCustomerSlip(order)}
               component="label"
               variant="outlined"
               startIcon={<Print />}

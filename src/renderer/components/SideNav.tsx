@@ -2,7 +2,6 @@ import { Divider } from '@mui/material';
 import navData from '../lib/navitem.json';
 import SideNavItem from './SideNavItem';
 
-
 import logo from '../assets/images/logo.png';
 // Import SVG paths dynamically
 import homeSvgPath from '../assets/icon/home.svg';
@@ -36,10 +35,11 @@ const svgPaths: { [key: string]: string } = {
 
 const SideNav = (props: Props) => {
   const { loggedInUser } = useUserContext();
-  let user:any = loggedInUser
+  let user: any = loggedInUser;
 
   const verifyUserRoute = (item: Item, index: number, type: string) => {
-const svgPath = svgPaths[item.name.toLowerCase().replace(/\s/g, '')];    if (item.type === type)
+    const svgPath = svgPaths[item.name.toLowerCase().replace(/\s/g, '')];
+    if (item.type === type)
       return (
         <SideNavItem
           name={item.name}
@@ -50,9 +50,6 @@ const svgPath = svgPaths[item.name.toLowerCase().replace(/\s/g, '')];    if (ite
       );
   };
 
-  console.log(loggedInUser);
-
-
   return (
     <div className="flex flex-col gap-3 p-2 bg-gray-50 min-h-full h-fit sticky left-0 top-0">
       <div id="imageWrapper" className="w-24 mx-auto">
@@ -62,8 +59,7 @@ const svgPath = svgPaths[item.name.toLowerCase().replace(/\s/g, '')];    if (ite
       {navData.map((item: Item, i) => verifyUserRoute(item, i, 'public'))}
       {(user?.role === 'manager' || user?.role === '') &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'private'))}
-      {
-        user.role === '' &&
+      {user.role === '' &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'protected'))}
     </div>
   );

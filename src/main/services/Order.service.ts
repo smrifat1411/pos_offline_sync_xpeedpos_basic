@@ -167,3 +167,22 @@ export function deleteOrder(orderId: number): boolean {
     return false;
   }
 }
+export function getAllOrders(): Order[] {
+  try {
+    const db = connect();
+
+    const stm = db.prepare('SELECT * FROM orders');
+    const orders:any = stm.all() ;
+
+    for (const order of orders) {
+      const itemsStm = db.prepare(`SELECT * FROM order_items WHERE order_id = ${order.order_id}`);
+      const items = itemsStm.all({ orderId: order.orderId }) as OrderItem[];
+      order.items = items;
+    }
+
+    return orders;
+  } catch (error) {
+    console.error('Error getting all orders:', error);
+    return [];
+  }
+}

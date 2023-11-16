@@ -1,4 +1,4 @@
-import { useOrders } from "../../../context/OrderContextProvider";
+import { useOrders } from '../../../context/OrderContextProvider';
 import {
   Paper,
   Table,
@@ -9,11 +9,21 @@ import {
   TableRow,
   styled,
   tableCellClasses,
-} from "@mui/material";
-import OrderTableRow from "./OrderTableRow";
+} from '@mui/material';
+import OrderTableRow from './OrderTableRow';
+import { useEffect, useState } from 'react';
+import { Order } from 'renderer/types/order.type';
 
 const OrderList = () => {
-  const { orders } = useOrders();
+  const [orders, setOrders] = useState<Order[] | null>();
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const data = await window.electron.getAllOrder();
+      setOrders(data);
+    };
+
+    fetchOrder();
+  }, []);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -24,6 +34,7 @@ const OrderList = () => {
       fontSize: 14,
     },
   }));
+  console.log(orders);
 
   return (
     <TableContainer component={Paper}>
@@ -37,9 +48,9 @@ const OrderList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {orders.length ? orders?.map((order) => (
-            <OrderTableRow order={order} key={order._data.kot} />
-          )) : null}
+          {orders && orders.length
+            ? orders?.map((order, i) => <OrderTableRow order={order} key={i} />)
+            : null}
         </TableBody>
       </Table>
     </TableContainer>

@@ -43,6 +43,7 @@ const electronHandler = {
   updateOrder: (orderId: string, updatedOrder: any) =>
     ipcRenderer.invoke('order:update', orderId, updatedOrder),
   deleteOrder: (orderId: string) => ipcRenderer.invoke('order:delete', orderId),
+  getAllOrder: () => ipcRenderer.invoke('order:getAll'),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

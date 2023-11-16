@@ -35,6 +35,7 @@ import { CategoryDocumentType } from 'renderer/types/category.type';
 import {
   createOrder,
   deleteOrder,
+  getAllOrders,
   updateOrder,
 } from './services/Order.service';
 
@@ -176,6 +177,9 @@ app
 
     ipcMain.handle('order:delete', async (_, orderId) => {
       return deleteOrder(orderId);
+    });
+    ipcMain.handle('order:getAll', async () => {
+      return getAllOrders();
     });
     createWindow();
     app.on('activate', () => {
