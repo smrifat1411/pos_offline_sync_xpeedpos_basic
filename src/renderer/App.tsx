@@ -7,6 +7,7 @@ import SideNav from './components/SideNav';
 
 import { CartProvider } from './context/CartContext';
 import { UserContextProvider } from './context/UserContextProvider';
+import OrderContextProvider from './context/OrderContextProvider';
 
 type Props = {};
 
@@ -14,11 +15,12 @@ const App = (props: Props) => {
   return (
     <div className="w-full flex">
       <UserContextProvider>
-      <CartProvider>
-        <SideNav />
-        <AppOutlet />
-      </CartProvider>
-
+        <CartProvider>
+          <OrderContextProvider>
+            <SideNav />
+            <AppOutlet />
+          </OrderContextProvider>
+        </CartProvider>
       </UserContextProvider>
     </div>
   );

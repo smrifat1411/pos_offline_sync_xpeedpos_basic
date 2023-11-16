@@ -53,7 +53,8 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const getOrdersBySorting = async () => {
       try {
-        // setOrders(orders);
+        const orders = await window.electron.getAllOrder()
+        setOrders(orders);
       } catch (error) {
         console.log(error);
       }

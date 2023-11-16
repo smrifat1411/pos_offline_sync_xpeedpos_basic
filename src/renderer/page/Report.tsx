@@ -3,57 +3,56 @@ import ReportCard from "renderer/features/report/components/ReportCard";
 import ReportChart from "renderer/features/report/components/ReportChart";
 import { Order } from "renderer/types/order.type";
 
-
 type Props = {};
 
 const Report = (props: Props) => {
   const { orders } = useOrders();
+  console.log(orders);
 
   const dailyOrders = orders.filter(
-    (order: Order ) =>
+    (order: Order) =>
       new Date(order?.orderTime).getDate() == new Date().getDate() &&
       order?.paymentStatus !== "canceled"
   );
 
   const monthlyOrders = orders.filter(
-    (order: { _data: Order }) =>
-      new Date(order?._data.orderTime).getMonth() == new Date().getMonth() &&
-      new Date(order?._data.orderTime).getFullYear() ==
-        new Date().getFullYear() &&
-      order?._data?.paymentStatus !== "canceled"
+    (order: Order) =>
+      new Date(order?.orderTime).getMonth() == new Date().getMonth() &&
+      new Date(order?.orderTime).getFullYear() == new Date().getFullYear() &&
+      order?.paymentStatus !== "canceled"
   );
 
   const dailyRevenue = dailyOrders.reduce(
-    (prevAmount, order) => prevAmount + order?._data.netPayable,
+    (prevAmount, order) => prevAmount + order?.netPayable,
     0
   );
 
   const monthlyRevenue = monthlyOrders.reduce(
-    (prevAmount, order) => prevAmount + order?._data.netPayable,
+    (prevAmount, order) => prevAmount + order?.netPayable,
     0
   );
 
-  let lastSevenDaysOrdersByDate: Array<Array<{ _data: Order }>> = [];
+  let lastSevenDaysOrdersByDate: Array<Array<Order>> = [];
 
   for (let i = 6; i >= 0; i--) {
     let currentDate = new Date();
     currentDate.setDate(currentDate.getDate() - i);
     const ordersInADay = orders.filter(
-      (o: { _data: Order }) =>
-        new Date(o?._data.orderTime).getDate() == currentDate.getDate() &&
-        o?._data.orderTime <= Date.now() &&
-        o?._data?.paymentStatus !== "canceled"
+      (o: Order) =>
+        new Date(o?.orderTime).getDate() == currentDate.getDate() &&
+        o?.orderTime <= Date.now() &&
+        o?.paymentStatus !== "canceled"
     );
     lastSevenDaysOrdersByDate.push(ordersInADay || []);
   }
 
-  let lastSevenDaysOrders: any[] = [];
+  let lastSevenDaysOrders: Order[] = [];
   lastSevenDaysOrders = lastSevenDaysOrders.concat(
     ...lastSevenDaysOrdersByDate
   );
 
   const lastSevenDaysRevenue = lastSevenDaysOrders.reduce(
-    (prevAmount, order) => prevAmount + order?._data.netPayable,
+    (prevAmount, order) => prevAmount + order?.netPayable,
     0
   );
 
@@ -73,16 +72,16 @@ const Report = (props: Props) => {
   ];
 
   const weeklyChartLabels = lastSevenDaysOrdersByDate?.map((eachDay) =>
-    eachDay[0]?._data?.orderTime
-      ? `${new Date(eachDay[0]?._data?.orderTime).getDate()} ${
-          monthlyChartLabels[new Date(eachDay[0]?._data?.orderTime).getMonth()]
+    eachDay[0]?.orderTime
+      ? `${new Date(eachDay[0]?.orderTime).getDate()} ${
+          monthlyChartLabels[new Date(eachDay[0]?.orderTime).getMonth()]
         }`
-      : 0
+      : "0"
   );
 
   const weeklyChartAmountData = lastSevenDaysOrdersByDate?.map((eachDay) =>
     eachDay.reduce(
-      (prevAmount, currOrder) => prevAmount + currOrder?._data.netPayable,
+      (prevAmount, currOrder) => prevAmount + currOrder?.netPayable,
       0
     )
   );
@@ -91,21 +90,20 @@ const Report = (props: Props) => {
     (eachDay) => eachDay.length
   );
 
-  let ordersByMonths: Array<Array<{ _data: Order }>> = [];
+  let ordersByMonths: Array<Array<Order>> = [];
   for (let i = 0; i <= 11; i++) {
     const ordersInAMonth = orders.filter(
-      (o: { _data: Order }) =>
-        new Date(o?._data.orderTime).getMonth() == i &&
-        new Date(o?._data.orderTime).getFullYear() ==
-          new Date().getFullYear() &&
-        o?._data?.paymentStatus !== "canceled"
+      (o: Order) =>
+        new Date(o?.orderTime).getMonth() == i &&
+        new Date(o?.orderTime).getFullYear() == new Date().getFullYear() &&
+        o?.paymentStatus !== "canceled"
     );
     ordersByMonths.push(ordersInAMonth || []);
   }
 
   const monthlyChartAmountData = ordersByMonths?.map((eachMonth) =>
     eachMonth.reduce(
-      (prevAmount, currOrder) => prevAmount + currOrder?._data.netPayable,
+      (prevAmount, currOrder) => prevAmount + currOrder?.netPayable,
       0
     )
   );
@@ -116,24 +114,23 @@ const Report = (props: Props) => {
 
   return (
     <>
-
       <section className="">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 p-4 justify-items-center">
           <ReportCard
             title="Daily Revenue"
-            revenue={dailyRevenue}
+            revenue={dailyRevenue.toString()}
             totalOrders={dailyOrders.length}
           />
           <ReportCard
             title="Last 7 Days Revenue"
-            revenue={lastSevenDaysRevenue}
+            revenue={lastSevenDaysRevenue.toString()}
             totalOrders={lastSevenDaysOrders.length}
           />
           <ReportCard
             title={`In This Month(${
               monthlyChartLabels[new Date().getMonth()]
             })`}
-            revenue={monthlyRevenue}
+            revenue={monthlyRevenue.toString()}
             totalOrders={monthlyOrders.length}
           />
         </div>
