@@ -1,35 +1,39 @@
-import React, { createContext, useState, useContext, useEffect, SetStateAction, Dispatch } from "react";
+"use client"
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { CartItem, Product } from "../types/product";
 
 interface CartContextType {
   cart: CartItem[];
-  setCart: Dispatch<SetStateAction<CartItem[]>>;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: number) => void;
   increaseQuantity: (productId: number) => void;
   decreaseQuantity: (productId: number) => void;
   getTotalPrice: () => number;
   getItemTotalPrice: (item: CartItem) => number;
+  clearCart: () => void;
+  updateQuantity: (itemId: number, newQuantity: number) => void;
 }
+
 interface Props {
   children: React.ReactNode;
 }
 
 const CartContext = createContext<CartContextType>({
   cart: [],
-  setCart: () => {},
   addToCart: () => {},
   removeFromCart: () => {},
   increaseQuantity: () => {},
   decreaseQuantity: () => {},
   getTotalPrice: () => 0,
   getItemTotalPrice: () => 0,
+  clearCart: () => {},
+  updateQuantity: () => {},
 });
 
 export const useCart = () => useContext(CartContext);
 
-export const CartProvider: React.FC<Props> = ({ children }): any => {
-  const [cart, setCart] = useState<CartItem[] | any>([]);
+export const CartProvider: React.FC<Props> = ({ children }): React.ReactNode => {
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
@@ -43,62 +47,80 @@ export const CartProvider: React.FC<Props> = ({ children }): any => {
   }, [cart]);
 
   const addToCart = (product: Product) => {
-    setCart((prevCart: any[]) => {
-      const existingCartItem = prevCart.find((item: { id: number; }) => item.id === product.id);
-      const discountedPrice = product.discountable ? product.price - (product.price * product.discount) / 100 : product.price;
+    setCart((prevCart:any) => {
+      const existingCartItem = prevCart.find((item:Product) => item.id === product.id);
       if (existingCartItem) {
-        return prevCart.map((item: { id: number; quantity: number; }) =>
+        return prevCart.map((item:any) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1, discountedPrice }
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        return [...prevCart, { ...product, quantity: 1, discountedPrice }];
+        return [...prevCart, { ...product, quantity: 1 }];
       }
     });
   };
 
   const removeFromCart = (productId: number) => {
-    setCart((prevCart: any[]) => prevCart.filter((item: { id: number; }) => item.id !== productId));
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
   const increaseQuantity = (productId: number) => {
-    setCart((prevCart: any[]) =>
-      prevCart.map((item: { id: number; quantity: number; }) =>
+    setCart((prevCart) =>
+      prevCart.map((item) =>
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
   const decreaseQuantity = (productId: number) => {
-    setCart((prevCart: any[]) =>
-      prevCart.map((item: { id: number; quantity: number; }) => {
-        return item.id === productId
-          ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-          : item;
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        if (item.id === productId) {
+          const newQuantity = Math.max(item.quantity - 1, 0);
+          if (newQuantity === 0) {
+            removeFromCart(item.id);
+          }
+          return { ...item, quantity: newQuantity };
+        } else {
+          return item;
+        }
       })
     );
   };
 
   const getTotalPrice = () => {
-    return cart.length && cart.reduce((total: number, item: CartItem) => total + item.discountedPrice * item.quantity, 0);
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const getItemTotalPrice = (item: CartItem) => {
-    return item.discountedPrice * item.quantity;
+    return item.price * item.quantity;
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const updateQuantity = (itemId: number, newQuantity: number) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      )
+    );
   };
 
   return (
     <CartContext.Provider
       value={{
         cart,
-        setCart,
         addToCart,
         removeFromCart,
         increaseQuantity,
         decreaseQuantity,
         getTotalPrice,
         getItemTotalPrice,
+        clearCart,
+        updateQuantity,
       }}
     >
       {children}

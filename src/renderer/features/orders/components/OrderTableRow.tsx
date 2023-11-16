@@ -1,0 +1,112 @@
+import { Order } from "../../../types/order.type";
+import {
+  faBangladeshiTakaSign,
+  faEye,
+  faMoneyCheckAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Chip, TableCell, TableRow, styled, tableCellClasses } from "@mui/material";
+import { useState } from "react";
+import OrderViewModal from "./OrderViewModal";
+import OrderPaymentModal from "./OrderPaymentModal";
+
+type Props = { order: { _data: Order } };
+
+const OrderTableRow = ({ order }: Props) => {
+  const [isOpenViewModal, setIsOpenViewModal] = useState(false);
+  const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+
+  return (
+    <StyledTableRow key={order?._data?.kot}>
+      <StyledTableCell component="th" scope="row">
+        <div className="flex justify-center items-start flex-col w-full h-full">
+          <p className="capitalize text-lg">{order?._data?.kot}</p>
+          <p className="capitalize text-gray-400 text-xs">
+            Time:{" "}
+            {new Date(order?._data?.orderTime).toLocaleString("en-BD", {
+              hour12: true,
+            })}
+          </p>
+        </div>
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        <div className="flex justify-center items-end flex-col w-full h-full">
+          <p className="text-lg flex flex-wrap items-center justify-center">
+            <FontAwesomeIcon icon={faBangladeshiTakaSign} className="mr-0.5 w-3" />
+            {order?._data?.netPayable.toFixed(2)}
+          </p>
+          <p className="capitalize text-gray-400 text-xs">
+            {/* Tables: {order?._data?.tables.toString()} */}
+          </p>
+        </div>
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        <div className="flex justify-center items-end flex-col w-full h-full">
+          <Chip
+            label={order?._data?.paymentStatus}
+            color={
+              order?._data?.paymentStatus === "payment due"
+                ? "error"
+                : "primary"
+            }
+            variant={order?._data?.paymentStatus === "canceled"
+            ? "outlined"
+            : "filled"}
+          />
+          <p className="capitalize text-gray-400 text-xs text-center">
+            Pay With: {order?._data?.paymentMethod}
+          </p>
+        </div>
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        <div className="flex gap-2 justify-end items-center w-full h-full">
+          <button
+            className="p-2 flex gap-1 justify-center items-center bg-lime-400 hover:bg-slate-600 hover:text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm"
+            onClick={() => setIsOpenViewModal(true)}
+          >
+            <FontAwesomeIcon icon={faEye} />
+            View
+          </button>
+          <button
+            className={`p-2 flex gap-1 justify-center items-center bg-blue-950 hover:bg-blue-200 hover:text-black text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm`}
+            onClick={() => setIsOpenPaymentModal(true)}
+          >
+            <FontAwesomeIcon icon={faMoneyCheckAlt} />
+            Pay
+          </button>
+        </div>
+      </StyledTableCell>
+      <OrderViewModal
+        isOpenViewModal={isOpenViewModal}
+        setIsOpenViewModal={setIsOpenViewModal}
+        order={order}
+      />
+      <OrderPaymentModal
+        isOpenPaymentModal={isOpenPaymentModal}
+        setIsOpenPaymentModal={setIsOpenPaymentModal}
+        order={order}
+      />
+    </StyledTableRow>
+  );
+};
+
+export default OrderTableRow;

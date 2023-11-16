@@ -4,6 +4,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { TODO } from './services/Database.service';
 import { Product } from 'renderer/types/product';
 import { CategoryDocumentType } from 'renderer/types/category.type';
+import { Order } from 'renderer/types/order.type';
 
 export type Channels = 'ipc-example';
 
@@ -37,6 +38,11 @@ const electronHandler = {
   getAllCategories: () => ipcRenderer.invoke('category:getAll'),
   createCategory: (category: CategoryDocumentType) =>
     ipcRenderer.invoke('category:create', category),
+
+  createOrder: (order: Order) => ipcRenderer.invoke('order:create', order),
+  updateOrder: (orderId: string, updatedOrder: any) =>
+    ipcRenderer.invoke('order:update', orderId, updatedOrder),
+  deleteOrder: (orderId: string) => ipcRenderer.invoke('order:delete', orderId),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

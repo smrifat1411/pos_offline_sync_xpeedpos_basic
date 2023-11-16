@@ -32,6 +32,11 @@ import {
 } from './services/product.service';
 import { Product } from 'renderer/types/product';
 import { CategoryDocumentType } from 'renderer/types/category.type';
+import {
+  createOrder,
+  deleteOrder,
+  updateOrder,
+} from './services/Order.service';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -161,6 +166,17 @@ app
         return createCategory(category);
       },
     );
+    ipcMain.handle('order:create', async (_, order) => {
+      return createOrder(order);
+    });
+
+    ipcMain.handle('order:update', async (_, orderId, updatedOrder) => {
+      return updateOrder(orderId, updatedOrder);
+    });
+
+    ipcMain.handle('order:delete', async (_, orderId) => {
+      return deleteOrder(orderId);
+    });
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

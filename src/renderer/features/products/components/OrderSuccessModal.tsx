@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 import PrintTwoToneIcon from '@mui/icons-material/PrintTwoTone';
 import DoDisturbOnTwoToneIcon from '@mui/icons-material/DoDisturbOnTwoTone';
 import { printChefSlip } from "../../../utils/print.utils";
+import { MoneyTwoTone, PaymentTwoTone } from "@mui/icons-material";
 
 type Props = {
   isOpenModal: boolean;
@@ -33,15 +34,12 @@ const OrderSuccessModal = ({
         <h4 className="text-3xl text-green-600">Order Created Successfully</h4>
         <div className="text-start w-3/4 mx-auto mt-3" id="slipArea">
           <p className="text-xl">
-            <span className="font-semibold">KOT:</span> {newOrder?.kot}
+            <span className="font-semibold">OrderNumber:</span> {newOrder?.kot}
           </p>
-          <p className="text-xl">
-            <span className="font-semibold">TABLES:</span>{" "}
-            {newOrder?.tables?.toString()}
-          </p>
+
           <p className="text-xl">
             <span className="font-semibold">ITEMS:</span>{" "}
-            {newOrder?.items?.map((i) => `${i.name}(${i.quantity})`).toString()}
+            {newOrder?.items?.map((i) => `${i.name}-(${i.quantity})pc`).toString()}
           </p>
           <p className="text-xl">
             <span className="font-semibold">ORDER TIME:</span>{" "}
@@ -67,8 +65,8 @@ const OrderSuccessModal = ({
             component="label"
             variant="contained"
             color="success"
-            startIcon={<PrintTwoToneIcon />}
-          >Print Slip for Chef</Button>
+            startIcon={<PaymentTwoTone />}
+          >Make Payment</Button>
         </div>
       </Box>
     </Modal>
