@@ -29,7 +29,7 @@ const SideNavItem = ({ name, link, svgPath }: Props) => {
             // className="w-full h-auto"
           ></img>
         </div>
-        <p className="md:col-span-3 lg:col-span-4 self-center">{name}</p>
+        <p className="md:col-span-3 font-bold lg:col-span-4 self-center">{name}</p>
       </Link>
       <Divider></Divider>
     </>

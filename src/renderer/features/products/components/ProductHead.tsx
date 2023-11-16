@@ -25,7 +25,7 @@ const ProductHead = (props: Props) => {
 
   return (
     <div className="flex w-full justify-evenly px-2 items-center">
-      <h1 className="text-xl font-medium">Food Menu</h1>
+      <h1 className="text-xl font-medium">Product Menu</h1>
       {(user?.role === '' || user?.role === 'admin') && (
         <Button onclick={openModal} txt="Create Product" />
       )}

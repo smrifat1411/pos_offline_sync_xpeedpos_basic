@@ -9,6 +9,7 @@ interface Props {
 const ProductItem: React.FC<Props> = ({ data }) => {
   const { addToCart } = useCart();
 
+
   return (
     <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border">
       <div className="my-4 mx-auto flex flex-col items-center justify-between">

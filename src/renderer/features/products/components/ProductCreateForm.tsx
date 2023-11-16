@@ -6,6 +6,8 @@ import CategoryDropdown from './CategoryDropdown';
 
 import { Checkbox, FormControlLabel } from '@mui/material';
 import Button from 'renderer/components/Button';
+import { electron } from 'process';
+import { Product } from 'renderer/types/product';
 
 interface Option {
   value: string;
@@ -49,15 +51,14 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
 
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      const data = {
+      const data: Product = {
         name: values.name,
         price: values.price,
         category: values.category,
         discountable: values.discountable,
         discount: values.discountable ? values.discount : 0,
-        isOnline: false,
       };
-
+      await window.electron.insertProduct(data);
       formik.resetForm();
       onSuccess();
     },

@@ -2,6 +2,8 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { TODO } from './services/Database.service';
+import { Product } from 'renderer/types/product';
+import { CategoryDocumentType } from 'renderer/types/category.type';
 
 export type Channels = 'ipc-example';
 
@@ -23,14 +25,18 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
-  insertTODO: (todo: TODO) => ipcRenderer.invoke('todo:insert', todo),
-  deleteTODO: (id: number) => ipcRenderer.invoke('todo:delete', id),
-  getAllTODO: () => ipcRenderer.invoke('todo:getAll'),
-  getOneTODO: (id: number) => ipcRenderer.invoke('todo:getOne', id),
-  updateTODO: (todo: TODO) => ipcRenderer.invoke('todo:update', todo),
+
   login: (user: Auth) => ipcRenderer.invoke('auth:login', user),
   register: (user: Auth) => ipcRenderer.invoke('auth:register', user),
   getUser: (username: string) => ipcRenderer.invoke('auth:getUser', username),
+  insertProduct: (product: Product) =>
+    ipcRenderer.invoke('product:insert', product),
+  getProductByName: (name: string) =>
+    ipcRenderer.invoke('product:getByName', name),
+  getAllProducts: () => ipcRenderer.invoke('product:getAll'),
+  getAllCategories: () => ipcRenderer.invoke('category:getAll'),
+  createCategory: (category: CategoryDocumentType) =>
+    ipcRenderer.invoke('category:create', category),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

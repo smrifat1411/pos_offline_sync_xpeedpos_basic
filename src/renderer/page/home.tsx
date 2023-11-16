@@ -1,5 +1,5 @@
+import Cart from 'renderer/components/Cart';
 import ProductSec from 'renderer/features/products/components/Product';
-
 
 const Home: React.FC = () => {
   // const { user } = useUser();
@@ -28,6 +28,7 @@ const Home: React.FC = () => {
               Please Contact to your admin
             </h2>
           )} */}
+          <Cart />
         </div>
       </div>
     </>

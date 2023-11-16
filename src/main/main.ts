@@ -23,8 +23,15 @@ import {
   TODO,
 } from './services/Database.service';
 import { getUser, login, register } from './services/Auth.service';
-
-
+import {
+  createCategory,
+  createProduct,
+  getAllCategories,
+  getAllProducts,
+  getProductByName,
+} from './services/product.service';
+import { Product } from 'renderer/types/product';
+import { CategoryDocumentType } from 'renderer/types/category.type';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -109,7 +116,6 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
-
 };
 
 /**
@@ -127,21 +133,6 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    ipcMain.handle('todo:insert', async (_, todo: TODO) => {
-      insertTODO(todo);
-    });
-    ipcMain.handle('todo:update', async (_, todo: TODO) => {
-      updateTODO(todo);
-    });
-    ipcMain.handle('todo:delete', async (_, id: number) => {
-      deleteTODO(id);
-    });
-    ipcMain.handle('todo:getOne', async (_, id: number) => {
-      return getOneTODO(id);
-    });
-    ipcMain.handle('todo:getAll', async () => {
-      return getAllTODO();
-    });
     ipcMain.handle('auth:login', async (_, user: Auth) => {
       return login(user);
     });
@@ -151,6 +142,25 @@ app
     ipcMain.handle('auth:getUser', async (_, username: string) => {
       return getUser(username);
     });
+    ipcMain.handle('product:insert', async (_, product: Product) => {
+      createProduct(product);
+    });
+
+    ipcMain.handle('product:getByName', async (_, name: string) => {
+      return getProductByName(name);
+    });
+    ipcMain.handle('product:getAll', async () => {
+      return getAllProducts();
+    });
+    ipcMain.handle('category:getAll', async () => {
+      return getAllCategories();
+    });
+    ipcMain.handle(
+      'category:create',
+      async (_, category: CategoryDocumentType) => {
+        return createCategory(category);
+      },
+    );
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
