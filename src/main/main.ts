@@ -1,28 +1,17 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
+import { BrowserWindow, app, ipcMain, shell } from 'electron';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
+import { CategoryDocumentType } from 'renderer/types/category.type';
+import { Product } from 'renderer/types/product';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
-import {
-  deleteTODO,
-  getAllTODO,
-  getOneTODO,
-  insertTODO,
-  updateTODO,
-  TODO,
-} from './services/Database.service';
 import { getUser, login, register } from './services/Auth.service';
+import {
+  createOrder,
+  deleteOrder,
+  getAllOrders,
+  updateOrder,
+} from './services/Order.service';
 import {
   createCategory,
   createProduct,
@@ -31,22 +20,9 @@ import {
   getProductById,
   getProductByName,
 } from './services/product.service';
-import { Product } from 'renderer/types/product';
-import { CategoryDocumentType } from 'renderer/types/category.type';
-import {
-  createOrder,
-  deleteOrder,
-  getAllOrders,
-  updateOrder,
-} from './services/Order.service';
+import { resolveHtmlPath } from './util';
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -118,32 +94,90 @@ const createWindow = async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  // Open urls in the user's browser
+  // Open URLs in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
 };
 
-/**
- * Add event listeners...
- */
-
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
+const printOptions = {
+  silent: false,
+  printBackground: true,
+  color: true,
+  margin: {
+    marginType: "printableArea",
+  },
+  landscape: false,
+  pagesPerSheet: 1,
+  collate: false,
+  copies: 1,
+  header: "Page header",
+  footer: "Page footer",
+};
+
+ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
+  let win: BrowserWindow | null = new BrowserWindow({
+    show: false,
+    title: isPreview ? 'Print Preview' : 'Print Document',
+    autoHideMenuBar: true,
+  });
+
+  win.once('ready-to-show', () => {
+    if (win && isPreview) {
+      win.webContents.printToPDF(printOptions).then((data) => {
+        const buf = Buffer.from(data);
+        const base64Data = buf.toString('base64');
+        const previewUrl = 'data:application/pdf;base64,' + base64Data;
+
+        win?.once('ready-to-show', () => {
+          if (win) {
+            win.show();
+          }
+        });
+
+        win?.once('page-title-updated', (e) => e.preventDefault());
+        win?.once('closed', () => {
+          if (win) {
+            win = null; // This line is not needed
+          }
+        });
+
+        win?.loadURL(previewUrl);
+      }).catch((error) => {
+        console.log(error);
+      });
+    } else if (win) {
+      win.webContents.print({}, (success, failureReason) => {
+        console.log('Print Initiated in Main...');
+        if (!success) {
+          console.log(failureReason);
+        }
+      });
+    }
+  });
+
+  await win.loadURL(url);
+
+  return isPreview ? 'shown preview window' : 'shown print dialog';
+});
+
+
 
 app
   .whenReady()
   .then(() => {
-    ipcMain.handle('auth:login', async (_, user: Auth) => {
+    ipcMain.handle('auth:login', async (_, user: any) => {
+      // Replace 'any' with the actual type for 'Auth'
       return login(user);
     });
-    ipcMain.handle('auth:register', async (_, user: Auth) => {
+    ipcMain.handle('auth:register', async (_, user: any) => {
+      // Replace 'any' with the actual type for 'Auth'
       return register(user);
     });
     ipcMain.handle('auth:getUser', async (_, username: string) => {
@@ -151,7 +185,6 @@ app
     });
     ipcMain.handle('product:insert', async (_, product: Product) => {
       const createdProduct = await createProduct(product);
-      // Return the created product back to the renderer process
       return createdProduct;
     });
 
@@ -187,10 +220,10 @@ app
     ipcMain.handle('order:getAll', async () => {
       return getAllOrders();
     });
+
     createWindow();
+
     app.on('activate', () => {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
     });
   })

@@ -27,6 +27,10 @@ const electronHandler = {
     },
   },
 
+  printOrPreviewComponent: async (url: string, isPreview: boolean) => {
+    return ipcRenderer.invoke('printOrPreviewComponent', { url, isPreview });
+  },
+
   login: (user: Auth) => ipcRenderer.invoke('auth:login', user),
   register: (user: Auth) => ipcRenderer.invoke('auth:register', user),
   getUser: (username: string) => ipcRenderer.invoke('auth:getUser', username),
@@ -46,6 +50,7 @@ const electronHandler = {
     ipcRenderer.invoke('order:update', orderId, updatedOrder),
   deleteOrder: (orderId: string) => ipcRenderer.invoke('order:delete', orderId),
   getAllOrder: () => ipcRenderer.invoke('order:getAll'),
+
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
