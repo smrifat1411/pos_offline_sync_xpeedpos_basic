@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Order } from 'renderer/types/order.type';
-import { printChefSlip } from 'renderer/utils/print.utils';
+import logo from '../../../assets/images/logo.png';
 
 type Props = {
   isOpenModal: boolean;
@@ -19,9 +19,9 @@ const OrderSuccessModal = ({
 }: Props) => {
   // HTML content to be printed
   const printContent = `
-  <section style="width: 50mm; margin: 0; padding: 0">
-  &emsp;&emsp;&emsp;&ensp;<img decoding='async' fetchPriority='high' src='/images/printed-logo.png' alt='logo' width='100' height='130' style='margin:0 auto; text-align:center' />
-  <h3 style='text-align:center; margin: 0; padding: 0'>3PM Restaurant</h3>
+  <section style="margin: 0; padding: 0">
+  &emsp;&emsp;&emsp;&ensp;<img decoding='async' fetchPriority='high'  src="file://${logo}"alt='logo' width='100' height='130' style='margin:0 auto; text-align:center' />
+  <h3 style='text-align:center; margin: 0; padding: 0'>Electro Tech World</h3>
   <p style='text-align:center; margin-top: 0; padding: 0'>SA Tower, On the north side of Supriyo Pump, Panchagarh Road, Thakurgaon</p>
   <p style='text-align:center; margin: 0; padding: 0; border-bottom: 1px dotted black'>Customer Slip:</p>
   <p style='text-align:start; margin: 0; padding: 0'>ORDER #: ${
@@ -33,8 +33,8 @@ const OrderSuccessModal = ({
   <table style="width:100%; font-size:12px; text-decoration:none; font-weight:normal; border-collapse: collapse; ; margin: 0; padding: 0">
     <tr>
       <th>Name</th>
-      <th>Price</th>
       <th>Quantity</th>
+      <th>Price</th>
       <th>Sub-total</th>
     </tr>
     ${newOrder.items?.map(
@@ -46,8 +46,11 @@ const OrderSuccessModal = ({
       <td style="text-align: center; border-top: 1px dotted black">${
         o.quantity
       }</td>
+      <td style="text-align: center; border-top: 1px dotted black">${o.price.toFixed(
+        2,
+      )}</td>
       <td style="text-align: center; border-top: 1px dotted black">${(
-        o.discountedPrice * o.quantity
+        o.price * o.quantity
       ).toFixed(2)}</td>
     </tr>`,
     )}
@@ -107,19 +110,15 @@ const OrderSuccessModal = ({
 
   // Function to handle the print action
   const handlePrint = async () => {
-    // Convert HTML content to data URL
     const dataUrl = `data:text/html;charset=UTF-8,${encodeURIComponent(printContent)}`;
 
-    // Call printOrPreviewComponent with the data URL
-    try {
-      const result = await window.electron.printOrPreviewComponent(dataUrl, true);
-      console.log(result);
-    } catch (error) {
-      console.error(error);
-    }
+    const img = new Image();
+    img.onload = () => {
+      // Call printOrPreviewComponent with the data URL after the image is loaded
+      window.electron.printOrPreviewComponent(dataUrl, true);
+    };
+    img.src = logo;
   };
-
-
   return (
     <Modal
       open={isOpenModal}
@@ -136,6 +135,7 @@ const OrderSuccessModal = ({
         <div className="text-start w-3/4 mx-auto mt-3" id="slipArea">
           {/* ... Other content ... */}
         </div>
+
         <div className="w-full flex justify-center gap-2 mt-2">
           <Button
             onClick={() => {

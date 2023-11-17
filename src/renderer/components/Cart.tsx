@@ -13,7 +13,6 @@ const Cart: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const handlePlaceOrder = async () => {
-    // Create the order object with the required information
     const newOrder: Order = {
       items: cart,
       kot: Date.now(),

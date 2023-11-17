@@ -17,7 +17,6 @@ interface Item {
   id: number;
   name: string;
   link: string;
-
   type: string;
 }
 

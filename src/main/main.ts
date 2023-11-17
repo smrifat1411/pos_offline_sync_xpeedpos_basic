@@ -111,47 +111,66 @@ const printOptions = {
   printBackground: true,
   color: true,
   margin: {
-    marginType: "printableArea",
+    marginType: 'printableArea',
   },
   landscape: false,
   pagesPerSheet: 1,
   collate: false,
   copies: 1,
-  header: "Page header",
-  footer: "Page footer",
+  header: 'Page header',
+  footer: 'Page footer',
 };
 
 ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
+  const RESOURCES_PATH = app.isPackaged
+    ? path.join(process.resourcesPath, 'assets')
+    : path.join(__dirname, '../../assets');
+
+  const getAssetPath = (...paths: string[]): string => {
+    return path.join(RESOURCES_PATH, ...paths);
+  };
+
+  const logoPath = getAssetPath('images', 'logo.png');
+
   let win: BrowserWindow | null = new BrowserWindow({
     show: false,
     title: isPreview ? 'Print Preview' : 'Print Document',
     autoHideMenuBar: true,
+    width: 1024,
+    height: 728,
+    webPreferences: {
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
   });
 
   win.once('ready-to-show', () => {
     if (win && isPreview) {
-      win.webContents.printToPDF(printOptions).then((data) => {
-        const buf = Buffer.from(data);
-        const base64Data = buf.toString('base64');
-        const previewUrl = 'data:application/pdf;base64,' + base64Data;
+      win.webContents
+        .printToPDF(printOptions)
+        .then((data) => {
+          const base64Data = data.toString('base64');
+          const previewUrl = 'data:application/pdf;base64,' + base64Data;
 
-        win?.once('ready-to-show', () => {
-          if (win) {
-            win.show();
-          }
+          win?.once('ready-to-show', () => {
+            if (win) {
+              win.show();
+            }
+          });
+
+          win?.once('page-title-updated', (e) => e.preventDefault());
+          win?.once('closed', () => {
+            if (win) {
+              win = null;
+            }
+          });
+
+          win?.loadURL(previewUrl);
+        })
+        .catch((error) => {
+          console.log(error);
         });
-
-        win?.once('page-title-updated', (e) => e.preventDefault());
-        win?.once('closed', () => {
-          if (win) {
-            win = null; // This line is not needed
-          }
-        });
-
-        win?.loadURL(previewUrl);
-      }).catch((error) => {
-        console.log(error);
-      });
     } else if (win) {
       win.webContents.print({}, (success, failureReason) => {
         console.log('Print Initiated in Main...');
@@ -166,7 +185,6 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
 
   return isPreview ? 'shown preview window' : 'shown print dialog';
 });
-
 
 
 app
