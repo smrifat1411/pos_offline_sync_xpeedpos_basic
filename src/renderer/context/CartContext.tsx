@@ -74,18 +74,20 @@ export const CartProvider: React.FC<Props> = ({ children }): React.ReactNode => 
   };
 
   const decreaseQuantity = (productId: number) => {
-    setCart((prevCart) =>
-      prevCart.map((item) => {
+    setCart((prevCart:any) =>
+      prevCart.map((item:any) => {
         if (item.id === productId) {
           const newQuantity = Math.max(item.quantity - 1, 0);
           if (newQuantity === 0) {
-            removeFromCart(item.id);
+            // If the new quantity is zero, remove the item from the cart
+            return null;
+          } else {
+            return { ...item, quantity: newQuantity };
           }
-          return { ...item, quantity: newQuantity };
         } else {
           return item;
         }
-      })
+      }).filter(Boolean) // Remove null values (items with quantity === 0)
     );
   };
 

@@ -53,16 +53,30 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
     // await window.electron.
   };
 
-  const createProduct = async (newProduct: Product): Promise<void> => {
-    await window.electron.insertProduct(newProduct);
-  };
+// Your React component or service where you use createProduct
+
+const createProduct = async (newProduct: Product): Promise<void> => {
+  try {
+    const fetchNewProduct = await window.electron.insertProduct(newProduct);
+    if (fetchNewProduct) {
+      // Handle the newly created product, for example, update state
+      setAllProducts((prevProducts) => [...prevProducts, fetchNewProduct]);
+      console.log('Product created successfully:', fetchNewProduct);
+    } else {
+      console.log('Error creating product. Fetch result is null.');
+    }
+  } catch (error) {
+    console.error('Error creating product:', error);
+  }
+};
+
 
   // Use useEffect to fetch data when there's a product update or creation
   useEffect(() => {
     window.electron.getAllProducts().then((products: Product[]) => {
       setAllProducts(products);
     });
-  }, [updateProductById, createProduct]);
+  }, []);
 
   return (
     <ProductContext.Provider

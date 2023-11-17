@@ -52,7 +52,7 @@ const SideNav = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-3 p-2 bg-gray-50 min-h-full h-fit sticky left-0 top-0">
-      <div id="imageWrapper" className="w-24 mx-auto">
+      <div id="imageWrapper" className="w-36 mx-auto">
         <img src={logo} alt="Brand Logo" className=" rounded" />
       </div>
       <Divider></Divider>

@@ -3,6 +3,7 @@ import Select from 'react-select';
 import CategoryInputField from './CategoryInputField';
 
 import { CategoryDocumentType } from '../../../types/category.type';
+import { setOptions } from 'react-chartjs-2/dist/utils';
 
 interface Props {
   selectedCategory: string | any | null;
@@ -23,15 +24,11 @@ const CategoryDropdown: React.FC<Props> = ({
         : null,
     );
   const [newOptionValue, setNewOptionValue] = useState('');
-  const isNewOption = selectedOption?.value === 'createNew';
   const [myoptions, setMyOptions] = useState<CategoryDocumentType[]>([]);
 
-  useEffect(() => {}, []);
-
-  const getDropdownOption = (option: CategoryDocumentType) => {
-    const { label, value } = option;
-    return { label, value };
-  };
+  useEffect(() => {
+    handleCollectionChange();
+  }, []);
 
   const handleOptionChange = (option: CategoryDocumentType | null) => {
     setSelectedOption(option);
@@ -43,10 +40,6 @@ const CategoryDropdown: React.FC<Props> = ({
     setMyOptions(data);
   };
 
-  useEffect(() => {
-    handleCollectionChange();
-  }, []);
-
   const handleCreateNewOption = async (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
@@ -55,7 +48,16 @@ const CategoryDropdown: React.FC<Props> = ({
         value: newOptionValue.toLocaleLowerCase(),
         label: newOptionValue,
       };
-      await window.electron.createCategory(newOption);
+      try {
+        const createCategory = await window.electron.createCategory(newOption);
+
+        if (createCategory !== false) {
+          setMyOptions((prev) => [...prev, newOption]);
+          handleOptionChange(newOption);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -68,10 +70,10 @@ const CategoryDropdown: React.FC<Props> = ({
     <div className="flex flex-col gap-2 w-full">
       <Select
         options={options}
-        defaultValue={selectedOption}
-        onChange={handleOptionChange}
+        value={selectedOption} // Use the 'value' prop instead of 'defaultValue'
+        onChange={(option) => handleOptionChange(option as CategoryDocumentType)}
       />
-      {isNewOption && (
+      {selectedOption?.value === 'createNew' && (
         <CategoryInputField
           newOptionValue={newOptionValue}
           setNewOptionValue={setNewOptionValue}
@@ -83,3 +85,6 @@ const CategoryDropdown: React.FC<Props> = ({
 };
 
 export default CategoryDropdown;
+
+
+

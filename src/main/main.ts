@@ -28,6 +28,7 @@ import {
   createProduct,
   getAllCategories,
   getAllProducts,
+  getProductById,
   getProductByName,
 } from './services/product.service';
 import { Product } from 'renderer/types/product';
@@ -149,11 +150,16 @@ app
       return getUser(username);
     });
     ipcMain.handle('product:insert', async (_, product: Product) => {
-      createProduct(product);
+      const createdProduct = await createProduct(product);
+      // Return the created product back to the renderer process
+      return createdProduct;
     });
 
     ipcMain.handle('product:getByName', async (_, name: string) => {
       return getProductByName(name);
+    });
+    ipcMain.handle('product:getById', async (_, id: number) => {
+      return getProductById(id);
     });
     ipcMain.handle('product:getAll', async () => {
       return getAllProducts();

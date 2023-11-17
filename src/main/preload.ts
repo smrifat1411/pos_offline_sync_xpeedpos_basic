@@ -34,6 +34,8 @@ const electronHandler = {
     ipcRenderer.invoke('product:insert', product),
   getProductByName: (name: string) =>
     ipcRenderer.invoke('product:getByName', name),
+  getProductById: (id: number) =>
+    ipcRenderer.invoke('product:getByName', id),
   getAllProducts: () => ipcRenderer.invoke('product:getAll'),
   getAllCategories: () => ipcRenderer.invoke('category:getAll'),
   createCategory: (category: CategoryDocumentType) =>

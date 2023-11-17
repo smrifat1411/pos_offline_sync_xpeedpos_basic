@@ -2,7 +2,8 @@ import { Product } from 'renderer/types/product';
 import { connect } from './Database.service';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 
-export function createProduct(product: Product): boolean {
+
+export async function createProduct(product: Product): Promise<Product | null> {
   try {
     const db = connect();
 
@@ -11,7 +12,7 @@ export function createProduct(product: Product): boolean {
 
     if (checkProduct) {
       console.log('Product with the same name already exists.');
-      return false;
+      return null;
     }
 
     const insertProduct = {
@@ -19,17 +20,37 @@ export function createProduct(product: Product): boolean {
     };
 
     const stm = db.prepare(
-      `INSERT INTO products (name, price)
-      VALUES (@name, @price)`,
+      `INSERT INTO products (name, category, price, discount)
+      VALUES (@name, @category, @price, @discount)`,
     );
 
-    stm.run(insertProduct);
+    // Use await with a Promise for the synchronous SQLite operation
+    const result: { lastInsertRowid: number } = await new Promise((resolve, reject) => {
+      try {
+        const runResult = stm.run(insertProduct);
+        // Explicitly cast lastInsertRowid to number
+        resolve({ lastInsertRowid: Number(runResult.lastInsertRowid) });
+      } catch (error) {
+        reject(error);
+      }
+    });
+
+    // Retrieve the newly created product from the database by ID
+    const newProductId = result.lastInsertRowid;
+
+    // Use await with getProductById to ensure it completes before proceeding
+    const newProduct = await getProductById(newProductId);
+
+    if (!newProduct) {
+      console.error('Error retrieving the newly created product.');
+      return null;
+    }
 
     console.log('Product created successfully.');
-    return true;
+    return newProduct;
   } catch (error) {
     console.error('Error creating product:', error);
-    return false;
+    return null;
   }
 }
 
@@ -43,6 +64,27 @@ export function getProductByName(name: string): Product | undefined {
     return product;
   } catch (error) {
     console.error('Error getting product:', error);
+    return undefined;
+  }
+}
+export function getProductById(id: number | bigint): Product | undefined {
+  try {
+    const db = connect();
+
+    console.log('Attempting to fetch product with ID:', id);
+
+    const stm = db.prepare('SELECT * FROM products WHERE id = @id');
+    const product = stm.get({ id: Number(id) }) as Product | undefined;
+
+    if (product) {
+      console.log('Product found:', product);
+    } else {
+      console.log('Product not found for ID:', id);
+    }
+
+    return product;
+  } catch (error) {
+    console.error('Error getting product by ID:', error);
     return undefined;
   }
 }
