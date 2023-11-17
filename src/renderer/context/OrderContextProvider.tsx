@@ -16,7 +16,7 @@ interface OrderContextType {
   setSortOrder: Dispatch<SetStateAction<'desc' | 'asc'>>;
   sortField: string;
   sortOrder: 'asc' | 'desc';
-  updateOrder: (updatedOrder: Order) => Promise<void>;
+  updateOrder: (id:string,updatedOrder: Order) => Promise<void>;
   cancleOrder: (kot: number) => Promise<void>;
   updateOrderStatus: (
     order: Order,
@@ -53,7 +53,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const getOrdersBySorting = async () => {
       try {
-        const orders = await window.electron.getAllOrder()
+        const orders = await window.electron.getAllOrder();
         setOrders(orders);
       } catch (error) {
         console.log(error);
@@ -70,8 +70,9 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     // await postData(newOrderData, ordersCollection);
   };
 
-  const updateOrder = async (updatedOrder: Order) => {
+  const updateOrder = async (id: string, data: Order) => {
     try {
+      const fetchedData = await window.electron.updateOrder(id, data);
     } catch (error) {
       console.log(error);
     }

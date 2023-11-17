@@ -6,8 +6,8 @@ import CategoryDropdown from './CategoryDropdown';
 
 import { Checkbox, FormControlLabel } from '@mui/material';
 import Button from 'renderer/components/Button';
-import { electron } from 'process';
-import { Product } from 'renderer/types/product';
+import { useProductContext } from 'renderer/context/ProductContext';
+
 
 interface Option {
   value: string;
@@ -19,6 +19,8 @@ interface Props {
 }
 
 const ProductCreateForm = ({ onSuccess }: Props) => {
+  const { createProduct } = useProductContext(); // Use the useProductContext hook to access the context
+
   const handleCategoryChange = (option: Option | null) => {
     formik.setFieldValue('category', option ? option.value : '');
   };
@@ -34,9 +36,7 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
     name: Yup.string().required('Product Name is required'),
     price: Yup.number().required('Price is required'),
     category: Yup.string().required('Category is required'),
-    discountable: Yup.boolean().required(
-      'Please define is this product is discountable or not',
-    ),
+    discountable: Yup.boolean().required('Please define if this product is discountable or not'),
     discount: Yup.number(),
   });
 
@@ -48,17 +48,18 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
       discountable: false,
       discount: 0,
     },
-
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      const data: Product = {
+      const data = {
         name: values.name,
-        price: values.price,
+        price: Number(values.price),
         category: values.category,
-        discountable: values.discountable,
+        // discountable: values.discountable,
         discount: values.discountable ? values.discount : 0,
       };
-      await window.electron.insertProduct(data);
+
+      // Use the createProduct function from the context to create a new product
+      await createProduct(data);
       formik.resetForm();
       onSuccess();
     },
