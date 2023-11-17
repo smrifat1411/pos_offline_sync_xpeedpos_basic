@@ -1,5 +1,5 @@
 {
-  "description": "A foundation for scalable desktop apps",
+  "description": "Xpeed advance pos system",
   "keywords": [
     "electron",
     "boilerplate",
@@ -11,25 +11,24 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "www.xpeedlab.com",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "https://github.com/smrifat1411/new_pos"
   },
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Rifat the Xpeeders",
+    "email": "hello@xpeedlab.tech",
+    "url": "https://xpeedlab.tech"
   },
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
+      "name": "Rifat",
+      "email": "smrifat1411@gmail.com",
+      "url": "https://github.com/smrifat1411/new_pos"
     }
   ],
   "main": "./src/main/main.ts",
@@ -191,7 +190,7 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
+    "productName": "XpeedPos",
     "appId": "org.erb.ElectronReact",
     "asar": true,
     "asarUnpack": [
@@ -254,8 +253,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "xpeedlab",
+      "repo": "xpeedlab_pos"
     }
   },
   "collective": {
