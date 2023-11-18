@@ -100,11 +100,11 @@ const OrderTableRow = ({ order }: Props) => {
         setIsOpenViewModal={setIsOpenViewModal}
         order={order}
       />
-      {/* <OrderPaymentModal
+      <OrderPaymentModal
         isOpenPaymentModal={isOpenPaymentModal}
         setIsOpenPaymentModal={setIsOpenPaymentModal}
         order={order}
-      /> */}
+      />
     </StyledTableRow>
   );
 };

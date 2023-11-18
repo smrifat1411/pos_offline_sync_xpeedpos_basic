@@ -52,7 +52,7 @@ const EditProduct = ({ product }: Props) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      price: product.price,
+      price: product.sellingPrice,
       category: product.category,
       discountable: product.discountable,
       discount: product.discount,
@@ -174,7 +174,7 @@ const EditProduct = ({ product }: Props) => {
                   control={
                     <Checkbox
                       onChange={(e) => handleDiscountableCheckbox(e)}
-                      checked={formik.values.discountable}
+                      checked={formik.values.discountable==0?false:true}
                     />
                   }
                   label="is Discountable Product"

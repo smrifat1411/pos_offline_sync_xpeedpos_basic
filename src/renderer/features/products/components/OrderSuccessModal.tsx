@@ -1,10 +1,12 @@
 // Import necessary dependencies
 import { Button, Modal, Box } from '@mui/material';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Order } from 'renderer/types/order.type';
 import logo from '../../../assets/images/logo.png';
+import { PrintTwoTone } from '@mui/icons-material';
+import OrderPaymentModal from 'renderer/features/orders/components/OrderPaymentModal';
 
 type Props = {
   isOpenModal: boolean;
@@ -17,6 +19,8 @@ const OrderSuccessModal = ({
   setIsOpenModal,
   newOrder,
 }: Props) => {
+  const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
+
   // HTML content to be printed
   const printContent = `
   <section style="margin: 0; padding: 0">
@@ -110,7 +114,9 @@ const OrderSuccessModal = ({
 
   // Function to handle the print action
   const handlePrint = async () => {
-    const dataUrl = `data:text/html;charset=UTF-8,${encodeURIComponent(printContent)}`;
+    const dataUrl = `data:text/html;charset=UTF-8,${encodeURIComponent(
+      printContent,
+    )}`;
 
     const img = new Image();
     img.onload = () => {
@@ -120,48 +126,67 @@ const OrderSuccessModal = ({
     img.src = logo;
   };
   return (
-    <Modal
-      open={isOpenModal}
-      onClose={() => setIsOpenModal(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box className="rounded border-gray-300 w-11/12 sm:w-3/4 lg:w-2/4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center">
-        <FontAwesomeIcon
-          icon={faCheck}
-          className="text-center mx-auto text-[#21e321] w-20 h-20"
-        />
-        <h4 className="text-3xl text-green-600">Order Created Successfully</h4>
-        <div className="text-start w-3/4 mx-auto mt-3" id="slipArea">
-          {/* ... Other content ... */}
-        </div>
+    <div>
+      <Modal
+        open={isOpenModal}
+        onClose={() => setIsOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box className="rounded border-gray-300 w-11/12 sm:w-3/4 lg:w-2/4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center">
+          <FontAwesomeIcon
+            icon={faCheck}
+            className="text-center mx-auto text-[#21e321] w-20 h-20"
+          />
+          <h4 className="text-3xl text-green-600">
+            Order Created Successfully
+          </h4>
+          <div className="text-start w-3/4 mx-auto mt-3" id="slipArea">
+            {/* ... Other content ... */}
+          </div>
 
-        <div className="w-full flex justify-center gap-2 mt-2">
-          <Button
-            onClick={() => {
-              setIsOpenModal(false);
-            }}
-            component="label"
-            variant="contained"
-            color="warning"
-          >
-            Close
-          </Button>
+          <div className="w-full flex justify-between gap-2 mt-2">
+            <Button
+              onClick={() => {
+                setIsOpenModal(false);
+              }}
+              component="label"
+              variant="contained"
+              color="warning"
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                setIsOpenPaymentModal(true);
+              }}
+              component="label"
+              variant="contained"
+              color="success"
+            >
+              Make Payment
+            </Button>
 
-          <Button
-            onClick={() => {
-              // window.electron.printComponent(printContent)
-              handlePrint();
-            }}
-            component="label"
-            variant="contained"
-            color="success"
-          >
-            Make Payment
-          </Button>
-        </div>
-      </Box>
-    </Modal>
+            <Button
+              onClick={() => {
+                // window.electron.printComponent(printContent)
+                handlePrint();
+              }}
+              component="label"
+              variant="contained"
+              color="info"
+            >
+              <PrintTwoTone></PrintTwoTone> Without Payment
+            </Button>
+          </div>
+        </Box>
+      </Modal>
+      <OrderPaymentModal
+        isOpenPaymentModal={isOpenPaymentModal}
+        setIsOpenPaymentModal={setIsOpenPaymentModal}
+        order={newOrder}
+      />
+    </div>
   );
 };
 
