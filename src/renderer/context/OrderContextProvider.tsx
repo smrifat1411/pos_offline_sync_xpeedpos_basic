@@ -19,11 +19,7 @@ interface OrderContextType {
   updateOrder: (id:string,updatedOrder: Order) => Promise<void>;
   cancleOrder: (kot: number) => Promise<void>;
   updateOrderStatus: (
-    order: Order,
-    status: string,
-    method: string,
-    cashPaid: number,
-    changeAmount: number,
+   data:any
   ) => Promise<void>;
 }
 
@@ -36,7 +32,7 @@ const ORDER_CONTEXT = createContext<OrderContextType>({
   sortOrder: 'desc',
   updateOrder: () => Promise.resolve(),
   cancleOrder: () => Promise.resolve(),
-  updateOrderStatus: () => Promise.resolve(),
+  updateOrderStatus: (data:any) => Promise.resolve(),
 });
 
 export const useOrders = () => useContext(ORDER_CONTEXT);
@@ -79,13 +75,10 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateOrderStatus = async (
-    order: Order,
-    status: string,
-    method: string,
-    cashPaid: number,
-    changeAmount: number,
+data:any
   ) => {
     try {
+      window.electron.updateOrder(data.order_id,data)
     } catch (error) {
       console.log(error);
     }

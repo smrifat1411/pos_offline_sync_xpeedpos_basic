@@ -34,7 +34,6 @@ const OrderList = () => {
       fontSize: 14,
     },
   }));
-  console.log(orders);
 
   return (
     <TableContainer component={Paper}>

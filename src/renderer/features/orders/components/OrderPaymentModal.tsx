@@ -22,7 +22,7 @@ import { printCustomerSlip } from '../../../utils/print.utils';
 type Props = {
   isOpenPaymentModal: boolean;
   setIsOpenPaymentModal: Dispatch<SetStateAction<boolean>>;
-  order:  Order
+  order: Order;
 };
 
 const OrderPaymentModal = ({
@@ -37,14 +37,14 @@ const OrderPaymentModal = ({
   const [cashPaid, setCashPaid] = useState<number>(0);
 
   const handlePayNow = () => {
-    const chnageAmount = cashPaid - order.netPayable;
-    updateOrderStatus(
-      order,
-      'payment done',
-      paymentMethod,
-      cashPaid,
-      chnageAmount,
-    );
+    console.log('click mlick go');
+
+    const changeAmount = cashPaid - order.netPayable;
+    updateOrderStatus({
+      ...order,
+      paymentStatus: 'payment done',
+      changeAmount: changeAmount,
+    });
   };
 
   return (
@@ -87,39 +87,53 @@ const OrderPaymentModal = ({
                   <TableHead>
                     <TableRow>
                       <TableCell>Name</TableCell>
-                      <TableCell align="right">Price</TableCell>
                       <TableCell align="right">Quantity</TableCell>
+                      <TableCell align="right">Price</TableCell>
+                      <TableCell align="right">Discount</TableCell>
                       <TableCell align="right">Sub-Total</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {order?.items.map((item, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{
-                          '&:last-child td, &:last-child th': { border: 0 },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {item.name}
-                        </TableCell>
-                        <TableCell align="right">
-                          {item.discountable && (
-                            <>
-                              <span className="line-through">
-                                {item.sellingPrice.toFixed(2)}
-                              </span>{' '}
-                              - {item.discount}%<br />
-                            </>
-                          )}
-                          {/* {item.discountedPrice.toFixed(2)} */}
-                        </TableCell>
-                        <TableCell align="right">{item.quantity}</TableCell>
-                        <TableCell align="right">
-                          {(item.discountedPrice * item.quantity).toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {order?.items.map((item, index) => {
+                      const discountedAmount: number =
+                        item.discount !== undefined
+                          ? (item.discount * item.sellingPrice) / 100
+                          : 0;
+                      return (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            '&:last-child td, &:last-child th': { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {item.name}
+                          </TableCell>
+
+                          <TableCell align="center">{item.quantity}</TableCell>
+                          <TableCell align="right">
+                            {
+                              <>
+                                <span className="">{item.sellingPrice}</span>
+                              </>
+                            }
+                          </TableCell>
+                          <TableCell align="right">
+                            {item.discount !== undefined &&
+                            item.discount != 0 ? (
+                              <span>
+                                {(item?.discount * item.sellingPrice) / 100}
+                              </span>
+                            ) : (
+                              <span>-</span>
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            <span>{item.sellingPrice - discountedAmount}</span>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -141,13 +155,13 @@ const OrderPaymentModal = ({
                 </TableHead>
                 <TableBody>
                   <TableRow>
-                    <TableCell>Sub-total</TableCell>
+                    <TableCell>Total</TableCell>
                     <TableCell align="right">
                       {order?.subTotal?.toFixed(2)}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Discount(-{order?.discount}%)</TableCell>
+                    <TableCell>Discount</TableCell>
                     <TableCell align="right">
                       {order?.discountAmount?.toFixed(2)}
                     </TableCell>
@@ -197,15 +211,13 @@ const OrderPaymentModal = ({
                   {order.paymentStatus === 'payment done' && (
                     <TableRow>
                       <TableCell>Payment Method</TableCell>
-                      <TableCell align="right">
-                        {order.paymentMethod}
-                      </TableCell>
+                      <TableCell align="right">{order.paymentMethod}</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
               </Table>
             </TableContainer>
-            {order.paymentStatus === 'payment due' && (
+            {order.paymentStatus === 'Pending' && (
               <div className="mb-4">
                 <p className="mb-2">Select Payment Methods:</p>
                 <div className="flex gap-2 flex-wrap justify-center">
@@ -246,7 +258,7 @@ const OrderPaymentModal = ({
                 </div>
               </div>
             )}
-            {order.paymentStatus === 'payment due' &&
+            {order.paymentStatus === 'Pending' &&
               paymentMethod &&
               cashPaid - order.netPayable >= 0 && (
                 <Button
