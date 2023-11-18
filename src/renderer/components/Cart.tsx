@@ -7,7 +7,7 @@ import { useOrders } from 'renderer/context/OrderContextProvider';
 import OrderSuccessModal from 'renderer/features/products/components/OrderSuccessModal';
 
 const Cart: React.FC = () => {
-  const { cart, getTotalPrice } = useCart();
+  const { cart, getTotalPrice, totalPriceWithoutDis } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
   const { setOrderData } = useOrders();
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -25,7 +25,7 @@ const Cart: React.FC = () => {
       vatAmount: 0,
       netPayable: getTotalPrice(),
     };
-    await window.electron.createOrder(newOrder)
+    await window.electron.createOrder(newOrder);
 
     // Update the order state
     setOrder(newOrder);
@@ -61,20 +61,40 @@ const Cart: React.FC = () => {
           <div className="px-4">
             <div className="flow-root">
               <div className="flex flex-col gap-2">
-                <div className="w-full flex gap-2 justify-between">
+                <div className="w-full pt-2 flex gap-2 font-bold text-xl justify-between">
                   <h1>Order</h1>
                 </div>
                 <CartItemPod />
               </div>
             </div>
             <div className="mt-6 border-t border-b py-2"></div>
-            <div className="mt-4 flex items-center justify-between">
-              <p className="text-xl font-medium text-gray-900">Total</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {getTotalPrice()}
-                <span className="text-xs font-normal text-gray-400"> tk</span>
-              </p>
+
+            {/* amount section */}
+            <div className="w-full flex flex-col gap-2">
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-lg font-medium text-gray-900">Total</p>
+                <p className="">
+                  {totalPriceWithoutDis()}
+                  <span className="text-xs font-normal text-gray-400"> tk</span>
+                </p>
+              </div>
+
+              <div className="flex justify-between">
+                <p className="text-lg font-semibold text-gray-900">Discount</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {totalPriceWithoutDis() - getTotalPrice()}{' '}
+                  <span className="text-xs font-normal text-gray-400"> tk</span>
+                </p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-xl font-extrabold text-gray-900">Payable</p>
+                <p className="text-lg font-bold text-gray-900">
+                  {getTotalPrice()}{' '}
+                  <span className="text-xs font-normal text-gray-400"> tk</span>
+                </p>
+              </div>
             </div>
+
             <div className="mt-6 text-center">{renderButtonOrError()}</div>
           </div>
         </div>

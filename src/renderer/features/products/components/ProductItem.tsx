@@ -1,6 +1,6 @@
-import { useCart } from "../../../context/CartContext";
-import { Product } from "../../../types/product";
-import EditProduct from "./EditProduct";
+import { useCart } from '../../../context/CartContext';
+import { Product } from '../../../types/product';
+import EditProduct from './EditProduct';
 
 interface Props {
   data: Product;
@@ -9,23 +9,22 @@ interface Props {
 const ProductItem: React.FC<Props> = ({ data }) => {
   const { addToCart } = useCart();
 
-
   return (
     <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border">
       <div className="my-4 mx-auto flex flex-col items-center justify-between">
         <div className="mb-2">
-          {data?.discount ? (
+          {data.discount && data?.discount>0  ? (
             <>
               <p className="mr-3 text-base font-semibold">
-                ৳{data.price - (data.price * data.discount) / 100}
+                ৳{data.sellingPrice - (data.sellingPrice * data.discount) / 100}
               </p>
               <p className="mr-3 text-xs">
-                <span className="line-through">৳{data.price}</span> -{" "}
+                <span className="line-through">৳{data.sellingPrice}</span> -
                 {data.discount}%
               </p>
             </>
           ) : (
-            <p className="mr-3 text-base font-semibold">৳{data.price}</p>
+            <p className="mr-3 text-base font-semibold">৳{data.sellingPrice}</p>
           )}
         </div>
         <h3 className="mb-2 text-lg text-center text-gray-700">{data.name}</h3>

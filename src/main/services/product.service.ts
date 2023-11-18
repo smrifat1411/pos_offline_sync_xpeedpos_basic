@@ -2,7 +2,6 @@ import { Product } from 'renderer/types/product';
 import { connect } from './Database.service';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 
-
 export async function createProduct(product: Product): Promise<Product | null> {
   try {
     const db = connect();
@@ -20,20 +19,22 @@ export async function createProduct(product: Product): Promise<Product | null> {
     };
 
     const stm = db.prepare(
-      `INSERT INTO products (name, category, price, discount)
-      VALUES (@name, @category, @price, @discount)`,
+      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice)
+      VALUES (@name, @category, @sellingPrice, @discount, @discountable,@buyingPrice)`,
     );
 
     // Use await with a Promise for the synchronous SQLite operation
-    const result: { lastInsertRowid: number } = await new Promise((resolve, reject) => {
-      try {
-        const runResult = stm.run(insertProduct);
-        // Explicitly cast lastInsertRowid to number
-        resolve({ lastInsertRowid: Number(runResult.lastInsertRowid) });
-      } catch (error) {
-        reject(error);
-      }
-    });
+    const result: { lastInsertRowid: number } = await new Promise(
+      (resolve, reject) => {
+        try {
+          const runResult = stm.run(insertProduct);
+          // Explicitly cast lastInsertRowid to number
+          resolve({ lastInsertRowid: Number(runResult.lastInsertRowid) });
+        } catch (error) {
+          reject(error);
+        }
+      },
+    );
 
     // Retrieve the newly created product from the database by ID
     const newProductId = result.lastInsertRowid;
@@ -147,7 +148,9 @@ export function createCategory(category: CategoryDocumentType): boolean {
   }
 }
 
-export function getCategoryByName(label: string): CategoryDocumentType | undefined {
+export function getCategoryByName(
+  label: string,
+): CategoryDocumentType | undefined {
   try {
     const db = connect();
 

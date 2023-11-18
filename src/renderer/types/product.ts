@@ -3,9 +3,11 @@ export interface Product {
   id?: number;
   name: string;
   category: string
-  price: number;
-  discountable?: boolean;
+  sellingPrice: number;
+  discountable?: number;
   discount?: number;
+  buyingPrice: number;
+
 }
 
 export interface resProduct {

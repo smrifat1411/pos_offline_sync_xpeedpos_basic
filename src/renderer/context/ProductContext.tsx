@@ -8,15 +8,9 @@ import React, {
   SetStateAction,
   useEffect,
 } from 'react';
+import { Product } from 'renderer/types/product';
 
-export interface Product {
-  id?: number;
-  name: string;
-  category: string;
-  price: number;
-  discountable?: boolean;
-  discount?: number;
-}
+
 
 interface ProductContextProps {
   allProducts: Product[];

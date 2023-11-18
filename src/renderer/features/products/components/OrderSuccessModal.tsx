@@ -46,11 +46,11 @@ const OrderSuccessModal = ({
       <td style="text-align: center; border-top: 1px dotted black">${
         o.quantity
       }</td>
-      <td style="text-align: center; border-top: 1px dotted black">${o.price.toFixed(
+      <td style="text-align: center; border-top: 1px dotted black">${o.sellingPrice.toFixed(
         2,
       )}</td>
       <td style="text-align: center; border-top: 1px dotted black">${(
-        o.price * o.quantity
+        o.sellingPrice * o.quantity
       ).toFixed(2)}</td>
     </tr>`,
     )}
