@@ -20,7 +20,9 @@ const App = (props: Props) => {
           <CartProvider>
             <OrderContextProvider>
               <SideNav />
-              <AppOutlet />
+              <div className="w-full">
+                <AppOutlet />
+              </div>
             </OrderContextProvider>
           </CartProvider>
         </ProductProvider>
