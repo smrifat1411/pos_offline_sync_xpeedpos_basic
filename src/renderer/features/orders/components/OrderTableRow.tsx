@@ -1,18 +1,38 @@
-import { Order } from "../../../types/order.type";
+import { Order } from '../../../types/order.type';
 import {
   faBangladeshiTakaSign,
   faEye,
   faMoneyCheckAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Chip, TableCell, TableRow, styled, tableCellClasses } from "@mui/material";
-import { useState } from "react";
-import OrderViewModal from "./OrderViewModal";
-import OrderPaymentModal from "./OrderPaymentModal";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  Chip,
+  TableCell,
+  TableRow,
+  styled,
+  tableCellClasses,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import OrderViewModal from './OrderViewModal';
+import OrderPaymentModal from './OrderPaymentModal';
 
-type Props = { order: Order  };
+type Props = { order: Order };
 
 const OrderTableRow = ({ order }: Props) => {
+  const [newOrder, setNewOrder] = useState<any>();
+
+  useEffect(() => {
+    const fetch = async() => {
+      if (order.order_id) {
+        const data =await window.electron.getOrderById(order?.order_id);
+
+        setNewOrder(data);
+      }
+    };
+
+    fetch()
+  }, []);
+
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
 
@@ -27,10 +47,10 @@ const OrderTableRow = ({ order }: Props) => {
   }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(odd)": {
+    '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.action.hover,
     },
-    "&:last-child td, &:last-child th": {
+    '&:last-child td, &:last-child th': {
       border: 0,
     },
   }));
@@ -41,8 +61,8 @@ const OrderTableRow = ({ order }: Props) => {
         <div className="flex justify-center items-start flex-col w-full h-full">
           <p className="capitalize text-lg">{order?.kot}</p>
           <p className="capitalize text-gray-400 text-xs">
-            Time:{" "}
-            {new Date(order?.orderTime).toLocaleString("en-BD", {
+            Time:{' '}
+            {new Date(order?.orderTime).toLocaleString('en-BD', {
               hour12: true,
             })}
           </p>
@@ -51,7 +71,10 @@ const OrderTableRow = ({ order }: Props) => {
       <StyledTableCell align="right">
         <div className="flex justify-center items-end flex-col w-full h-full">
           <p className="text-lg flex flex-wrap items-center justify-center">
-            <FontAwesomeIcon icon={faBangladeshiTakaSign} className="mr-0.5 w-3" />
+            <FontAwesomeIcon
+              icon={faBangladeshiTakaSign}
+              className="mr-0.5 w-3"
+            />
             {order?.netPayable.toFixed(2)}
           </p>
           <p className="capitalize text-gray-400 text-xs">
@@ -63,14 +86,10 @@ const OrderTableRow = ({ order }: Props) => {
         <div className="flex justify-center items-end flex-col w-full h-full">
           <Chip
             label={order?.paymentStatus}
-            color={
-              order?.paymentStatus === "payment due"
-                ? "error"
-                : "primary"
+            color={order?.paymentStatus === 'payment due' ? 'error' : 'primary'}
+            variant={
+              order?.paymentStatus === 'canceled' ? 'outlined' : 'filled'
             }
-            variant={order?.paymentStatus === "canceled"
-            ? "outlined"
-            : "filled"}
           />
           <p className="capitalize text-gray-400 text-xs text-center">
             Pay With: {order?.paymentMethod}
@@ -103,7 +122,7 @@ const OrderTableRow = ({ order }: Props) => {
       <OrderPaymentModal
         isOpenPaymentModal={isOpenPaymentModal}
         setIsOpenPaymentModal={setIsOpenPaymentModal}
-        order={order}
+        order={newOrder}
       />
     </StyledTableRow>
   );

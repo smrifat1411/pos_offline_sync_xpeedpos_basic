@@ -10,6 +10,7 @@ import {
   createOrder,
   deleteOrder,
   getAllOrders,
+  getOrderDetails,
   updateOrder,
 } from './services/Order.service';
 import {
@@ -237,6 +238,9 @@ app
     });
     ipcMain.handle('order:getAll', async () => {
       return getAllOrders();
+    });
+    ipcMain.handle('order:getById', async (_,id:number) => {
+      return getOrderDetails(id);
     });
 
     createWindow();

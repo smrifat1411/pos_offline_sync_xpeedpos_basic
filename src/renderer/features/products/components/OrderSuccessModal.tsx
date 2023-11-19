@@ -24,7 +24,7 @@ const OrderSuccessModal = ({
   // HTML content to be printed
   const printContent = `
   <section style="margin: 0; padding: 0">
-  &emsp;&emsp;&emsp;&ensp;<img decoding='async' fetchPriority='high'  src="file://${logo}"alt='logo' width='100' height='130' style='margin:0 auto; text-align:center' />
+  &emsp;&emsp;&emsp;&ensp;
   <h3 style='text-align:center; margin: 0; padding: 0'>Electro Tech World</h3>
   <p style='text-align:center; margin-top: 0; padding: 0'>SA Tower, On the north side of Supriyo Pump, Panchagarh Road, Thakurgaon</p>
   <p style='text-align:center; margin: 0; padding: 0; border-bottom: 1px dotted black'>Customer Slip:</p>

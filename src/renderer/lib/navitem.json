@@ -23,13 +23,7 @@
         "link": "/inventory",
         "type": "private"
     },
-    {
-        "id": 5,
-        "name": "Employee Salary",
-        "svgPath": "/icon/salary.svg",
-        "link": "/employee-salary",
-        "type": "protected"
-    },
+
     {
         "id": 6,
         "name": "Report",

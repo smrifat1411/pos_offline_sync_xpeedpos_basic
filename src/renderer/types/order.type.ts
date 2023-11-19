@@ -1,7 +1,7 @@
 import { CartItem } from './product';
 
 export interface Order {
-  order_id?:string
+  order_id?:number
   items: CartItem[];
   kot: number;
   orderTime: number;

@@ -38,8 +38,7 @@ const electronHandler = {
     ipcRenderer.invoke('product:insert', product),
   getProductByName: (name: string) =>
     ipcRenderer.invoke('product:getByName', name),
-  getProductById: (id: number) =>
-    ipcRenderer.invoke('product:getByName', id),
+  getProductById: (id: number) => ipcRenderer.invoke('product:getByName', id),
   getAllProducts: () => ipcRenderer.invoke('product:getAll'),
   getAllCategories: () => ipcRenderer.invoke('category:getAll'),
   createCategory: (category: CategoryDocumentType) =>
@@ -50,7 +49,7 @@ const electronHandler = {
     ipcRenderer.invoke('order:update', orderId, updatedOrder),
   deleteOrder: (orderId: string) => ipcRenderer.invoke('order:delete', orderId),
   getAllOrder: () => ipcRenderer.invoke('order:getAll'),
-
+  getOrderById: (id: number) => ipcRenderer.invoke('order:getById', id),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

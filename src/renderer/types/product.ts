@@ -1,14 +1,4 @@
 // types/product.ts
-export interface Product {
-  id?: number;
-  name: string;
-  category: string
-  sellingPrice: number;
-  discountable?: number;
-  discount?: number;
-  buyingPrice: number;
-
-}
 
 export interface resProduct {
   name: 'string';
@@ -18,6 +8,15 @@ export interface resProduct {
   price: 0;
 }
 
+export interface Product {
+  id?: number;
+  name: string;
+  category: string;
+  sellingPrice: number;
+  discountable?: number;
+  discount?: number;
+  buyingPrice: number;
+}
 export interface CartItem extends Product {
   discountedPrice: number;
   quantity: number;

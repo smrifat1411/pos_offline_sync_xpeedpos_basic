@@ -1,13 +1,8 @@
+import { CartItem } from 'renderer/types/product';
 import { connect } from './Database.service';
 
-export interface OrderItem {
-  productId: number;
-  quantity: number;
-  price: number;
-}
-
 export interface Order {
-  items: OrderItem[];
+  items: CartItem[];
   kot: number;
   orderTime: number;
   paymentStatus: string;
@@ -55,9 +50,9 @@ export function createOrder(order: Order): boolean {
     for (const item of order.items) {
       const insertOrderItem = {
         orderId,
-        productId: item.productId,
+        productId: item.id,
         quantity: item.quantity,
-        price: item.price,
+        price: item.sellingPrice,
       };
 
       const insertOrderItemStatement = db.prepare(
@@ -126,9 +121,9 @@ export function updateOrder(orderId: number, updatedOrder: Order): boolean {
     for (const item of updatedOrder.items) {
       const insertOrderItem = {
         orderId,
-        productId: item.productId,
+        productId: item.id,
         quantity: item.quantity,
-        price: item.price,
+        price: item.sellingPrice,
       };
 
       const insertOrderItemStatement = db.prepare(
@@ -152,8 +147,12 @@ export function deleteOrder(orderId: number): boolean {
     const db = connect();
 
     // Delete order and related items
-    const deleteOrderStatement = db.prepare('DELETE FROM orders WHERE order_id = @orderId');
-    const deleteOrderItemsStatement = db.prepare('DELETE FROM order_items WHERE order_id = @orderId');
+    const deleteOrderStatement = db.prepare(
+      'DELETE FROM orders WHERE order_id = @orderId',
+    );
+    const deleteOrderItemsStatement = db.prepare(
+      'DELETE FROM order_items WHERE order_id = @orderId',
+    );
 
     db.transaction(() => {
       deleteOrderStatement.run({ orderId });
@@ -172,11 +171,13 @@ export function getAllOrders(): Order[] {
     const db = connect();
 
     const stm = db.prepare('SELECT * FROM orders');
-    const orders:any = stm.all() ;
+    const orders: any = stm.all();
 
     for (const order of orders) {
-      const itemsStm = db.prepare(`SELECT * FROM order_items WHERE order_id = ${order.order_id}`);
-      const items = itemsStm.all({ orderId: order.orderId }) as OrderItem[];
+      const itemsStm = db.prepare(
+        `SELECT * FROM order_items WHERE order_id = ${order.order_id}`,
+      );
+      const items = itemsStm.all({ orderId: order.orderId }) as CartItem[];
       order.items = items;
     }
 
@@ -187,4 +188,40 @@ export function getAllOrders(): Order[] {
   }
 }
 
+export function getOrderDetails(orderId: number): Order | null {
+  try {
+    const db = connect();
 
+    // Retrieve order details from the 'orders' table
+    const orderStatement = db.prepare(
+      'SELECT * FROM orders WHERE order_id = @orderId',
+    );
+    const order: unknown = orderStatement.get({ orderId });
+
+    if (!order) {
+      console.log(`Order with order_id ${orderId} not found.`);
+      return null;
+    }
+
+    // Explicitly cast the result to the Order type
+    const typedOrder = order as Order;
+
+    // Retrieve order items from the 'order_items' table and join with 'products' table
+    const itemsStatement = db.prepare(`
+    SELECT oi.*, p.name, p.buyingPrice,p.sellingPrice,p.discount,p.discountable
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    WHERE oi.order_id = @orderId
+    `);
+
+    const items: CartItem[] = itemsStatement.all({ orderId }) as CartItem[];
+
+    // Add items to the order object
+    typedOrder.items = items;
+
+    return typedOrder;
+  } catch (error) {
+    console.error('Error getting order details:', error);
+    return null;
+  }
+}
