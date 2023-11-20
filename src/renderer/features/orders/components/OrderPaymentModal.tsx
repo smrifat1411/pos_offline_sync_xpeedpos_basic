@@ -1,6 +1,7 @@
 import { useOrders } from '../../../context/OrderContextProvider';
 
-import { Order } from '../../../types/order.type';
+import { Close, Print } from '@mui/icons-material';
+import PointOfSaleTwoToneIcon from '@mui/icons-material/PointOfSaleTwoTone';
 import {
   Box,
   Button,
@@ -13,11 +14,9 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import PointOfSaleTwoToneIcon from '@mui/icons-material/PointOfSaleTwoTone';
-import { Close, Print } from '@mui/icons-material';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useSettings } from '../../../context/settingsContextProvider';
-import { printCustomerSlip } from '../../../utils/print.utils';
+import { Order } from '../../../types/order.type';
 
 type Props = {
   isOpenPaymentModal: boolean;

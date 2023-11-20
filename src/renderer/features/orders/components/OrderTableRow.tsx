@@ -22,15 +22,15 @@ const OrderTableRow = ({ order }: Props) => {
   const [newOrder, setNewOrder] = useState<any>();
 
   useEffect(() => {
-    const fetch = async() => {
+    const fetch = async () => {
       if (order.order_id) {
-        const data =await window.electron.getOrderById(order?.order_id);
+        const data = await window.electron.getOrderById(order?.order_id);
 
         setNewOrder(data);
       }
     };
 
-    fetch()
+    fetch();
   }, []);
 
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
@@ -119,11 +119,13 @@ const OrderTableRow = ({ order }: Props) => {
         setIsOpenViewModal={setIsOpenViewModal}
         order={order}
       />
-      <OrderPaymentModal
-        isOpenPaymentModal={isOpenPaymentModal}
-        setIsOpenPaymentModal={setIsOpenPaymentModal}
-        order={newOrder}
-      />
+      {newOrder !== undefined && (
+        <OrderPaymentModal
+          isOpenPaymentModal={isOpenPaymentModal}
+          setIsOpenPaymentModal={setIsOpenPaymentModal}
+          order={newOrder}
+        />
+      )}
     </StyledTableRow>
   );
 };
