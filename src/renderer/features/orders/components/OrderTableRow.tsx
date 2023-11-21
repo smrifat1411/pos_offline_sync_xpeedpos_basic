@@ -25,6 +25,7 @@ const OrderTableRow = ({ order }: Props) => {
     const fetch = async () => {
       if (order.order_id) {
         const data = await window.electron.getOrderById(order?.order_id);
+          console.log(data);
 
         setNewOrder(data);
       }

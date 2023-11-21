@@ -1,10 +1,11 @@
 import { useOrders } from '../../../context/OrderContextProvider';
 
-import { Close, Print } from '@mui/icons-material';
+import { Check, Close, Edit, Print } from '@mui/icons-material';
 import PointOfSaleTwoToneIcon from '@mui/icons-material/PointOfSaleTwoTone';
 import {
   Box,
   Button,
+  IconButton,
   Modal,
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useSettings } from '../../../context/settingsContextProvider';
 import { Order } from '../../../types/order.type';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 type Props = {
   isOpenPaymentModal: boolean;
@@ -35,14 +37,46 @@ const OrderPaymentModal = ({
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [cashPaid, setCashPaid] = useState<number>(0);
 
-  const handlePayNow = () => {
-    console.log('click mlick go');
+  const [discount, setDiscount] = useState<number>(0);
+  const [isEditingDiscount, setIsEditingDiscount] = useState(false);
+  const [discountedAmount, setDiscountedAmount] = useState<number>(
+    (discount * order.subTotal) / 100,
+  );
 
-    const changeAmount = cashPaid - order.netPayable;
+  const handleDiscountedAmountChange = (value: number) => {
+    setDiscountedAmount(value);
+    const newDiscount = (value / order.subTotal) * 100;
+    setDiscount(parseFloat(newDiscount.toFixed(2)));
+  };
+
+  const handleDiscountPercentiageChanged = (value: string) => {
+    setDiscount(parseInt(value) || 0);
+    const newDiscountedAmount = (parseInt(value) * order.subTotal) / 100;
+    setDiscountedAmount(parseFloat(newDiscountedAmount.toFixed(0)));
+  };
+
+  const handleKeyPress = (e: any) => {
+    if (e.keyCode == 13) {
+      setIsEditingDiscount(false);
+      // setIsEditingVat(false);
+    }
+  };
+
+  const netPayable = order.subTotal - discountedAmount;
+
+  const changeAmount = cashPaid - netPayable;
+
+  const navigate = useNavigate();
+  const handlePayNow = () => {
     updateOrderStatus({
       ...order,
       paymentStatus: 'payment done',
       changeAmount: changeAmount,
+      discountAmount: discountedAmount,
+      netPayable: netPayable,
+      discount: discount,
+      cashPaid: 'yes',
+      paymentMethod: 'cash',
     });
   };
 
@@ -92,6 +126,7 @@ const OrderPaymentModal = ({
                       <TableCell align="right">Sub-Total</TableCell>
                     </TableRow>
                   </TableHead>
+
                   <TableBody>
                     {order?.items.map((item, index) => {
                       const discountedAmount: number =
@@ -160,9 +195,92 @@ const OrderPaymentModal = ({
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Discount</TableCell>
+                    <TableCell>
+                      <p className="text-gray-900 flex items-center">
+                        Discount(
+                        {isEditingDiscount ? (
+                          <TextField
+                            id="discount"
+                            value={
+                              isEditingDiscount
+                                ? discount === 0
+                                  ? ''
+                                  : discount
+                                : ''
+                            }
+                            type="number"
+                            size="small"
+                            sx={{ width: 50 }}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                              onKeyDown: handleKeyPress,
+                            }}
+                            margin="none"
+                            onChange={(
+                              event: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                              handleDiscountPercentiageChanged(
+                                event.target.value,
+                              );
+                            }}
+                          />
+                        ) : (
+                          discount
+                        )}
+                        %)
+                        {isEditingDiscount ? (
+                          <IconButton
+                            onClick={() => setIsEditingDiscount(false)}
+                            color="success"
+                            size="small"
+                          >
+                            <Check color="success" fontSize="inherit" />
+                          </IconButton>
+                        ) : (
+                          <IconButton
+                            onClick={() => setIsEditingDiscount(true)}
+                            size="small"
+                          >
+                            <Edit fontSize="inherit" />
+                          </IconButton>
+                        )}
+                      </p>
+                    </TableCell>
+
                     <TableCell align="right">
-                      {order?.discountAmount?.toFixed(2)}
+                      {isEditingDiscount ? (
+                        <TextField
+                          id="discountedAmount"
+                          value={
+                            isEditingDiscount
+                              ? discountedAmount === 0
+                                ? ''
+                                : discountedAmount
+                              : ''
+                          }
+                          type="number"
+                          size="small"
+                          sx={{ width: 50 }}
+                          inputProps={{
+                            style: {
+                              padding: 0,
+                            },
+                            onKeyDown: handleKeyPress,
+                          }}
+                          margin="none"
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>,
+                          ) => {
+                            handleDiscountedAmountChange(
+                              parseFloat(event.target.value) || 0,
+                            );
+                          }}
+                        />
+                      ) : (
+                        ((discount * order.subTotal) / 100).toFixed(2)
+                      )}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -173,9 +291,7 @@ const OrderPaymentModal = ({
                   </TableRow>
                   <TableRow>
                     <TableCell>Net Payable</TableCell>
-                    <TableCell align="right">
-                      {order.netPayable.toFixed(2)}
-                    </TableCell>
+                    <TableCell align="right">{netPayable}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Cash Paid</TableCell>
@@ -203,7 +319,7 @@ const OrderPaymentModal = ({
                       <TableCell align="right"></TableCell>
                     ) : (
                       <TableCell align="right">
-                        {(cashPaid - order.netPayable).toFixed(2)}
+                        {(cashPaid - netPayable).toFixed(2)}
                       </TableCell>
                     )}
                   </TableRow>
@@ -259,7 +375,7 @@ const OrderPaymentModal = ({
             )}
             {order.paymentStatus === 'Pending' &&
               paymentMethod &&
-              cashPaid - order.netPayable >= 0 && (
+              cashPaid - netPayable >= 0 && (
                 <Button
                   onClick={handlePayNow}
                   component="label"

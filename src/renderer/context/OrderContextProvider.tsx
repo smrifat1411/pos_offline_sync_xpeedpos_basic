@@ -16,11 +16,9 @@ interface OrderContextType {
   setSortOrder: Dispatch<SetStateAction<'desc' | 'asc'>>;
   sortField: string;
   sortOrder: 'asc' | 'desc';
-  updateOrder: (id:string,updatedOrder: Order) => Promise<void>;
+  updateOrder: (id: string, updatedOrder: Order) => Promise<void>;
   cancleOrder: (kot: number) => Promise<void>;
-  updateOrderStatus: (
-   data:any
-  ) => Promise<void>;
+  updateOrderStatus: (data: any) => Promise<void>;
 }
 
 const ORDER_CONTEXT = createContext<OrderContextType>({
@@ -32,7 +30,7 @@ const ORDER_CONTEXT = createContext<OrderContextType>({
   sortOrder: 'desc',
   updateOrder: () => Promise.resolve(),
   cancleOrder: () => Promise.resolve(),
-  updateOrderStatus: (data:any) => Promise.resolve(),
+  updateOrderStatus: (data: any) => Promise.resolve(),
 });
 
 export const useOrders = () => useContext(ORDER_CONTEXT);
@@ -46,22 +44,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     setOrders(data);
   };
 
-  useEffect(() => {
-    const getOrdersBySorting = async () => {
-      try {
-        const orders = await window.electron.getAllOrder();
-        setOrders(orders);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getOrdersBySorting();
-
-    return () => {
-      getOrdersBySorting();
-    };
-  }, [sortField, sortOrder]);
-
   const setOrderData = async (data: Order) => {
     // await postData(newOrderData, ordersCollection);
   };
@@ -74,14 +56,18 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateOrderStatus = async (
-data:any
-  ) => {
+  const updateOrderStatus = async (data: any) => {
     try {
-      window.electron.updateOrder(data.order_id,data)
+      await window.electron.updateOrder(data.order_id, data);
+      fetchUpdatedOrders();
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const fetchUpdatedOrders = async () => {
+    const data = await window.electron.getAllOrder();
+    setOrders(data);
   };
 
   const cancleOrder = async (kot: number) => {
