@@ -9,8 +9,10 @@ import OrderSuccessModal from 'renderer/features/products/components/OrderSucces
 const Cart: React.FC = () => {
   const { cart, getTotalPrice, totalPriceWithoutDis } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
-  const { setOrderData } = useOrders();
+  // const { setOrderData } = useOrders();
   const [isOpenModal, setIsOpenModal] = useState(false);
+
+  const { getAllOrdersData } = useOrders();
 
   const handlePlaceOrder = async () => {
     const newOrder: Order = {
@@ -25,13 +27,12 @@ const Cart: React.FC = () => {
       vatAmount: 0,
       netPayable: getTotalPrice(),
     };
-    await window.electron.createOrder(newOrder);
+    const fetchedNewData = await window.electron.createOrder(newOrder);
+    getAllOrdersData();
 
     // Update the order state
-    setOrder(newOrder);
+    setOrder({ ...newOrder, order_id: fetchedNewData.order_id });
     setIsOpenModal(true);
-
-    setOrderData(newOrder);
   };
 
   const renderButtonOrError = () => {

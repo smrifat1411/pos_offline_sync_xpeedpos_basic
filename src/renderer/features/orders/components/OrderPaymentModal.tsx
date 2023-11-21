@@ -75,7 +75,7 @@ const OrderPaymentModal = ({
       discountAmount: discountedAmount,
       netPayable: netPayable,
       discount: discount,
-      cashPaid: 'yes',
+      cashPaid: cashPaid,
       paymentMethod: 'cash',
     });
   };
@@ -296,7 +296,7 @@ const OrderPaymentModal = ({
                   <TableRow>
                     <TableCell>Cash Paid</TableCell>
                     {order.paymentStatus === 'payment done' ? (
-                      <TableCell align="right"></TableCell>
+                      <TableCell align="right">{order.cashPaid}</TableCell>
                     ) : (
                       <TableCell align="right">
                         <TextField
@@ -316,7 +316,7 @@ const OrderPaymentModal = ({
                   <TableRow>
                     <TableCell>Change Amount</TableCell>
                     {order.paymentStatus === 'payment done' ? (
-                      <TableCell align="right"></TableCell>
+                      <TableCell align="right">{order.changeAmount}</TableCell>
                     ) : (
                       <TableCell align="right">
                         {(cashPaid - netPayable).toFixed(2)}

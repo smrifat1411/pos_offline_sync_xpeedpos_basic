@@ -1,4 +1,3 @@
-import { useOrders } from '../../../context/OrderContextProvider';
 import {
   Paper,
   Table,
@@ -10,20 +9,11 @@ import {
   styled,
   tableCellClasses,
 } from '@mui/material';
+import { useOrders } from '../../../context/OrderContextProvider';
 import OrderTableRow from './OrderTableRow';
-import { useEffect, useState } from 'react';
-import { Order } from 'renderer/types/order.type';
 
 const OrderList = () => {
-  const [orders, setOrders] = useState<Order[] | null>();
-  useEffect(() => {
-    const fetchOrder = async () => {
-      const data = await window.electron.getAllOrder();
-      setOrders(data);
-    };
-
-    fetchOrder();
-  }, []);
+  const { orders } = useOrders();
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -41,9 +31,9 @@ const OrderList = () => {
         <TableHead>
           <TableRow>
             <StyledTableCell>ORDER NO</StyledTableCell>
-            <StyledTableCell align="right">NET AMOUNT</StyledTableCell>
-            <StyledTableCell align="right">STATUS</StyledTableCell>
-            <StyledTableCell align="right">ACTIONS</StyledTableCell>
+            <StyledTableCell align="left">NET AMOUNT</StyledTableCell>
+            <StyledTableCell align="center">STATUS</StyledTableCell>
+            <StyledTableCell align="center">ACTIONS</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>

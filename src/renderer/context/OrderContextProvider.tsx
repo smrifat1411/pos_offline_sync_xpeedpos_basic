@@ -11,7 +11,8 @@ import { Order } from '../types/order.type';
 
 interface OrderContextType {
   orders: (Order | any)[];
-  setOrderData: (data: Order | any) => void;
+  getAllOrdersData:()=>void;
+  setOrdersData: (data: Order | any) => void;
   setSortField: Dispatch<SetStateAction<string>>;
   setSortOrder: Dispatch<SetStateAction<'desc' | 'asc'>>;
   sortField: string;
@@ -23,11 +24,12 @@ interface OrderContextType {
 
 const ORDER_CONTEXT = createContext<OrderContextType>({
   orders: [],
-  setOrderData: () => {},
+  setOrdersData: () => {},
   setSortField: () => {},
   sortField: 'orderTime',
   setSortOrder: () => {},
   sortOrder: 'desc',
+  getAllOrdersData:() =>{},
   updateOrder: () => Promise.resolve(),
   cancleOrder: () => Promise.resolve(),
   updateOrderStatus: (data: any) => Promise.resolve(),
@@ -40,11 +42,12 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [sortField, setSortField] = useState<string>('orderTime');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const getOrderData = async (data: Order[]) => {
-    setOrders(data);
+  const getAllOrdersData = async () => {
+    const fetchedAllData = await window.electron.getAllOrder();
+    setOrders(fetchedAllData);
   };
 
-  const setOrderData = async (data: Order) => {
+  const setOrdersData = async (data: Order) => {
     // await postData(newOrderData, ordersCollection);
   };
 
@@ -77,11 +80,16 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  useEffect(() => {
+    getAllOrdersData();
+  }, []);
+
   return (
     <ORDER_CONTEXT.Provider
       value={{
+        getAllOrdersData,
         orders,
-        setOrderData,
+        setOrdersData,
         sortField,
         setSortField,
         sortOrder,

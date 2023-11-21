@@ -17,7 +17,7 @@ export interface Order {
   paymentMethod?: string;
 }
 
-export function createOrder(order: Order): boolean {
+export function createOrder(order: Order): Order | null {
   try {
     const db = connect();
 
@@ -63,11 +63,27 @@ export function createOrder(order: Order): boolean {
       insertOrderItemStatement.run(insertOrderItem);
     }
 
+    // Retrieve the created order and its items using the orderId
+    const selectOrderStatement = db.prepare(
+      `SELECT * FROM orders WHERE order_id = @orderId`
+    );
+
+    const orderData:any = selectOrderStatement.get({ orderId });
+
+    const selectOrderItemsStatement = db.prepare(
+      `SELECT * FROM order_items WHERE order_id = @orderId`
+    );
+
+    const orderItems = selectOrderItemsStatement.all({ orderId });
+
+    // Combine order data and order items and return
+    const completeOrder = { ...orderData, items: orderItems };
+
     console.log('Order created successfully.');
-    return true;
+    return completeOrder;
   } catch (error) {
     console.error('Error creating order:', error);
-    return false;
+    return null;
   }
 }
 

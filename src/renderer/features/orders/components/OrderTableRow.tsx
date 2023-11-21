@@ -69,7 +69,7 @@ const OrderTableRow = ({ order }: Props) => {
           </p>
         </div>
       </StyledTableCell>
-      <StyledTableCell align="right">
+      <StyledTableCell className='' align="right">
         <div className="flex justify-center items-end flex-col w-full h-full">
           <p className="text-lg flex flex-wrap items-center justify-center">
             <FontAwesomeIcon
@@ -83,16 +83,16 @@ const OrderTableRow = ({ order }: Props) => {
           </p>
         </div>
       </StyledTableCell>
-      <StyledTableCell align="right">
-        <div className="flex justify-center items-end flex-col w-full h-full">
+      <StyledTableCell className='' align="right">
+        <div className="flex flex-col gap-1 max-w-[140px] mx-auto h-full">
           <Chip
             label={order?.paymentStatus}
-            color={order?.paymentStatus === 'payment due' ? 'error' : 'primary'}
+            color={order?.paymentStatus === 'payment due' ? 'error' : 'success'}
             variant={
               order?.paymentStatus === 'canceled' ? 'outlined' : 'filled'
             }
           />
-          <p className="capitalize text-gray-400 text-xs text-center">
+          <p className="capitalize text-blue-600 text-xs font-bold text-center">
             Pay With: {order?.paymentMethod}
           </p>
         </div>

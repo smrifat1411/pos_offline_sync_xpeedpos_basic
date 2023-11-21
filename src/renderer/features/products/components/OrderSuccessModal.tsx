@@ -159,6 +159,8 @@ const OrderSuccessModal = ({
             <Button
               onClick={() => {
                 setIsOpenPaymentModal(true);
+                setIsOpenModal(false)
+
               }}
               component="label"
               variant="contained"
