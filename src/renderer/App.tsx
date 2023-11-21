@@ -10,6 +10,7 @@ import { UserContextProvider } from './context/UserContextProvider';
 import OrderContextProvider from './context/OrderContextProvider';
 import { ProductProvider } from './context/ProductContext';
 import AuthContextProvider from './context/AuthContextProvider';
+import TopBar from './components/TopBar';
 
 type Props = {};
 
@@ -23,6 +24,7 @@ const App = (props: Props) => {
               <OrderContextProvider>
                 <SideNav />
                 <div className="w-full">
+                  <TopBar/>
                   <AppOutlet />
                 </div>
               </OrderContextProvider>
