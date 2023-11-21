@@ -31,9 +31,6 @@ const electronHandler = {
     return ipcRenderer.invoke('printOrPreviewComponent', { url, isPreview });
   },
 
-  login: (user: Auth) => ipcRenderer.invoke('auth:login', user),
-  register: (user: Auth) => ipcRenderer.invoke('auth:register', user),
-  getUser: (username: string) => ipcRenderer.invoke('auth:getUser', username),
   insertProduct: (product: Product) =>
     ipcRenderer.invoke('product:insert', product),
   getProductByName: (name: string) =>
@@ -50,6 +47,9 @@ const electronHandler = {
   deleteOrder: (orderId: string) => ipcRenderer.invoke('order:delete', orderId),
   getAllOrder: () => ipcRenderer.invoke('order:getAll'),
   getOrderById: (id: number) => ipcRenderer.invoke('order:getById', id),
+  login: (user: Auth) => ipcRenderer.invoke('auth:login', user),
+  register: (user: Auth) => ipcRenderer.invoke('auth:register', user),
+  getUser: (username: string) => ipcRenderer.invoke('auth:getUser', username),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

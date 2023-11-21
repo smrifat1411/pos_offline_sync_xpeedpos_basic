@@ -65,13 +65,13 @@ export function createOrder(order: Order): Order | null {
 
     // Retrieve the created order and its items using the orderId
     const selectOrderStatement = db.prepare(
-      `SELECT * FROM orders WHERE order_id = @orderId`
+      `SELECT * FROM orders WHERE order_id = @orderId`,
     );
 
-    const orderData:any = selectOrderStatement.get({ orderId });
+    const orderData: any = selectOrderStatement.get({ orderId });
 
     const selectOrderItemsStatement = db.prepare(
-      `SELECT * FROM order_items WHERE order_id = @orderId`
+      `SELECT * FROM order_items WHERE order_id = @orderId`,
     );
 
     const orderItems = selectOrderItemsStatement.all({ orderId });
@@ -127,27 +127,35 @@ export function updateOrder(orderId: number, updatedOrder: Order): boolean {
 
     updateOrderStatement.run({ orderId, ...updateOrder });
 
-    // Delete existing order items in the 'order_items' table
-    const deleteOrderItemsStatement = db.prepare(
-      'DELETE FROM order_items WHERE order_id = @orderId',
-    );
-    deleteOrderItemsStatement.run({ orderId });
-
-    // Insert updated order items into the 'order_items' table
-    for (const item of updatedOrder.items) {
-      const insertOrderItem = {
-        orderId,
-        productId: item.id,
-        quantity: item.quantity,
-        price: item.sellingPrice,
-      };
-
-      const insertOrderItemStatement = db.prepare(
-        `INSERT INTO order_items (order_id, product_id, quantity, price)
-        VALUES (@orderId, @productId, @quantity, @price)`,
+    // Check if updatedOrder.items is not null or undefined
+    if (updatedOrder.items && updatedOrder.items.length > 0) {
+      // Delete existing order items in the 'order_items' table
+      const deleteOrderItemsStatement = db.prepare(
+        'DELETE FROM order_items WHERE order_id = @orderId',
       );
+      deleteOrderItemsStatement.run({ orderId });
 
-      insertOrderItemStatement.run(insertOrderItem);
+      // Insert updated order items into the 'order_items' table
+      for (const item of updatedOrder.items) {
+        if (
+          (item && item.id) ||
+          (item.product_id && item.quantity && item.sellingPrice)
+        ) {
+          const insertOrderItem = {
+            orderId,
+            productId: item.id || item.product_id,
+            quantity: item.quantity,
+            price: item.sellingPrice,
+          };
+
+          const insertOrderItemStatement = db.prepare(
+            `INSERT INTO order_items (order_id, product_id, quantity, price)
+            VALUES (@orderId, @productId, @quantity, @price)`,
+          );
+
+          insertOrderItemStatement.run(insertOrderItem);
+        }
+      }
     }
 
     console.log('Order updated successfully.');
@@ -190,10 +198,14 @@ export function getAllOrders(): Order[] {
     const orders: any = stm.all();
 
     for (const order of orders) {
-      const itemsStm = db.prepare(
-        `SELECT * FROM order_items WHERE order_id = ${order.order_id}`,
-      );
-      const items = itemsStm.all({ orderId: order.orderId }) as CartItem[];
+      // Retrieve order items from the 'order_items' table and join with 'products' table
+      const itemsStm = db.prepare(`
+        SELECT oi.*, p.name, p.buyingPrice, p.sellingPrice, p.discount, p.discountable
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id = ${order.order_id}
+      `);
+      const items = itemsStm.all() as CartItem[];
       order.items = items;
     }
 

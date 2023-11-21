@@ -191,17 +191,6 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
 app
   .whenReady()
   .then(() => {
-    ipcMain.handle('auth:login', async (_, user: any) => {
-      // Replace 'any' with the actual type for 'Auth'
-      return login(user);
-    });
-    ipcMain.handle('auth:register', async (_, user: any) => {
-      // Replace 'any' with the actual type for 'Auth'
-      return register(user);
-    });
-    ipcMain.handle('auth:getUser', async (_, username: string) => {
-      return getUser(username);
-    });
     ipcMain.handle('product:insert', async (_, product: Product) => {
       const createdProduct = await createProduct(product);
       return createdProduct;
@@ -241,6 +230,15 @@ app
     });
     ipcMain.handle('order:getById', async (_,id:number) => {
       return getOrderDetails(id);
+    });
+    ipcMain.handle('auth:login', async (_, user: Auth) => {
+      return login(user);
+    });
+    ipcMain.handle('auth:register', async (_, user: Auth) => {
+      return register(user);
+    });
+    ipcMain.handle('auth:getUser', async (_, username: string) => {
+      return getUser(username);
     });
 
     createWindow();

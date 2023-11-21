@@ -20,6 +20,7 @@ export interface Product {
 export interface CartItem extends Product {
   discountedPrice: number;
   quantity: number;
+  product_id?: number;
 }
 
 export interface finalProduct extends Product {

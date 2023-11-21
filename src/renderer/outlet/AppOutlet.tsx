@@ -1,6 +1,9 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import LoginForm from 'renderer/components/LoginForm';
+import RegistrationForm from 'renderer/components/RegistrationForm';
 import ProductList from 'renderer/features/products/components/ProductList';
+import AuthGuard from 'renderer/guards/AuthGuards';
 import Home from 'renderer/page/Home';
 import Orders from 'renderer/page/Orders';
 import Report from 'renderer/page/Report';
@@ -10,10 +13,15 @@ const AppOutlet = (props: Props) => {
   return (
     <Routes>
       <Route path="/">
-        <Route index element={<Home />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="report" element={<Report />} />
-        <Route path="inventory" element={<ProductList />} />
+        <Route index element={<AuthGuard component={<Home />} />} />
+        <Route path="orders" element={<AuthGuard component={<Orders />} />} />
+        <Route path="report" element={<AuthGuard component={<Report />} />} />
+        <Route
+          path="inventory"
+          element={<AuthGuard component={<ProductList />} />}
+        />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/register" element={<RegistrationForm />} />
       </Route>
     </Routes>
   );

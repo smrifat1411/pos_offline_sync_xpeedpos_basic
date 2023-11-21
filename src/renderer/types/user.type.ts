@@ -1,6 +1,11 @@
-export interface UserType {
-    _id?: string;
-    userName?: string;
-    email?: string;
-    role?: string;
+export interface User {
+  id?: number;
+  username: string;
+  password_hash: Buffer;
+  status: number;
+}
+
+export interface Auth {
+  username: string;
+  password: string;
 }

@@ -35,11 +35,12 @@ export function register(user: Auth) {
       username: user.username,
       password_hash: hashText(user.password),
       status: 1,
+      role:"manager"
     };
 
     const stm = db.prepare(
-      `INSERT INTO users (username, password_hash, status)
-    VALUES (@username, @password_hash, @status)`,
+      `INSERT INTO users (username, password_hash, status,role)
+    VALUES (@username, @password_hash, @status,@role)`,
     );
 
     stm.run(registerUser);
