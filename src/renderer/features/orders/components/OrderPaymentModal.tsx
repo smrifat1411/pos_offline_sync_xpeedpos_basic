@@ -15,7 +15,7 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSettings } from '../../../context/settingsContextProvider';
 import { Order } from '../../../types/order.type';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -29,18 +29,16 @@ type Props = {
 const OrderPaymentModal = ({
   isOpenPaymentModal,
   setIsOpenPaymentModal,
-  order,
+  order: initialOrder,
 }: Props) => {
   const { updateOrderStatus } = useOrders();
-
-  const { settings } = useSettings();
+  const [order, setOrder] = useState<Order>(initialOrder);
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [cashPaid, setCashPaid] = useState<number>(0);
-
   const [discount, setDiscount] = useState<number>(0);
   const [isEditingDiscount, setIsEditingDiscount] = useState(false);
   const [discountedAmount, setDiscountedAmount] = useState<number>(
-    (discount * order.subTotal) / 100,
+    (discount * initialOrder.subTotal) / 100,
   );
 
   const handleDiscountedAmountChange = (value: number) => {
@@ -67,8 +65,10 @@ const OrderPaymentModal = ({
   const changeAmount = cashPaid - netPayable;
 
   const navigate = useNavigate();
-  const handlePayNow = () => {
-    updateOrderStatus({
+
+  const handlePayNow = async () => {
+    // Update the local state to reflect the payment status
+    const updatedOrder = {
       ...order,
       paymentStatus: 'payment done',
       changeAmount: changeAmount,
@@ -77,7 +77,10 @@ const OrderPaymentModal = ({
       discount: discount,
       cashPaid: cashPaid,
       paymentMethod: 'cash',
-    });
+    };
+
+    await updateOrderStatus(updatedOrder);
+    setOrder(updatedOrder);
   };
 
   return (

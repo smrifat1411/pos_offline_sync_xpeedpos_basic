@@ -19,20 +19,6 @@ import OrderPaymentModal from './OrderPaymentModal';
 type Props = { order: Order };
 
 const OrderTableRow = ({ order }: Props) => {
-  const [newOrder, setNewOrder] = useState<any>();
-
-  useEffect(() => {
-    const fetch = async () => {
-      if (order.order_id) {
-        const data = await window.electron.getOrderById(order?.order_id);
-          console.log(data);
-
-        setNewOrder(data);
-      }
-    };
-
-    fetch();
-  }, []);
 
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
@@ -120,11 +106,11 @@ const OrderTableRow = ({ order }: Props) => {
         setIsOpenViewModal={setIsOpenViewModal}
         order={order}
       />
-      {newOrder !== undefined && (
+      { (
         <OrderPaymentModal
           isOpenPaymentModal={isOpenPaymentModal}
           setIsOpenPaymentModal={setIsOpenPaymentModal}
-          order={newOrder}
+          order={order}
         />
       )}
     </StyledTableRow>

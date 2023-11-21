@@ -62,7 +62,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const updateOrderStatus = async (data: any) => {
     try {
       await window.electron.updateOrder(data.order_id, data);
-      fetchUpdatedOrders();
+     getAllOrdersData()
     } catch (error) {
       console.log(error);
     }
