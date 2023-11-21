@@ -51,9 +51,9 @@ export default function LoginForm() {
           alignItems: 'center',
         }}
       >
-        <Typography component="h1" variant="h5">
+        <p className='font-bold text-2xl'>
           Sign in
-        </Typography>
+        </p>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
