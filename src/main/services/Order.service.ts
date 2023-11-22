@@ -1,5 +1,6 @@
 import { CartItem } from 'renderer/types/product';
 import { connect } from './Database.service';
+import { getProductById, updateProductById } from './product.service';
 
 export interface Order {
   items: CartItem[];
@@ -54,6 +55,13 @@ export function createOrder(order: Order): Order | null {
         quantity: item.quantity,
         price: item.sellingPrice,
       };
+
+      const fetchProduct: any = item.id && getProductById(item?.id);
+
+      item.id &&
+        updateProductById(item.id, {
+          stockAmount: fetchProduct?.stockAmount - item.quantity,
+        });
 
       const insertOrderItemStatement = db.prepare(
         `INSERT INTO order_items (order_id, product_id, quantity, price)

@@ -202,12 +202,12 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         </div>
         {/* discount */}
         <div className="group relative z-0 mb-6 w-full">
-          <FormControlLabel
+        <FormControlLabel
             required
-            control={<Checkbox />}
+            control={<Checkbox checked={formik.values.discountable!=0}  />}
             label="Discountable Product"
             onChange={(e) => handleDiscountableCheckbox(e)}
-            value={formik.values.discountable}
+            value={true}
           />
           {formik.errors.discountable && (
             <p className="text-red-500 text-sm mt-1">

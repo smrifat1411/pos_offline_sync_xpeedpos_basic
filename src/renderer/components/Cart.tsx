@@ -28,7 +28,7 @@ const Cart: React.FC = () => {
       netPayable: getTotalPrice(),
     };
     const fetchedNewData = await window.electron.createOrder(newOrder);
-    getAllOrdersData();
+    // getAllOrdersData();
 
     // Update the order state
     setOrder({ ...newOrder, order_id: fetchedNewData.order_id });

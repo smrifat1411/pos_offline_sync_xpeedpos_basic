@@ -104,20 +104,24 @@ export function getAllProducts(): Product[] {
   }
 }
 
-export async function updateProductById(id: number, updatedProductData: Product): Promise<void> {
+export async function updateProductById(id: number, updatedProductData: any): Promise<void> {
   try {
     const db = connect();
+
+    const updateFields = Object.keys(updatedProductData)
+      .map((key) => `${key} = @${key}`)
+      .join(', ');
+
+    const stm = db.prepare(
+      `UPDATE products
+      SET ${updateFields}
+      WHERE id = @id`,
+    );
 
     const updateProduct = {
       id: id,
       ...updatedProductData,
     };
-
-    const stm = db.prepare(
-      `UPDATE products
-      SET name = @name, category = @category, sellingPrice = @sellingPrice, discount = @discount, discountable = @discountable, buyingPrice = @buyingPrice, stockAmount = @stockAmount
-      WHERE id = @id`,
-    );
 
     await new Promise<void>((resolve, reject) => {
       try {
