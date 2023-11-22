@@ -15,11 +15,12 @@ interface Option {
 }
 
 interface Props {
-  onSuccess: () => void;
+  onSuccess?: () => void;
+  product?: Product;
 }
 
-const ProductCreateForm = ({ onSuccess }: Props) => {
-  const { createProduct } = useProductContext();
+const ProductCreateForm = ({ onSuccess, product }: Props) => {
+  const { createProduct, updateProductById } = useProductContext();
 
   const handleCategoryChange = (option: Option | null) => {
     formik.setFieldValue('category', option ? option.value : '');
@@ -37,36 +38,47 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
     sellingPrice: Yup.number().required('Price is required'),
     buyingPrice: Yup.number().required('Buying Price is required'),
     category: Yup.string().required('Category is required'),
-    discountable: Yup.boolean().required('Please define if this product is discountable or not'),
+    discountable: Yup.boolean().required(
+      'Please define if this product is discountable or not',
+    ),
     discount: Yup.number(),
+    stockAmount: Yup.number().required('Please add at least one stock'),
   });
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      sellingPrice: '',
-      buyingPrice: '', // Added buyingPrice field
-      category: '',
-      discountable: 0,
-      discount: 0,
+      name: product?.name || '',
+      sellingPrice: product?.sellingPrice || '',
+      buyingPrice: product?.buyingPrice || '', // Added buyingPrice field
+      category: product?.category || '',
+      discountable: product?.discountable || 0,
+      discount: product?.discount || 0,
+      stockAmount: product?.stockAmount || 1,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      const data:Product = {
+      const data: Product = {
         name: values.name,
         sellingPrice: Number(values.sellingPrice),
         buyingPrice: Number(values.buyingPrice),
-        discountable: Number(values.discount)>0?1:0 ,
+        discountable: Number(values.discount) > 0 ? 1 : 0,
         category: values.category,
-        discount: values.discount
+        discount: values.discount,
+        stockAmount: values.stockAmount,
       };
 
-      await createProduct(data);
-      formik.resetForm();
-      onSuccess();
+      try {
+        if (!product) {
+          await createProduct(data);
+          formik.resetForm();
+        } else if (product.id) {
+          await updateProductById(product?.id, data);
+        }
+
+        onSuccess && onSuccess();
+      } catch (error) {}
     },
   });
-
 
   return (
     <form
@@ -99,7 +111,9 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
       </div>
 
       <div className="mb-6 w-full">
-        <label htmlFor="buyingPrice" className="text-sm text-gray-500">Buying Price</label>
+        <label htmlFor="buyingPrice" className="text-sm text-gray-500">
+          Buying Price
+        </label>
         <input
           type="number"
           name="buyingPrice"
@@ -112,7 +126,9 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
           value={formik.values.buyingPrice}
         />
         {formik.errors.buyingPrice && (
-          <p className="text-red-500 text-sm mt-1">{formik.errors.buyingPrice}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {formik.errors.buyingPrice}
+          </p>
         )}
       </div>
 
@@ -135,10 +151,12 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
               formik.values.sellingPrice && 'text-blue-600'
             }`}
           >
-            Price
+            Selling Price
           </label>
           {formik.errors.sellingPrice && (
-            <p className="text-red-500 text-sm mt-1">{formik.errors.sellingPrice}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {formik.errors.sellingPrice}
+            </p>
           )}
         </div>
         <div className="mb-6 w-full">
@@ -154,23 +172,55 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
         </div>
       </div>
 
-
-      <div className="group relative z-0 mb-6 w-full">
-        <FormControlLabel
-          required
-          control={<Checkbox />}
-          label="Discountable Product"
-          onChange={(e) => handleDiscountableCheckbox(e)}
-          value={formik.values.discountable}
-        />
-        {formik.errors.discountable && (
-          <p className="text-red-500 text-sm mt-1">
-            {formik.errors.discountable}
-          </p>
-        )}
-      </div>
-      {formik.values.discountable && (
+      {/*  */}
+      <div className="grid md:grid-cols-2 w-full md:gap-6">
         <div className="group relative z-0 mb-6 w-full">
+          <input
+            type="number"
+            name="stockAmount"
+            id="stockAmount"
+            className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500 ${
+              formik.errors.stockAmount && 'border-red-500'
+            }`}
+            placeholder=" "
+            onChange={formik.handleChange}
+            value={formik.values.stockAmount}
+          />
+          <label
+            htmlFor="stockAmount"
+            className={`absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-gray-500 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:font-medium peer-focus:text-blue-600 dark:text-gray-400 peer-focus:dark:text-blue-500 ${
+              formik.values.stockAmount && 'text-blue-600'
+            }`}
+          >
+            Stock Amount
+          </label>
+          {formik.errors.sellingPrice && (
+            <p className="text-red-500 text-sm mt-1">
+              {formik.errors.stockAmount}
+            </p>
+          )}
+        </div>
+        {/* discount */}
+        <div className="group relative z-0 mb-6 w-full">
+          <FormControlLabel
+            required
+            control={<Checkbox />}
+            label="Discountable Product"
+            onChange={(e) => handleDiscountableCheckbox(e)}
+            value={formik.values.discountable}
+          />
+          {formik.errors.discountable && (
+            <p className="text-red-500 text-sm mt-1">
+              {formik.errors.discountable}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Discount */}
+
+      {formik.values.discountable ? (
+        <div className="group relative z-0 mb-6 w-[50%] mx-auto">
           <input
             type="number"
             name="discount"
@@ -190,8 +240,11 @@ const ProductCreateForm = ({ onSuccess }: Props) => {
             Percentage of Discount
           </label>
         </div>
-      )}
-      <Button onclick={formik.handleSubmit} txt="Create" />
+      ) : null}
+      <Button
+        onclick={formik.handleSubmit}
+        txt={`${product ? 'Update' : 'Create'}`}
+      />
     </form>
   );
 };

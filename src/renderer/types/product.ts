@@ -16,6 +16,7 @@ export interface Product {
   discountable?: number;
   discount?: number;
   buyingPrice: number;
+  stockAmount: number;
 }
 export interface CartItem extends Product {
   discountedPrice: number;

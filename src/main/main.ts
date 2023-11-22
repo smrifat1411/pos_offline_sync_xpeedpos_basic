@@ -20,6 +20,7 @@ import {
   getAllProducts,
   getProductById,
   getProductByName,
+  updateProductById,
 } from './services/product.service';
 import { resolveHtmlPath } from './util';
 
@@ -187,7 +188,6 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
   return isPreview ? 'shown preview window' : 'shown print dialog';
 });
 
-
 app
   .whenReady()
   .then(() => {
@@ -202,6 +202,12 @@ app
     ipcMain.handle('product:getById', async (_, id: number) => {
       return getProductById(id);
     });
+    ipcMain.handle(
+      'product:updateById',
+      async (_, id: number, data: Product) => {
+        return updateProductById(id, data);
+      },
+    );
     ipcMain.handle('product:getAll', async () => {
       return getAllProducts();
     });
@@ -228,7 +234,7 @@ app
     ipcMain.handle('order:getAll', async () => {
       return getAllOrders();
     });
-    ipcMain.handle('order:getById', async (_,id:number) => {
+    ipcMain.handle('order:getById', async (_, id: number) => {
       return getOrderDetails(id);
     });
     ipcMain.handle('auth:login', async (_, user: Auth) => {

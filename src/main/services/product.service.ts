@@ -19,8 +19,8 @@ export async function createProduct(product: Product): Promise<Product | null> {
     };
 
     const stm = db.prepare(
-      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice)
-      VALUES (@name, @category, @sellingPrice, @discount, @discountable,@buyingPrice)`,
+      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice,stockAmount)
+      VALUES (@name, @category,  @sellingPrice, @discount, @discountable,@buyingPrice, @stockAmount)`,
     );
 
     // Use await with a Promise for the synchronous SQLite operation
@@ -101,6 +101,36 @@ export function getAllProducts(): Product[] {
   } catch (error) {
     console.error('Error getting all products:', error);
     return [];
+  }
+}
+
+export async function updateProductById(id: number, updatedProductData: Product): Promise<void> {
+  try {
+    const db = connect();
+
+    const updateProduct = {
+      id: id,
+      ...updatedProductData,
+    };
+
+    const stm = db.prepare(
+      `UPDATE products
+      SET name = @name, category = @category, sellingPrice = @sellingPrice, discount = @discount, discountable = @discountable, buyingPrice = @buyingPrice, stockAmount = @stockAmount
+      WHERE id = @id`,
+    );
+
+    await new Promise<void>((resolve, reject) => {
+      try {
+        stm.run(updateProduct);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+
+    console.log('Product updated successfully.');
+  } catch (error) {
+    console.error('Error updating product:', error);
   }
 }
 
