@@ -1,12 +1,13 @@
 import React from 'react';
-import ProductList from 'renderer/features/purchase/ProductList';
+import InventoryTable from 'renderer/features/purchase/InventoryTable';
+import ProductList from 'renderer/features/purchase/InventoryTable';
 
 type Props = {};
 
 const Inventory = (props: Props) => {
   return (
     <>
-      <ProductList />
+      <InventoryTable />
     </>
   );
 };

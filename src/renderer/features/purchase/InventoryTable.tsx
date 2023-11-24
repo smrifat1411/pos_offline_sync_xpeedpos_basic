@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -17,6 +17,7 @@ import {
   GridRowId,
   GridRowModel,
   GridRowEditStopReasons,
+  GridValueFormatterParams,
 } from '@mui/x-data-grid';
 import {
   randomCreatedDate,
@@ -26,6 +27,9 @@ import {
 } from '@mui/x-data-grid-generator';
 import { useEffect, useState } from 'react';
 import { useProductContext } from 'renderer/context/ProductContext';
+import ProductCreateForm from '../products/components/ProductCreateForm';
+import Modal from 'renderer/components/Modal';
+import Button from 'renderer/components/Button';
 
 interface Product {
   id?: number;
@@ -51,30 +55,40 @@ interface EditToolbarProps {
 }
 
 function EditToolbar(props: EditToolbarProps) {
-  const { setRows, setRowModesModel } = props;
 
-  const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
-    }));
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+  const closeModal = () => {
+    setModalIsOpen(false);
   };
 
+  const handleProductCreated = () => {
+    closeModal();
+  };
+
+
   return (
-    <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
-      </Button>
-    </GridToolbarContainer>
+    <div className="px-4  py-2 flex  items-center">
+      <Button onclick={openModal} txt="Create Product" />
+      <Modal
+        isOpen={modalIsOpen}
+        closeModal={closeModal}
+        content={<ProductCreateForm onSuccess={handleProductCreated} />}
+      />
+    </div>
   );
 }
 
-export default function FullFeaturedCrudGrid() {
-  const [rows, setRows] = useState<GridRowsProp>([]);
+export default function InventoryTable() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-  const { updateProductById } = useProductContext();
+  const { updateProductById, allProducts } = useProductContext();
+  const [rows, setRows] = useState<Product[]>(allProducts);
+  const [isNew, setIsNew] = useState(false);
+
+
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
     params,
@@ -95,11 +109,6 @@ export default function FullFeaturedCrudGrid() {
 
     // Update the local state immediately for a responsive UI
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-
-    // Invoke the updateProductById function after the state is updated
-    // if (editedRow) {
-
-    // }
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
@@ -112,20 +121,20 @@ export default function FullFeaturedCrudGrid() {
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
 
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow!.isNew) {
+    // const editedRow = rows.find((row) => row.id === id);
+    if (isNew) {
       setRows(rows.filter((row) => row.id !== id));
     }
   };
 
   const processRowUpdate = async (newRow: any) => {
     const updatedRow = { ...newRow };
-
+    setIsNew(true);
 
     try {
-  updateProductById(newRow.id, {
-      ...newRow});
-
+      updateProductById(newRow.id, {
+        ...newRow,
+      });
     } catch (error) {
       console.error(`Error updating product with ID ${updatedRow.id}:`, error);
       // Handle error, e.g., show a notification to the user
@@ -138,15 +147,32 @@ export default function FullFeaturedCrudGrid() {
     setRowModesModel(newRowModesModel);
   };
 
+  const CustomSellingPriceCell = (params: any) => {
+    const { value } = params;
+    const sellingPrice = value as unknown as number;
+    const discount = params.row.discount as number;
+    const discountedPrice = sellingPrice - (discount * sellingPrice) / 100;
+
+    return (
+      <span>
+        {discountedPrice.toFixed(2)} ({discount}%)
+      </span>
+    );
+  };
+
+
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Name', width: 180, editable: true },
     { field: 'category', headerName: 'Category', width: 180, editable: false },
+
     {
       field: 'sellingPrice',
       headerName: 'Selling Price',
       type: 'number',
       width: 150,
       editable: true,
+      renderCell: CustomSellingPriceCell,
+
     },
     {
       field: 'discount',
@@ -217,37 +243,10 @@ export default function FullFeaturedCrudGrid() {
     },
   ];
 
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        // Assuming you have a function to fetch products from your API
-        const result = await window.electron.getAllProducts();
-
-        // Transform the fetched product data into the format expected by DataGrid
-        const transformedRows: GridRowsProp = result.map(
-          (product: Product) => ({
-            id: product.id,
-            name: product.name,
-            category: product.category,
-            sellingPrice: product.sellingPrice,
-            discount: product.discount || 0,
-            buyingPrice: product.buyingPrice,
-            stockAmount: product.stockAmount,
-          }),
-        );
-
-        setRows(transformedRows);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
-    fetchAllProducts();
-  }, []);
   return (
     <Box
       sx={{
-        height: 500,
+        height: '100%',
         width: '100%',
         '& .actions': {
           color: 'text.secondary',
@@ -261,6 +260,7 @@ export default function FullFeaturedCrudGrid() {
         rows={rows}
         columns={columns}
         editMode="row"
+
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
