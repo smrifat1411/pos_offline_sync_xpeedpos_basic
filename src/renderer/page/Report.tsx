@@ -9,109 +9,103 @@ const Report = (props: Props) => {
   const { orders } = useOrders();
   console.log(orders);
 
-  const dailyOrders = orders.filter(
-    (order: Order) =>
-      new Date(order?.orderTime).getDate() == new Date().getDate() &&
-      order?.paymentStatus !== "canceled"
-  );
+  const currentDate = new Date();
+  const filterOrders = (order: Order, filterType: string, filterDate: Date) => {
+    const orderDate = new Date(order?.orderTime);
+    switch (filterType) {
+      case "daily":
+        return (
+          orderDate.getDate() === filterDate.getDate() &&
+          order?.paymentStatus !== "canceled"
+        );
+      case "weekly":
+        const sevenDaysAgo = new Date(filterDate);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        return (
+          orderDate >= sevenDaysAgo &&
+          orderDate <= filterDate &&
+          order?.paymentStatus !== "canceled"
+        );
+      case "monthly":
+        const firstDayOfMonth = new Date(filterDate.getFullYear(), filterDate.getMonth(), 1);
+        const lastDayOfMonth = new Date(filterDate.getFullYear(), filterDate.getMonth() + 1, 0);
+        return (
+          orderDate >= firstDayOfMonth &&
+          orderDate <= lastDayOfMonth &&
+          order?.paymentStatus !== "canceled"
+        );
+      default:
+        return false;
+    }
+  };
 
-  const monthlyOrders = orders.filter(
-    (order: Order) =>
-      new Date(order?.orderTime).getMonth() == new Date().getMonth() &&
-      new Date(order?.orderTime).getFullYear() == new Date().getFullYear() &&
-      order?.paymentStatus !== "canceled"
-  );
+  const dailyOrders = orders.filter((order: Order) => filterOrders(order, "daily", currentDate));
+  const weeklyOrders = orders.filter((order: Order) => filterOrders(order, "weekly", currentDate));
+  const monthlyOrders = orders.filter((order: Order) => filterOrders(order, "monthly", currentDate));
 
-  const dailyRevenue = dailyOrders.reduce(
-    (prevAmount, order) => prevAmount + order?.netPayable,
-    0
-  );
+  const calculateTotalRevenue = (orderArray: Order[]) =>
+    orderArray.reduce((total, order) => total + (order?.netPayable || 0), 0);
 
-  const monthlyRevenue = monthlyOrders.reduce(
-    (prevAmount, order) => prevAmount + order?.netPayable,
-    0
-  );
+  const dailyRevenue = calculateTotalRevenue(dailyOrders);
+  const weeklyRevenue = calculateTotalRevenue(weeklyOrders);
+  const monthlyRevenue = calculateTotalRevenue(monthlyOrders);
 
-  let lastSevenDaysOrdersByDate: Array<Array<Order>> = [];
 
+  const lastSevenDaysOrdersByDate: Array<Array<Order>> = [];
   for (let i = 6; i >= 0; i--) {
-    let currentDate = new Date();
+    const currentDate = new Date(); // Use a new instance for each day
     currentDate.setDate(currentDate.getDate() - i);
+
     const ordersInADay = orders.filter(
       (o: Order) =>
-        new Date(o?.orderTime).getDate() == currentDate.getDate() &&
-        o?.orderTime <= Date.now() &&
+        new Date(o?.orderTime).getDate() === currentDate.getDate() &&
+        new Date(o?.orderTime) <= currentDate &&
         o?.paymentStatus !== "canceled"
     );
+
     lastSevenDaysOrdersByDate.push(ordersInADay || []);
   }
 
-  let lastSevenDaysOrders: Order[] = [];
-  lastSevenDaysOrders = lastSevenDaysOrders.concat(
-    ...lastSevenDaysOrdersByDate
-  );
-
-  const lastSevenDaysRevenue = lastSevenDaysOrders.reduce(
-    (prevAmount, order) => prevAmount + order?.netPayable,
-    0
-  );
+  const lastSevenDaysOrders: Order[] = lastSevenDaysOrdersByDate.flat();
+  const lastSevenDaysRevenue = calculateTotalRevenue(lastSevenDaysOrders);
 
   const monthlyChartLabels = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
+
+
+
+  const getMonthlyData = (monthIndex: number) => {
+    const filterDate = new Date(currentDate.getFullYear(), monthIndex, 1);
+
+    const ordersInAMonth = orders.filter((o: Order) =>
+      filterOrders(o, "monthly", filterDate) && new Date(o?.orderTime).getMonth() === monthIndex
+    );
+
+    return {
+      amount: calculateTotalRevenue(ordersInAMonth),
+      ordersCount: ordersInAMonth.length,
+    };
+  };
+
+  const monthlyChartAmountData = monthlyChartLabels.map((_, index) => getMonthlyData(index).amount);
+  const monthlyChartOrdersData = monthlyChartLabels.map((_, index) => getMonthlyData(index).ordersCount);
 
   const weeklyChartLabels = lastSevenDaysOrdersByDate?.map((eachDay) =>
     eachDay[0]?.orderTime
       ? `${new Date(eachDay[0]?.orderTime).getDate()} ${
-          monthlyChartLabels[new Date(eachDay[0]?.orderTime).getMonth()]
-        }`
+        monthlyChartLabels[new Date(eachDay[0]?.orderTime).getMonth()]
+      }`
       : "0"
   );
 
   const weeklyChartAmountData = lastSevenDaysOrdersByDate?.map((eachDay) =>
-    eachDay.reduce(
-      (prevAmount, currOrder) => prevAmount + currOrder?.netPayable,
-      0
-    )
+    calculateTotalRevenue(eachDay)
   );
 
   const weeklyChartOrdersData = lastSevenDaysOrdersByDate?.map(
     (eachDay) => eachDay.length
   );
-
-  let ordersByMonths: Array<Array<Order>> = [];
-  for (let i = 0; i <= 11; i++) {
-    const ordersInAMonth = orders.filter(
-      (o: Order) =>
-        new Date(o?.orderTime).getMonth() == i &&
-        new Date(o?.orderTime).getFullYear() == new Date().getFullYear() &&
-        o?.paymentStatus !== "canceled"
-    );
-    ordersByMonths.push(ordersInAMonth || []);
-  }
-
-  const monthlyChartAmountData = ordersByMonths?.map((eachMonth) =>
-    eachMonth.reduce(
-      (prevAmount, currOrder) => prevAmount + currOrder?.netPayable,
-      0
-    )
-  );
-
-  const monthlyChartOrdersData = ordersByMonths?.map(
-    (eachMonth) => eachMonth.length
-  );
-
   return (
     <>
       <section className="">

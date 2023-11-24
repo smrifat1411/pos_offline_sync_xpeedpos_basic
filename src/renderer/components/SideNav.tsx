@@ -9,7 +9,7 @@ import ordersSvgPath from '../assets/icon/orders.svg';
 import inventorySvgPath from '../assets/icon/inventory.svg';
 import salarySvgPath from '../assets/icon/salary.svg';
 import reportSvgPath from '../assets/icon/report.svg';
-import usersSvgPath from '../assets/icon/users.svg';
+import expenseSvgPath from '../assets/icon/users.svg';
 import settingSvgPath from '../assets/icon/setting.svg';
 import { useUserContext } from 'renderer/context/UserContextProvider';
 
@@ -28,7 +28,7 @@ const svgPaths: { [key: string]: string } = {
   inventory: inventorySvgPath,
   employeesalary: salarySvgPath,
   report: reportSvgPath,
-  users: usersSvgPath,
+  expense: expenseSvgPath,
   settings: settingSvgPath,
 };
 

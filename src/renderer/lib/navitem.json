@@ -33,9 +33,9 @@
     },
     {
         "id": 7,
-        "name": "Users",
-        "svgPath": "/icon/users.svg",
-        "link": "/users",
+        "name": "Expense",
+        "svgPath": "/icon/expense.svg",
+        "link": "/expense",
         "type": "protected"
     },
     {

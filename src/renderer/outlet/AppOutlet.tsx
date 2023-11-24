@@ -4,6 +4,7 @@ import LoginForm from 'renderer/components/LoginForm';
 import RegistrationForm from 'renderer/components/RegistrationForm';
 import ProductList from 'renderer/features/products/components/ProductList';
 import AuthGuard from 'renderer/guards/AuthGuards';
+import Expense from 'renderer/page/Expense';
 import Home from 'renderer/page/Home';
 import Inventory from 'renderer/page/Inventory';
 import Orders from 'renderer/page/Orders';
@@ -17,6 +18,7 @@ const AppOutlet = (props: Props) => {
         <Route index element={<AuthGuard component={<Home />} />} />
         <Route path="orders" element={<AuthGuard component={<Orders />} />} />
         <Route path="report" element={<AuthGuard component={<Report />} />} />
+        <Route path="expense" element={<AuthGuard component={<Expense />} />} />
         <Route
           path="inventory"
           element={<AuthGuard component={<Inventory />} />}
