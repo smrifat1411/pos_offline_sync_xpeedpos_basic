@@ -55,7 +55,6 @@ interface EditToolbarProps {
 }
 
 function EditToolbar(props: EditToolbarProps) {
-
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const openModal = () => {
@@ -69,10 +68,15 @@ function EditToolbar(props: EditToolbarProps) {
     closeModal();
   };
 
-
   return (
-    <div className="px-4  py-2 flex  items-center">
+    <div className="px-4  py-2 flex justify-between items-center">
       <Button onclick={openModal} txt="Create Product" />
+      <Modal
+        isOpen={modalIsOpen}
+        closeModal={closeModal}
+        content={<ProductCreateForm onSuccess={handleProductCreated} />}
+      />
+      <Button onclick={openModal} txt="Create Pod" />
       <Modal
         isOpen={modalIsOpen}
         closeModal={closeModal}
@@ -87,8 +91,6 @@ export default function InventoryTable() {
   const { updateProductById, allProducts } = useProductContext();
   const [rows, setRows] = useState<Product[]>(allProducts);
   const [isNew, setIsNew] = useState(false);
-
-
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
     params,
@@ -127,19 +129,38 @@ export default function InventoryTable() {
     }
   };
 
-  const processRowUpdate = async (newRow: any) => {
+  const processRowUpdate = async (newRow: any, originalRow: any) => {
     const updatedRow = { ...newRow };
     setIsNew(true);
 
     try {
-      updateProductById(newRow.id, {
-        ...newRow,
-      });
+      if (
+        newRow.discountedAmount !== undefined &&
+        originalRow.discount === newRow.discount
+      ) {
+        const sellingPrice = newRow.sellingPrice as number;
+        const discountedAmount = newRow.discountedAmount as number;
+        const discount = (discountedAmount / sellingPrice) * 100;
+        updatedRow.discount = discount;
+
+        const { discountedAmount: _, ...updatePayload } = updatedRow;
+        updateProductById(updatedRow.id, updatePayload);
+
+        // Update the discount percentage in the row
+
+        // Exclude the discountedAmount property from the update call
+        // const { discountedAmount: _, ...updatePayload } = updatedRow;
+      } else {
+        const { discountedAmount: _, ...updatePayload } = updatedRow;
+        updateProductById(updatedRow.id, updatePayload);
+      }
     } catch (error) {
       console.error(`Error updating product with ID ${updatedRow.id}:`, error);
       // Handle error, e.g., show a notification to the user
     }
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+
+    // Update the local state with the modified row
+    setRows(rows.map((row) => (row.id === updatedRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
@@ -153,17 +174,12 @@ export default function InventoryTable() {
     const discount = params.row.discount as number;
     const discountedPrice = sellingPrice - (discount * sellingPrice) / 100;
 
-    return (
-      <span>
-        {discountedPrice.toFixed(2)} ({discount}%)
-      </span>
-    );
+    return <span>{discountedPrice}</span>;
   };
-
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Name', width: 180, editable: true },
-    { field: 'category', headerName: 'Category', width: 180, editable: false },
+    { field: 'category', headerName: 'Category', width: 120, editable: false },
 
     {
       field: 'sellingPrice',
@@ -172,14 +188,32 @@ export default function InventoryTable() {
       width: 150,
       editable: true,
       renderCell: CustomSellingPriceCell,
-
     },
     {
       field: 'discount',
-      headerName: 'Discount',
+      headerName: 'Discount (%)',
       type: 'number',
       width: 120,
       editable: true,
+      valueFormatter: (params: GridValueFormatterParams) => {
+        // Format the discount value with no decimal places
+        const formattedDiscount = params.value.toFixed(0);
+        return `${formattedDiscount}%`;
+      },
+    },
+
+    {
+      field: 'discountedAmount',
+      headerName: 'Discounted (tk)',
+      type: 'number',
+      width: 180,
+      editable: true,
+      valueGetter: (params) => {
+        const sellingPrice = params.row.sellingPrice as number;
+        const discount = params.row.discount as number;
+        const discountedAmount = (discount * sellingPrice) / 100;
+        return discountedAmount;
+      },
     },
     {
       field: 'buyingPrice',
@@ -260,7 +294,6 @@ export default function InventoryTable() {
         rows={rows}
         columns={columns}
         editMode="row"
-
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
