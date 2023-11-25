@@ -1,177 +1,188 @@
-import { useOrders } from "renderer/context/OrderContextProvider";
-import ReportCard from "renderer/features/report/components/ReportCard";
-import ReportChart from "renderer/features/report/components/ReportChart";
+import React, { useEffect, useState } from "react";
+
+import {
+  Grid,
+  Paper,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@material-ui/core";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Order } from "renderer/types/order.type";
+import {
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
+import { useOrders } from "renderer/context/OrderContextProvider";
 
-type Props = {};
+interface ChartData {
+  date: string;
+  orderCount: number;
+  revenue: number;
+}
 
-const Report = (props: Props) => {
+const Report = () => {
   const { orders } = useOrders();
-  console.log(orders);
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [chartType, setChartType] = useState<string>("weeklyOrderCount");
 
-  const currentDate = new Date();
-  const filterOrders = (order: Order, filterType: string, filterDate: Date) => {
-    const orderDate = new Date(order?.orderTime);
-    switch (filterType) {
-      case "daily":
-        return (
-          orderDate.getDate() === filterDate.getDate() &&
-          order?.paymentStatus !== "canceled"
-        );
-      case "weekly":
-        const sevenDaysAgo = new Date(filterDate);
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-        return (
-          orderDate >= sevenDaysAgo &&
-          orderDate <= filterDate &&
-          order?.paymentStatus !== "canceled"
-        );
-      case "monthly":
-        const firstDayOfMonth = new Date(filterDate.getFullYear(), filterDate.getMonth(), 1);
-        const lastDayOfMonth = new Date(filterDate.getFullYear(), filterDate.getMonth() + 1, 0);
-        return (
-          orderDate >= firstDayOfMonth &&
-          orderDate <= lastDayOfMonth &&
-          order?.paymentStatus !== "canceled"
-        );
-      default:
-        return false;
+  const convertTimestampToDate = (timestamp: number): Date => new Date(timestamp);
+
+  const filterOrders = (order: Order, startDate: Date, endDate: Date): boolean => {
+    const orderDate = convertTimestampToDate(order?.orderTime || 0);
+    return orderDate >= startDate && orderDate <= endDate && order?.paymentStatus !== "canceled";
+  };
+
+  const getChartData = (startDate: Date, endDate: Date, type: string): ChartData[] => {
+    const data: ChartData[] = [];
+    let currentDate = new Date(startDate);
+    let dateLabel;
+
+    if (type === "daily") {
+      // For daily, calculate only for the selected day
+      dateLabel = currentDate.toISOString().split("T")[0];
+
+      data.push({
+        date: dateLabel,
+        orderCount: calculateData(currentDate, "orderCount"),
+        revenue: calculateData(currentDate, "revenue"),
+      });
+    } else {
+      // For other types, calculate for the date range
+      while (currentDate <= endDate) {
+        dateLabel = currentDate.toISOString().split("T")[0];
+
+        data.push({
+          date: dateLabel,
+          orderCount: calculateData(currentDate, "orderCount"),
+          revenue: calculateData(currentDate, "revenue"),
+        });
+
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    return data;
+  };
+
+  // ... (other code)
+
+
+  const calculateData = (date: Date, dataType: string): number => {
+    const filteredOrders = orders.filter((o: Order) =>
+      filterOrders(o, startOfDay(date), endOfDay(date))
+    );
+
+    if (dataType === "orderCount") {
+      return filteredOrders.length;
+    } else {
+      return filteredOrders.reduce((total, order) => total + (order?.netPayable || 0), 0);
     }
   };
 
-  const dailyOrders = orders.filter((order: Order) => filterOrders(order, "daily", currentDate));
-  const weeklyOrders = orders.filter((order: Order) => filterOrders(order, "weekly", currentDate));
-  const monthlyOrders = orders.filter((order: Order) => filterOrders(order, "monthly", currentDate));
+  useEffect(() => {
+    handleChartTypeChange(chartType);
+  }, [chartType, orders]);
 
-  const calculateTotalRevenue = (orderArray: Order[]) =>
-    orderArray.reduce((total, order) => total + (order?.netPayable || 0), 0);
+  const handleChartTypeChange = (type: string) => {
+    let startDate, endDate;
 
-  const dailyRevenue = calculateTotalRevenue(dailyOrders);
-  const weeklyRevenue = calculateTotalRevenue(weeklyOrders);
-  const monthlyRevenue = calculateTotalRevenue(monthlyOrders);
+    switch (type) {
+      case "daily":
+        startDate = endOfDay(new Date());
+        endDate = new Date();
+        break;
+      case "weekly":
+        startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
+        endDate = new Date();
+        break;
+      case "monthly":
+        startDate = startOfMonth(new Date());
+        endDate = endOfMonth(new Date());
+        break;
+      case "yearly":
+        startDate = startOfYear(new Date());
+        endDate = endOfYear(new Date());
+        break;
+      default:
+        startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
+        endDate = new Date();
+        break;
+    }
 
-
-  const lastSevenDaysOrdersByDate: Array<Array<Order>> = [];
-  for (let i = 6; i >= 0; i--) {
-    const currentDate = new Date(); // Use a new instance for each day
-    currentDate.setDate(currentDate.getDate() - i);
-
-    const ordersInADay = orders.filter(
-      (o: Order) =>
-        new Date(o?.orderTime).getDate() === currentDate.getDate() &&
-        new Date(o?.orderTime) <= currentDate &&
-        o?.paymentStatus !== "canceled"
-    );
-
-    lastSevenDaysOrdersByDate.push(ordersInADay || []);
-  }
-
-  const lastSevenDaysOrders: Order[] = lastSevenDaysOrdersByDate.flat();
-  const lastSevenDaysRevenue = calculateTotalRevenue(lastSevenDaysOrders);
-
-  const monthlyChartLabels = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-
-
-
-  const getMonthlyData = (monthIndex: number) => {
-    const filterDate = new Date(currentDate.getFullYear(), monthIndex, 1);
-
-    const ordersInAMonth = orders.filter((o: Order) =>
-      filterOrders(o, "monthly", filterDate) && new Date(o?.orderTime).getMonth() === monthIndex
-    );
-
-    return {
-      amount: calculateTotalRevenue(ordersInAMonth),
-      ordersCount: ordersInAMonth.length,
-    };
+    const newData = getChartData(startDate, endDate, type);
+    setChartData(newData);
   };
 
-  const monthlyChartAmountData = monthlyChartLabels.map((_, index) => getMonthlyData(index).amount);
-  const monthlyChartOrdersData = monthlyChartLabels.map((_, index) => getMonthlyData(index).ordersCount);
-
-  const weeklyChartLabels = lastSevenDaysOrdersByDate?.map((eachDay) =>
-    eachDay[0]?.orderTime
-      ? `${new Date(eachDay[0]?.orderTime).getDate()} ${
-        monthlyChartLabels[new Date(eachDay[0]?.orderTime).getMonth()]
-      }`
-      : "0"
-  );
-
-  const weeklyChartAmountData = lastSevenDaysOrdersByDate?.map((eachDay) =>
-    calculateTotalRevenue(eachDay)
-  );
-
-  const weeklyChartOrdersData = lastSevenDaysOrdersByDate?.map(
-    (eachDay) => eachDay.length
-  );
   return (
-    <>
-      <section className="">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 p-4 justify-items-center">
-          <ReportCard
-            title="Daily Revenue"
-            revenue={dailyRevenue.toString()}
-            totalOrders={dailyOrders.length}
-          />
-          <ReportCard
-            title="Last 7 Days Revenue"
-            revenue={lastSevenDaysRevenue.toString()}
-            totalOrders={lastSevenDaysOrders.length}
-          />
-          <ReportCard
-            title={`In This Month(${
-              monthlyChartLabels[new Date().getMonth()]
-            })`}
-            revenue={monthlyRevenue.toString()}
-            totalOrders={monthlyOrders.length}
-          />
-        </div>
-        <div className="p-4">
-          <h3 className="text-2xl font-semibold">Weekly</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 justify-items-center">
-            <ReportChart
-              title="Amounts"
-              labels={weeklyChartLabels}
-              labelsData={weeklyChartAmountData}
-              chartLineTitle="Revenue"
-              borderColor="rgb(255, 99, 132)"
-              backgroundColor="rgba(255, 99, 132, 0.5)"
-            />
-            <ReportChart
-              title="Orders"
-              labels={weeklyChartLabels}
-              labelsData={weeklyChartOrdersData}
-              chartLineTitle="Number of Orders"
-              borderColor="rgb(53, 162, 235)"
-              backgroundColor="rgba(53, 162, 235, 0.5)"
-            />
-          </div>
-        </div>
-        <div className="p-4 grid grid-cols-1">
-          <h3 className="text-2xl font-semibold">
-            Monthly({new Date().getFullYear()})
-          </h3>
-          <ReportChart
-            title="Amounts"
-            labels={monthlyChartLabels}
-            labelsData={monthlyChartAmountData}
-            chartLineTitle="Revenue"
-            borderColor="rgb(53, 162, 235)"
-            backgroundColor="rgba(53, 162, 235, 0.5)"
-          />
-          <ReportChart
-            title="Orders"
-            labels={monthlyChartLabels}
-            labelsData={monthlyChartOrdersData}
-            chartLineTitle="Number of Orders"
-            borderColor="rgb(255, 99, 132)"
-            backgroundColor="rgba(255, 99, 132, 0.5)"
-          />
-        </div>
-      </section>
-    </>
+    <section>
+
+      <Grid container  spacing={2} className="p-4">
+        <Grid item sm={12} className="flex justify-end w-full">
+          <Paper className="flex flex-col gap-2 min-w-[120px] mr-6">
+            <FormControl>
+              <InputLabel>Time Period</InputLabel>
+              <Select value={chartType} onChange={(e) => setChartType(e.target.value as string)}>
+                <MenuItem value="daily">Daily</MenuItem>
+                <MenuItem value="weekly">Weekly</MenuItem>
+                <MenuItem value="monthly">Monthly</MenuItem>
+                <MenuItem value="yearly">Yearly</MenuItem>
+              </Select>
+            </FormControl>
+          </Paper>
+        </Grid>
+
+        {/* Weekly Charts */}
+        <Grid item  sm={6}>
+          <Paper>
+            <Typography variant="h6" gutterBottom>
+              {chartType === "daily" ? "Daily" : chartType.charAt(0).toUpperCase() + chartType.slice(1)} Order Count Chart
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData}>
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="orderCount" name="Order Count" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+        <Grid item  sm={6}>
+          <Paper>
+            <Typography variant="h6" gutterBottom>
+              {chartType === "daily" ? "Daily" : chartType.charAt(0).toUpperCase() + chartType.slice(1)} Revenue Chart
+            </Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData}>
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+      </Grid>
+    </section>
   );
 };
 

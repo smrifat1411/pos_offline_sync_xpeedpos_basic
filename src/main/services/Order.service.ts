@@ -261,3 +261,50 @@ export function getOrderDetails(orderId: number): Order | null {
     return null;
   }
 }
+
+export function getOrdersByPeriod(period: string): Order[] {
+  try {
+    const db = connect();
+
+    let query = 'SELECT * FROM orders';
+
+    // Adjust the query based on the specified time period
+    switch (period) {
+      case 'daily':
+        query += " WHERE DATE(orderTime) = DATE('now')";
+        break;
+      case 'weekly':
+        query += " WHERE DATE(orderTime) >= DATE('now', '-7 days')";
+        break;
+      case 'monthly':
+        query += " WHERE strftime('%Y-%m', orderTime) = strftime('%Y-%m', 'now')";
+        break;
+      case 'yearly':
+        query += " WHERE strftime('%Y', orderTime) = strftime('%Y', 'now')";
+        break;
+      default:
+        break;
+    }
+
+    const stm = db.prepare(query);
+    const orders: any = stm.all();
+
+    for (const order of orders) {
+      // Retrieve order items from the 'order_items' table and join with 'products' table
+      const itemsStm = db.prepare(`
+        SELECT oi.*, p.name, p.buyingPrice, p.sellingPrice, p.discount, p.discountable
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id = ${order.order_id}
+      `);
+      const items = itemsStm.all() as CartItem[];
+      order.items = items;
+    }
+
+    return orders;
+  } catch (error) {
+    console.error(`Error getting ${period} orders:`, error);
+    return [];
+  }
+}
+

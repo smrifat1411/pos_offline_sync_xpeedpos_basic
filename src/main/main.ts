@@ -11,6 +11,7 @@ import {
   deleteOrder,
   getAllOrders,
   getOrderDetails,
+  getOrdersByPeriod,
   updateOrder,
 } from './services/Order.service';
 import {
@@ -245,6 +246,9 @@ app
     });
     ipcMain.handle('auth:getUser', async (_, username: string) => {
       return getUser(username);
+    });
+    ipcMain.handle('order:getByPeriod', async (_, period: string) => {
+      return getOrdersByPeriod(period);
     });
 
     createWindow();

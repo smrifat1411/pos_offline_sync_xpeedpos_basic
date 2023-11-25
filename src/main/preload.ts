@@ -52,6 +52,8 @@ const electronHandler = {
   login: (user: Auth) => ipcRenderer.invoke('auth:login', user),
   register: (user: Auth) => ipcRenderer.invoke('auth:register', user),
   getUser: (username: string) => ipcRenderer.invoke('auth:getUser', username),
+  getOrderByPeriod: (period: string) =>
+    ipcRenderer.invoke('order:getByPeriod', period),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
