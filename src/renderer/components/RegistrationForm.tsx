@@ -39,15 +39,18 @@ export default function RegistrationForm() {
     }
 
     if (email !== null && password !== null) {
-      register({
+    const res =  register({
         username: email ?? '',
         password: password ?? '',
       });
+
+
+
     }
   };
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" className='bg-white' maxWidth="sm">
       <Box
         sx={{
           boxShadow: 3,

@@ -9,6 +9,7 @@ import Home from 'renderer/page/Home';
 import Inventory from 'renderer/page/Inventory';
 import Orders from 'renderer/page/Orders';
 import Report from 'renderer/page/Report';
+import Setting from 'renderer/page/Setting';
 type Props = {};
 
 const AppOutlet = (props: Props) => {
@@ -19,6 +20,7 @@ const AppOutlet = (props: Props) => {
         <Route path="orders" element={<AuthGuard component={<Orders />} />} />
         <Route path="report" element={<AuthGuard component={<Report />} />} />
         <Route path="expense" element={<AuthGuard component={<Expense />} />} />
+        <Route path="settings" element={<AuthGuard component={<Setting />} />} />
         <Route
           path="inventory"
           element={<AuthGuard component={<Inventory />} />}

@@ -189,6 +189,7 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
   });
   const dataUrl = `data:text/html;charset=UTF-8,${encodeURIComponent(url)}`;
 
+
   await win.loadURL(dataUrl);
 
   return isPreview ? 'shown preview window' : 'shown print dialog';

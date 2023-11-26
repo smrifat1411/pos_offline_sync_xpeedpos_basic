@@ -45,9 +45,11 @@ const Report = () => {
 
   const totalOrders = chartData.length;
   const totalRevenue = chartData.reduce(
-    (sum, dataPoint: Order) => sum + dataPoint.netPayable,
-    0,
+    (sum, dataPoint: Order) =>
+      dataPoint.paymentStatus === "payment done" ? sum + dataPoint.netPayable : sum,
+    0
   );
+
   const totalDueOrders = chartData.filter(
     (order: Order) => order.paymentStatus === 'Pending',
   ).length;

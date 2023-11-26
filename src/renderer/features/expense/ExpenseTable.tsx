@@ -43,7 +43,7 @@ function EditToolbar({setRows}: EditToolbarProps) {
     <div className="px-4  py-2 flex justify-between items-center">
       <Button onclick={openModal} txt="Create Expense" />
       <Modal className='flex justify-center items-center h-full' open={modalIsOpen} onClose={closeModal}>
-        <CreateExpForm setRows = {setRows}  />
+        <CreateExpForm closeModal ={closeModal} setRows = {setRows}  />
       </Modal>
     </div>
   );

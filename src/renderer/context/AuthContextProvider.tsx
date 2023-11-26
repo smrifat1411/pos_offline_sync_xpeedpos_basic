@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User } from 'renderer/types/user.type';
 
 interface AuthContextType {
@@ -20,12 +21,14 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [authed, setAuthed] = useState(false);
-  const [userDetails, setUserDetails] = useState<User | undefined>(); // Initialize as undefined
+  const [userDetails, setUserDetails] = useState<User | undefined>();
 
+  const navigate = useNavigate();
   const signin = async (user: Auth) => {
     try {
       const response = await window.electron.login(user);
       setUserDetails(response);
+      // response === true && setAuthed(true);
       setAuthed(true);
       return response;
     } catch (error) {
@@ -36,7 +39,8 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (user: Auth) => {
     try {
-      await window.electron.register(user);
+      const registered = await window.electron.register(user);
+      registered === true && navigate('/login');
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
@@ -54,11 +58,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const value = { authed, userDetails, signin, register, logout };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContextProvider;

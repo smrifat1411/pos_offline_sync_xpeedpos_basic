@@ -29,14 +29,16 @@ const ProductItem: React.FC<Props> = ({ data }) => {
         </div>
         <h3 className="mb-2 text-lg text-center text-gray-700">{data.name}</h3>
       </div>
-      <button
-        className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden rounded-md text-gray-600"
-        onClick={() => addToCart(data)}
-      >
-        <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
-          Add
-        </div>
-      </button>
+    {
+      data.stockAmount >0?  <button
+      className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden rounded-md text-gray-600"
+      onClick={() => addToCart(data)}
+    >
+      <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
+        Add
+      </div>
+    </button>:<span className='text-red-500'>Out of Stock</span>
+    }
       <EditProduct product={data} />
     </section>
   );

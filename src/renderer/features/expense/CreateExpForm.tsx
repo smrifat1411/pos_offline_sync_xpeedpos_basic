@@ -6,9 +6,10 @@ import { Expense } from 'renderer/types/expense.type';
 import { useExpenseContext } from 'renderer/context/ExpenseContext';
 type Props = {
   setRows: any;
+  closeModal: any;
 };
 
-const CreateExpForm = ({ setRows }: Props) => {
+const CreateExpForm = ({ setRows, closeModal }: Props) => {
   const { userDetails } = useAuth();
   const { createExpense } = useExpenseContext();
 
@@ -19,9 +20,11 @@ const CreateExpForm = ({ setRows }: Props) => {
       username: userDetails?.name || '',
     };
     if (payLoad.username !== '') {
-      const data =await createExpense(payLoad);
+      const data = await createExpense(payLoad);
 
       setRows((prev: any) => [...prev, data]);
+
+      data !== undefined && closeModal();
     }
   };
 

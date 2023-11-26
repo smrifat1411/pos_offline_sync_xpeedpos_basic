@@ -26,6 +26,8 @@ export function login(user: Auth) {
 }
 
 export function register(user: Auth) {
+
+
   try {
     const checkUser = getUser(user.username);
 
@@ -34,16 +36,16 @@ export function register(user: Auth) {
     const db = connect();
 
     const registerUser = {
-      name: user.name,
       username: user.username,
       password_hash: hashText(user.password),
       status: 1,
       role: 'manager',
+      name: user.name,
     };
 
     const stm = db.prepare(
-      `INSERT INTO users (username, password_hash, status,role)
-    VALUES (@name, @username, @password_hash, @status,@role)`,
+      `INSERT INTO users (username, password_hash, status, role, name)
+      VALUES (@username, @password_hash, @status, @role, @name)`,
     );
 
     stm.run(registerUser);

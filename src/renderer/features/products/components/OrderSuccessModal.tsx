@@ -27,7 +27,7 @@ const OrderSuccessModal = ({
   <!-- top heading -->
       <div style="display: flex; align-items:center; justify-content:space-between; position:relative">
           <div>
-              <img style="width: 200px; height:100px; border-radius: 8px;" src="../../assets/images/logo.jpg" alt="icon??">
+              <img style="width: 200px; height:100px; border-radius: 8px;" src={logo} alt="icon??">
           </div>
           <div style="display: flex; flex-direction:column">
               <p style="margin: 0; padding: 10px 0px 0px 0px; font-size:25px; font-weight:bold">Electro electro-world</p>
@@ -278,8 +278,6 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
 
   // Function to handle the print action
   const handlePrint = async () => {
-
-
     const img = new Image();
     img.onload = () => {
       // Call printOrPreviewComponent with the data URL after the image is loaded

@@ -17,12 +17,13 @@ import {
   GridValueFormatterParams,
 } from '@mui/x-data-grid';
 import { randomArrayItem } from '@mui/x-data-grid-generator';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'renderer/components/Button';
 // import Modal from 'renderer/components/Modal';
 import { useProductContext } from 'renderer/context/ProductContext';
 import ProductCreateForm from '../products/components/ProductCreateForm';
 import { Card, Modal } from '@mui/material';
+import { useAuth } from 'renderer/context/AuthContextProvider';
 
 interface Product {
   id?: number;
@@ -69,7 +70,7 @@ function EditToolbar(props: EditToolbarProps) {
         className="flex justify-center items-center"
         onClose={closeModal}
       >
-        <Card className='p-2 pt-5'>
+        <Card className="p-2 pt-5">
           <ProductCreateForm onSuccess={handleProductCreated} />
         </Card>
       </Modal>
@@ -88,6 +89,15 @@ export default function InventoryTable() {
   const { updateProductById, allProducts } = useProductContext();
   const [rows, setRows] = useState<Product[]>(allProducts);
   const [isNew, setIsNew] = useState(false);
+
+  // useEffect(() => {
+  //   window.electron.getAllProducts().then((products: Product[]) => {
+  //     setRows(products);
+  //   });
+  // }, []);
+
+  const { userDetails } = useAuth();
+  const isBuyingPriceVisible = userDetails?.role === 'admin';
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
     params,
@@ -111,7 +121,7 @@ export default function InventoryTable() {
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    setRows(rows.filter((row) => row.id !== id));
+    setRows(rows?.filter((row) => row.id !== id));
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -122,7 +132,7 @@ export default function InventoryTable() {
 
     // const editedRow = rows.find((row) => row.id === id);
     if (isNew) {
-      setRows(rows.filter((row) => row.id !== id));
+      setRows(rows?.filter((row) => row.id !== id));
     }
   };
 
@@ -157,7 +167,7 @@ export default function InventoryTable() {
     }
 
     // Update the local state with the modified row
-    setRows(rows.map((row) => (row.id === updatedRow.id ? updatedRow : row)));
+    setRows(rows?.map((row) => (row.id === updatedRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
@@ -174,7 +184,14 @@ export default function InventoryTable() {
     return <span>{discountedPrice}</span>;
   };
 
-  const columns: GridColDef[] = [
+  const buyingPriceColumn: GridColDef | boolean = {
+    field: 'buyingPrice',
+    headerName: 'Buying Price',
+    type: 'number',
+    width: 150,
+    editable: true,
+  };
+  const columns: any[] = [
     { field: 'name', headerName: 'Name', width: 180, editable: true },
     { field: 'category', headerName: 'Category', width: 120, editable: false },
 
@@ -205,20 +222,15 @@ export default function InventoryTable() {
       type: 'number',
       width: 180,
       editable: true,
-      valueGetter: (params) => {
+      valueGetter: (params: any) => {
         const sellingPrice = params.row.sellingPrice as number;
         const discount = params.row.discount as number;
         const discountedAmount = (discount * sellingPrice) / 100;
         return discountedAmount;
       },
     },
-    {
-      field: 'buyingPrice',
-      headerName: 'Buying Price',
-      type: 'number',
-      width: 150,
-      editable: true,
-    },
+    ...(isBuyingPriceVisible ? [buyingPriceColumn] : []),
+    ,
     {
       field: 'stockAmount',
       headerName: 'Stock Amount',
@@ -232,7 +244,7 @@ export default function InventoryTable() {
       headerName: 'Actions',
       width: 100,
       cellClassName: 'actions',
-      getActions: ({ id }) => {
+      getActions: ({ id }: any) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
         if (isInEditMode) {
@@ -287,21 +299,23 @@ export default function InventoryTable() {
         },
       }}
     >
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
-        slots={{
-          toolbar: EditToolbar,
-        }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel },
-        }}
-      />
+      {rows !== undefined && (
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          slots={{
+            toolbar: EditToolbar,
+          }}
+          slotProps={{
+            toolbar: { setRows, setRowModesModel },
+          }}
+        />
+      )}
     </Box>
   );
 }

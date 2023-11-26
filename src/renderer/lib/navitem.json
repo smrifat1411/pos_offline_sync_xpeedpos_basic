@@ -1,48 +1,45 @@
-
-
 [
-    {
-        "id": 1,
-        "name": "Home",
-        "svgPath": "/icon/home.svg",
-        "link": "/",
-        "type": "public"
-    },
+  {
+    "id": 1,
+    "name": "Home",
+    "svgPath": "/icon/home.svg",
+    "link": "/",
+    "type": "public"
+  },
+  {
+    "id": 3,
+    "name": "Orders",
+    "svgPath": "../assets/icon/orders.svg",
+    "link": "/orders",
+    "type": "private"
+  },
+  {
+    "id": 4,
+    "name": "Inventory",
+    "svgPath": "/icon/inventory.svg",
+    "link": "/inventory",
+    "type": "private"
+  },
+  {
+    "id": 6,
+    "name": "Report",
+    "svgPath": "/icon/report.svg",
+    "link": "/report",
+    "type": "private"
+  },
+  {
+    "id": 7,
+    "name": "Expense",
+    "svgPath": "/icon/expense.svg",
+    "link": "/expense",
+    "type": "private"
+  },
 
-    {
-        "id": 3,
-        "name": "Orders",
-        "svgPath": "../assets/icon/orders.svg",
-        "link": "/orders",
-        "type": "private"
-    },
-    {
-        "id": 4,
-        "name": "Inventory",
-        "svgPath": "/icon/inventory.svg",
-        "link": "/inventory",
-        "type": "private"
-    },
-
-    {
-        "id": 6,
-        "name": "Report",
-        "svgPath": "/icon/report.svg",
-        "link": "/report",
-        "type": "protected"
-    },
-    {
-        "id": 7,
-        "name": "Expense",
-        "svgPath": "/icon/expense.svg",
-        "link": "/expense",
-        "type": "protected"
-    },
-    {
-        "id": 8,
-        "name": "Settings",
-        "svgPath": "/icon/setting.svg",
-        "link": "/settings",
-        "type": "protected"
-    }
+  {
+    "id": 9,
+    "name": "Setting",
+    "svgPath": "/icon/setting.svg",
+    "link": "/settings",
+    "type": "private"
+  }
 ]

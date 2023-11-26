@@ -29,7 +29,7 @@ const svgPaths: { [key: string]: string } = {
   employeesalary: salarySvgPath,
   report: reportSvgPath,
   expense: expenseSvgPath,
-  settings: settingSvgPath,
+  setting: settingSvgPath,
 };
 
 const SideNav = (props: Props) => {
@@ -55,9 +55,9 @@ const SideNav = (props: Props) => {
       </div>
       <Divider></Divider>
       {navData.map((item: Item, i) => verifyUserRoute(item, i, 'public'))}
-      {(userDetails?.role === 'manager' || userDetails?.role === '') &&
+      {(userDetails?.role === 'manager' || userDetails?.role === 'admin') &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'private'))}
-      {userDetails?.role === 'manager' &&
+      {userDetails?.role === 'admin' &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'protected'))}
     </div>
   );
