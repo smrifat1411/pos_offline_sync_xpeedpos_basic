@@ -32,7 +32,7 @@ const OrderSuccessModal = ({
           <div style="display: flex; flex-direction:column">
               <p style="margin: 0; padding: 10px 0px 0px 0px; font-size:25px; font-weight:bold">Electro electro-world</p>
               <p style="margin: 0; padding: 10px 0px 0px 0px;">Shopping Mall, 4/b </p>
-              <p style="margin: 0; padding: 10px 0px 0px 0px;">Dhanmondi, Dhaka-1100</p>
+              <p style="margin: 0; padding: 10px 0px 0px 0px;">3/2 Sultangonj Rd,Rayer Bazar</p>
               <div style="display: flex; flex-direction:column; gap:5px; margin: 0; padding: 10px 0px 0px 0px;">
                   <div style="display: flex; align-items:center; gap:5px;">
                       <svg height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"

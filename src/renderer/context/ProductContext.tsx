@@ -44,22 +44,29 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
   ) => {
     try {
       // Call the API or perform the update operation
-     const newData =  await window.electron.updateProductById(productId, updatedProduct);
+      const newData = await window.electron.updateProductById(
+        productId,
+        updatedProduct,
+      );
 
-     if (newData) {
-      setAllProducts((prev:any)=>[
-        ...prev,
-        newData
-     ])
-     }
+      if (newData !== undefined) {
+        setAllProducts((prev: Product[]) => {
+          // Find the index of the product with the matching ID
+          const index = prev.findIndex((product) => product.id === productId);
 
-
-
+          // If the product is found, replace it with the updated product
+          if (index !== -1) {
+            const newProducts = [...prev];
+            newProducts[index] = newData;
+            return newProducts;
+          }
+          return prev;
+        });
+      }
     } catch (error) {
       console.error('Error updating product:', error);
     }
   };
-
 
   const createProduct = async (newProduct: Product): Promise<void> => {
     try {

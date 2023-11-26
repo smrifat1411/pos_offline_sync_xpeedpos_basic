@@ -104,7 +104,7 @@ export function getAllProducts(): Product[] {
   }
 }
 
-export async function updateProductById(id: number, updatedProductData: any): Promise<void> {
+export async function updateProductById(id: number, updatedProductData: any): Promise<any> {
   try {
     const db = connect();
 
@@ -132,11 +132,16 @@ export async function updateProductById(id: number, updatedProductData: any): Pr
       }
     });
 
+    // Fetch the updated product data from the database
+    const updatedProduct = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
     console.log('Product updated successfully.');
+    return updatedProduct;
   } catch (error) {
     console.error('Error updating product:', error);
+    throw error;
   }
 }
+
 
 export function getAllCategories(): CategoryDocumentType[] {
   try {

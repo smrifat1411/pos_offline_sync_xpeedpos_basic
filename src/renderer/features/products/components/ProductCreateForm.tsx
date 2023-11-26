@@ -8,6 +8,7 @@ import { Checkbox, FormControlLabel } from '@mui/material';
 import Button from 'renderer/components/Button';
 import { useProductContext } from 'renderer/context/ProductContext';
 import { Product } from 'renderer/types/product';
+import { useAuth } from 'renderer/context/AuthContextProvider';
 
 interface Option {
   value: string;
@@ -21,6 +22,7 @@ interface Props {
 
 const ProductCreateForm = ({ onSuccess, product }: Props) => {
   const { createProduct, updateProductById } = useProductContext();
+  const {userDetails} = useAuth()
 
   const handleCategoryChange = (option: Option | null) => {
     formik.setFieldValue('category', option ? option.value : '');
