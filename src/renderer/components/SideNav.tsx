@@ -11,7 +11,7 @@ import salarySvgPath from '../assets/icon/salary.svg';
 import reportSvgPath from '../assets/icon/report.svg';
 import expenseSvgPath from '../assets/icon/users.svg';
 import settingSvgPath from '../assets/icon/setting.svg';
-import { useUserContext } from 'renderer/context/UserContextProvider';
+import { useAuth } from 'renderer/context/AuthContextProvider';
 
 interface Item {
   id: number;
@@ -33,8 +33,7 @@ const svgPaths: { [key: string]: string } = {
 };
 
 const SideNav = (props: Props) => {
-  const { loggedInUser } = useUserContext();
-  let user: any = loggedInUser;
+  const { userDetails } = useAuth();
 
   const verifyUserRoute = (item: Item, index: number, type: string) => {
     const svgPath = svgPaths[item.name.toLowerCase().replace(/\s/g, '')];
@@ -56,9 +55,9 @@ const SideNav = (props: Props) => {
       </div>
       <Divider></Divider>
       {navData.map((item: Item, i) => verifyUserRoute(item, i, 'public'))}
-      {(user?.role === 'manager' || user?.role === '') &&
+      {(userDetails?.role === 'manager' || userDetails?.role === '') &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'private'))}
-      {user.role === '' &&
+      {userDetails?.role === 'manager' &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'protected'))}
     </div>
   );

@@ -1,35 +1,28 @@
 import Box from '@mui/material/Box';
 // import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import {
-  GridRowsProp,
-  GridRowModesModel,
-  GridRowModes,
   DataGrid,
-  GridColDef,
-  GridToolbarContainer,
   GridActionsCellItem,
+  GridColDef,
   GridEventListener,
-  GridRowId,
-  GridRowModel,
   GridRowEditStopReasons,
+  GridRowId,
+  GridRowModes,
+  GridRowModesModel,
+  GridRowsProp,
   GridValueFormatterParams,
 } from '@mui/x-data-grid';
-import {
-  randomCreatedDate,
-  randomTraderName,
-  randomId,
-  randomArrayItem,
-} from '@mui/x-data-grid-generator';
-import { useEffect, useState } from 'react';
+import { randomArrayItem } from '@mui/x-data-grid-generator';
+import { useState } from 'react';
+import Button from 'renderer/components/Button';
+// import Modal from 'renderer/components/Modal';
 import { useProductContext } from 'renderer/context/ProductContext';
 import ProductCreateForm from '../products/components/ProductCreateForm';
-import Modal from 'renderer/components/Modal';
-import Button from 'renderer/components/Button';
+import { Card, Modal } from '@mui/material';
 
 interface Product {
   id?: number;
@@ -72,16 +65,20 @@ function EditToolbar(props: EditToolbarProps) {
     <div className="px-4  py-2 flex justify-between items-center">
       <Button onclick={openModal} txt="Create Product" />
       <Modal
-        isOpen={modalIsOpen}
-        closeModal={closeModal}
-        content={<ProductCreateForm onSuccess={handleProductCreated} />}
-      />
-      <Button onclick={openModal} txt="Create Pod" />
+        open={modalIsOpen}
+        className="flex justify-center items-center"
+        onClose={closeModal}
+      >
+        <Card className='p-2 pt-5'>
+          <ProductCreateForm onSuccess={handleProductCreated} />
+        </Card>
+      </Modal>
+      {/* <Button onclick={openModal} txt="Create Pod" />
       <Modal
         isOpen={modalIsOpen}
         closeModal={closeModal}
         content={<ProductCreateForm onSuccess={handleProductCreated} />}
-      />
+      /> */}
     </div>
   );
 }

@@ -48,7 +48,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
 
       // Find the index of the product to be updated in the current state
       const productIndex = allProducts.findIndex(
-        (product) => product.id === productId
+        (product) => product.id === productId,
       );
 
       if (productIndex !== -1) {
@@ -68,13 +68,12 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
     }
   };
 
-  // Your React component or service where you use createProduct
 
   const createProduct = async (newProduct: Product): Promise<void> => {
     try {
       const fetchNewProduct = await window.electron.insertProduct(newProduct);
       if (fetchNewProduct) {
-        // Handle the newly created product, for example, update state
+        // Handle the newly created product
         setAllProducts((prevProducts) => [...prevProducts, fetchNewProduct]);
         console.log('Product created successfully:', fetchNewProduct);
       } else {
@@ -85,7 +84,6 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
     }
   };
 
-  // Use useEffect to fetch data when there's a product update or creation
   useEffect(() => {
     window.electron.getAllProducts().then((products: Product[]) => {
       setAllProducts(products);

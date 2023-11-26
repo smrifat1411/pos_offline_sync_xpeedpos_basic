@@ -5,7 +5,7 @@ import path from 'path';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 import { Product } from 'renderer/types/product';
 import MenuBuilder from './menu';
-import { getUser, login, register } from './services/Auth.service';
+import { getAllUsers, getUser, login, register } from './services/Auth.service';
 import {
   createOrder,
   deleteOrder,
@@ -24,6 +24,11 @@ import {
   updateProductById,
 } from './services/product.service';
 import { resolveHtmlPath } from './util';
+import {
+  Expense,
+  createExpense,
+  getExpensesByPeriod,
+} from './services/expense.service';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -249,6 +254,16 @@ app
     });
     ipcMain.handle('order:getByPeriod', async (_, period: string) => {
       return getOrdersByPeriod(period);
+    });
+    ipcMain.handle('expense:createExpense', async (_, expenseData: Expense) => {
+      return createExpense(expenseData);
+    });
+    ipcMain.handle('auth:getAllUsers', async () => {
+      return getAllUsers();
+    });
+    // Expense
+    ipcMain.handle('expense:getExpensesByPeriod', async (_, period: string) => {
+      return getExpensesByPeriod(period);
     });
 
     createWindow();

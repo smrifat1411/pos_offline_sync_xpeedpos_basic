@@ -271,16 +271,17 @@ export function getOrdersByPeriod(period: string): Order[] {
     // Adjust the query based on the specified time period
     switch (period) {
       case 'daily':
-        query += " WHERE DATE(orderTime) = DATE('now')";
+        query += " WHERE orderTime >= strftime('%s', 'now', 'start of day') * 1000";
         break;
+
       case 'weekly':
-        query += " WHERE DATE(orderTime) >= DATE('now', '-7 days')";
+        query += " WHERE orderTime >= strftime('%s', 'now', '-7 days') * 1000";
         break;
       case 'monthly':
-        query += " WHERE strftime('%Y-%m', orderTime) = strftime('%Y-%m', 'now')";
+        query += " WHERE orderTime >= strftime('%s', 'now', 'start of month') * 1000 AND orderTime < strftime('%s', 'now', 'start of month', '+1 month') * 1000";
         break;
       case 'yearly':
-        query += " WHERE strftime('%Y', orderTime) = strftime('%Y', 'now')";
+        query += " WHERE orderTime >= strftime('%s', 'now', 'start of year') * 1000 AND orderTime < strftime('%s', 'now', 'start of year', '+1 year') * 1000";
         break;
       default:
         break;
@@ -301,6 +302,7 @@ export function getOrdersByPeriod(period: string): Order[] {
       order.items = items;
     }
 
+    console.log("orders found:", orders.length);
     return orders;
   } catch (error) {
     console.error(`Error getting ${period} orders:`, error);

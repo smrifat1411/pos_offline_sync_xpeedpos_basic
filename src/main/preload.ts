@@ -5,6 +5,7 @@ import { TODO } from './services/Database.service';
 import { Product } from 'renderer/types/product';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 import { Order } from 'renderer/types/order.type';
+import { Expense } from 'renderer/types/expense.type';
 
 export type Channels = 'ipc-example';
 
@@ -54,6 +55,12 @@ const electronHandler = {
   getUser: (username: string) => ipcRenderer.invoke('auth:getUser', username),
   getOrderByPeriod: (period: string) =>
     ipcRenderer.invoke('order:getByPeriod', period),
+  createExpense: (data: Expense) =>
+    ipcRenderer.invoke('expense:createExpense', data),
+
+  getAllUsers: () => ipcRenderer.invoke('auth:getAllUsers'),
+  getAllExpensesByPeriod: (period: string) =>
+    ipcRenderer.invoke('expense:getExpensesByPeriod', period),
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

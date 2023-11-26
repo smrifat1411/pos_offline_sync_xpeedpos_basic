@@ -1,11 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import {
+  ExpenseProvider,
+  useExpenseContext,
+} from 'renderer/context/ExpenseContext';
+import CreateExpForm from 'renderer/features/expense/CreateExpForm';
+import ExpenseTable from 'renderer/features/expense/ExpenseTable';
+import InventoryTable from 'renderer/features/purchase/InventoryTable';
 
-type Props = {}
+const Expense = () => {
+  const { allExpenses, getAllExpenses } = useExpenseContext();
 
-const Expense = (props: Props) => {
+  useEffect(() => {
+    getAllExpenses();
+  }, []);
+
   return (
-    <div>Expense</div>
-  )
-}
+    // <ExpenseProvider>
+    <div>
+      {/* <CreateExpForm /> */}
+      {allExpenses.length > 0 && <ExpenseTable allExpenses={allExpenses} />}
+    </div>
+    // </ExpenseProvider>
+  );
+};
 
-export default Expense
+export default Expense;

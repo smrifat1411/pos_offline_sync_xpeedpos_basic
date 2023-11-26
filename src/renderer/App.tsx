@@ -6,11 +6,12 @@ import AppOutlet from './outlet/AppOutlet';
 import SideNav from './components/SideNav';
 
 import { CartProvider } from './context/CartContext';
-import { UserContextProvider } from './context/UserContextProvider';
+
 import OrderContextProvider from './context/OrderContextProvider';
 import { ProductProvider } from './context/ProductContext';
 import AuthContextProvider from './context/AuthContextProvider';
 import TopBar from './components/TopBar';
+import { ExpenseProvider } from './context/ExpenseContext';
 
 type Props = {};
 
@@ -18,19 +19,19 @@ const App = (props: Props) => {
   return (
     <div className="w-full flex">
       <AuthContextProvider>
-        <UserContextProvider>
-          <ProductProvider>
-            <CartProvider>
-              <OrderContextProvider>
+        <ProductProvider>
+          <CartProvider>
+            <OrderContextProvider>
+              <ExpenseProvider>
                 <SideNav />
                 <div className="w-full">
-                  <TopBar/>
+                  <TopBar />
                   <AppOutlet />
                 </div>
-              </OrderContextProvider>
-            </CartProvider>
-          </ProductProvider>
-        </UserContextProvider>
+              </ExpenseProvider>
+            </OrderContextProvider>
+          </CartProvider>
+        </ProductProvider>
       </AuthContextProvider>
     </div>
   );

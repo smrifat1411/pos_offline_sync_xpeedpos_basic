@@ -1,3 +1,4 @@
+import { User } from 'renderer/types/user.type';
 import { decriptText, hashText } from '../utils/encrypt';
 import { connect } from './Database.service';
 
@@ -10,17 +11,18 @@ export function getUser(username: string) {
 }
 
 export function login(user: Auth) {
-  const dbUser = getUser(user.username);
+  const dbUser: any = getUser(user.username);
 
   if (!dbUser) return false;
 
-  const passwordCheck = decriptText(dbUser.password_hash);
+  const passwordCheck = decriptText(dbUser.password_hash) || undefined;
 
-  if (passwordCheck !== user.password) {
+  if (passwordCheck && passwordCheck !== user.password) {
     return false;
   }
 
-  return true;
+  const userDetails = { pasword_hash: __dirname, ...dbUser };
+  return userDetails;
 }
 
 export function register(user: Auth) {
@@ -32,15 +34,16 @@ export function register(user: Auth) {
     const db = connect();
 
     const registerUser = {
+      name: user.name,
       username: user.username,
       password_hash: hashText(user.password),
       status: 1,
-      role:"manager"
+      role: 'manager',
     };
 
     const stm = db.prepare(
       `INSERT INTO users (username, password_hash, status,role)
-    VALUES (@username, @password_hash, @status,@role)`,
+    VALUES (@name, @username, @password_hash, @status,@role)`,
     );
 
     stm.run(registerUser);
@@ -50,5 +53,27 @@ export function register(user: Auth) {
     console.error(error);
 
     return false;
+  }
+}
+
+export function getAllUsers(): User[] {
+  const db = connect();
+
+  // Prepare the SQL statement to select all users
+  const stm = db.prepare('SELECT * FROM users');
+
+  // Execute the statement and fetch all users
+  try {
+    const users: any = stm.all();
+
+    // Map the result to the PublicUser type, excluding password_hash
+    const publicUsers: User[] = users.map(
+      ({ password_hash, ...rest }: { password_hash: Buffer }) => rest,
+    );
+
+    return publicUsers;
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    return [];
   }
 }

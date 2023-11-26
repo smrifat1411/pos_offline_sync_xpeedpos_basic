@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User } from 'renderer/types/user.type';
 
 interface AuthContextType {
   authed: boolean;
+  userDetails?: User; // Make userDetails optional
   signin: (user: Auth) => Promise<any>;
   register: (user: Auth) => Promise<void>;
   logout: () => void;
 }
-
-
 
 const AuthContext = createContext<AuthContextType>({
   authed: false,
@@ -20,19 +20,21 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [authed, setAuthed] = useState(false);
+  const [userDetails, setUserDetails] = useState<User | undefined>(); // Initialize as undefined
 
   const signin = async (user: Auth) => {
     try {
       const response = await window.electron.login(user);
+      setUserDetails(response);
       setAuthed(true);
       return response;
     } catch (error) {
       console.error('Signin failed:', error);
-      throw error; // Propagate the error for handling at a higher level if needed
+      throw error;
     }
   };
 
-  const register = async (user: any) => {
+  const register = async (user: Auth) => {
     try {
       await window.electron.register(user);
     } catch (error) {
@@ -41,13 +43,16 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = () => setAuthed(false);
+  const logout = () => {
+    setUserDetails(undefined); // Clear userDetails on logout
+    setAuthed(false);
+  };
 
   useEffect(() => {
-    // You might want to add logic here to check initial authentication state on app load
+    // You might want to add logic here to check the initial authentication state on app load
   }, []);
 
-  const value = { authed, signin, register, logout };
+  const value = { authed, userDetails, signin, register, logout };
 
   return (
     <AuthContext.Provider value={value}>

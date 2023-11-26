@@ -3,13 +3,15 @@ import ProductCreateForm from './ProductCreateForm';
 
 import Button from 'renderer/components/Button';
 import Modal from 'renderer/components/Modal';
-import { UserContext, useUserContext } from 'renderer/context/UserContextProvider';
+
 
 type Props = {};
 
 const ProductHead = (props: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { loggedInUser:user }:any = useUserContext();
+const user:any  = {
+  role:"admin"
+}
 
   const openModal = () => {
     setModalIsOpen(true);
