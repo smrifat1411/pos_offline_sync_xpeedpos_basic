@@ -61,8 +61,8 @@ const electronHandler = {
   getAllUsers: () => ipcRenderer.invoke('auth:getAllUsers'),
   getAllExpensesByPeriod: (period: string) =>
     ipcRenderer.invoke('expense:getExpensesByPeriod', period),
+  generateReciept:(data:any)=>  ipcRenderer.invoke('generateHtmlContent', data),
 };
-
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
 export type ElectronHandler = typeof electronHandler;

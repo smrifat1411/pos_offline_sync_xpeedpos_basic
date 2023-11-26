@@ -23,12 +23,13 @@ import {
   getProductByName,
   updateProductById,
 } from './services/product.service';
-import { resolveHtmlPath } from './util';
+import { encodeImageToBase64, resolveHtmlPath } from './util';
 import {
   Expense,
   createExpense,
   getExpensesByPeriod,
 } from './services/expense.service';
+const fs = require('fs');
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -138,8 +139,6 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  const logoPath = getAssetPath('images', 'logo.png');
-
   let win: BrowserWindow | null = new BrowserWindow({
     show: false,
     title: isPreview ? 'Print Preview' : 'Print Document',
@@ -188,8 +187,9 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
       });
     }
   });
+  const dataUrl = `data:text/html;charset=UTF-8,${encodeURIComponent(url)}`;
 
-  await win.loadURL(url);
+  await win.loadURL(dataUrl);
 
   return isPreview ? 'shown preview window' : 'shown print dialog';
 });
