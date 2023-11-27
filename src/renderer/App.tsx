@@ -12,6 +12,7 @@ import { ProductProvider } from './context/ProductContext';
 import AuthContextProvider from './context/AuthContextProvider';
 import TopBar from './components/TopBar';
 import { ExpenseProvider } from './context/ExpenseContext';
+import ToastComponent from './components/ToastComponent';
 
 type Props = {};
 
@@ -23,6 +24,7 @@ const App = (props: Props) => {
           <CartProvider>
             <OrderContextProvider>
               <ExpenseProvider>
+                <ToastComponent />
                 <SideNav />
                 <div className="w-full">
                   <TopBar />

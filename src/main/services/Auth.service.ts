@@ -21,7 +21,7 @@ export function login(user: Auth) {
     return false;
   }
 
-  const userDetails = { pasword_hash: __dirname, ...dbUser };
+  const userDetails = { ...dbUser };
   return userDetails;
 }
 

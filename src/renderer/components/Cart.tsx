@@ -5,6 +5,8 @@ import CartItemPod from './CartItemPod';
 import { Order } from 'renderer/types/order.type';
 import { useOrders } from 'renderer/context/OrderContextProvider';
 import OrderSuccessModal from 'renderer/features/products/components/OrderSuccessModal';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
+import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 
 const Cart: React.FC = () => {
   const { cart, getTotalPrice, totalPriceWithoutDis, clearCart } = useCart();
@@ -28,6 +30,13 @@ const Cart: React.FC = () => {
       netPayable: getTotalPrice(),
     };
     const fetchedNewData = await window.electron.createOrder(newOrder);
+
+    fetchedNewData !== false &&
+      CommonUtils().showToast(
+        TOAST_TYPE.INFO,
+        `An ordered is placed with amount ${newOrder.netPayable}tk`,
+      );
+
     getAllOrdersData();
 
     // Update the order state

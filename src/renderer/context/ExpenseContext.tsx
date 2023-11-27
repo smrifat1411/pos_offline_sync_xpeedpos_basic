@@ -8,7 +8,9 @@ import React, {
   SetStateAction,
   useEffect,
 } from 'react';
+import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 import { Expense } from 'renderer/types/expense.type';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
 
 interface ExpenseContextProps {
   allExpenses: Expense[];
@@ -58,8 +60,13 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
     try {
       const newExpenseData = await window.electron.createExpense(newExpense);
 
-      setAllExpenses((prev) => [...prev, newExpenseData]);
+      newExpenseData &&
+        CommonUtils().showToast(
+          TOAST_TYPE.WARNING,
+          `You have costed ${newExpenseData.amount}`,
+        );
 
+      setAllExpenses((prev) => [...prev, newExpenseData]);
       return newExpenseData;
     } catch (error) {
       console.error('Error creating expense:', error);

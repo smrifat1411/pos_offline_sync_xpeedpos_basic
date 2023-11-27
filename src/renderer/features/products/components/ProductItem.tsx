@@ -2,15 +2,18 @@ import { useProductContext } from 'renderer/context/ProductContext';
 import { useCart } from '../../../context/CartContext';
 import { Product } from '../../../types/product';
 import EditProduct from './EditProduct';
-
+import { useAuth } from 'renderer/context/AuthContextProvider';
+import { Badge } from '@mui/material';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 interface Props {
   data: Product;
 }
 
 const ProductItem: React.FC<Props> = ({ data }) => {
-
-  const {setAllProducts} = useProductContext()
+  const { setAllProducts } = useProductContext();
   const { addToCart } = useCart();
+
+  const { userDetails } = useAuth();
 
   const handleAddToCart = () => {
     if (data.stockAmount > 0) {
@@ -18,7 +21,7 @@ const ProductItem: React.FC<Props> = ({ data }) => {
       const updatedProduct = { ...data, stockAmount: data.stockAmount - 1 };
       setAllProducts((prevProducts) => {
         const updatedProducts = prevProducts.map((product) =>
-          product.id === data.id ? updatedProduct : product
+          product.id === data.id ? updatedProduct : product,
         );
         return updatedProducts;
       });
@@ -28,12 +31,11 @@ const ProductItem: React.FC<Props> = ({ data }) => {
     }
   };
 
-
   return (
     <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border">
       <div className="my-4 mx-auto flex flex-col items-center justify-between">
         <div className="mb-2">
-          {data.discount && data?.discount>0  ? (
+          {data.discount && data?.discount > 0 ? (
             <>
               <p className="mr-3 text-base font-semibold">
                 ৳{data.sellingPrice - (data.sellingPrice * data.discount) / 100}
@@ -49,17 +51,31 @@ const ProductItem: React.FC<Props> = ({ data }) => {
         </div>
         <h3 className="mb-2 text-lg text-center text-gray-700">{data.name}</h3>
       </div>
-    {
-      data.stockAmount >0?  <button
-      className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden rounded-md text-gray-600"
-      onClick={() => handleAddToCart()}
-    >
-      <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
-        Add
-      </div>
-    </button>:<span className='text-red-500'>Out of Stock</span>
-    }
-      <EditProduct product={data} />
+      {data.stockAmount > 0 ? (
+        <button
+          className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden rounded-md text-gray-600"
+          onClick={() => handleAddToCart()}
+        >
+          <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
+            Add
+          </div>
+        </button>
+      ) : (
+        <span className="text-red-500">Out of Stock</span>
+      )}
+      {userDetails?.role === 'admin' && (
+        <>
+          {' '}
+          <div className="absolute top-2 right-2">
+            <EditProduct product={data} />
+          </div>
+          <div className="absolute top-2 left-2">
+            <Badge badgeContent={data.stockAmount}>
+              <Inventory2OutlinedIcon />
+            </Badge>
+          </div>
+        </>
+      )}
     </section>
   );
 };

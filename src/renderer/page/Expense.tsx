@@ -18,7 +18,7 @@ const Expense = () => {
     // <ExpenseProvider>
     <div>
       {/* <CreateExpForm /> */}
-      {allExpenses.length > 0 && <ExpenseTable allExpenses={allExpenses} />}
+      <ExpenseTable allExpenses={allExpenses} />
     </div>
     // </ExpenseProvider>
   );

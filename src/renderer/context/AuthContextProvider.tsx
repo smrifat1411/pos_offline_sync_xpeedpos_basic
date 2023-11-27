@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 import { User } from 'renderer/types/user.type';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
 
 interface AuthContextType {
   authed: boolean;
@@ -21,16 +23,32 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [authed, setAuthed] = useState(false);
-  const [userDetails, setUserDetails] = useState<User | undefined>();
+  const [userDetails, setUserDetails] = useState<User | undefined>(() => {
+    // Retrieve user details from local storage on component mount
+    const storedUserDetails = localStorage.getItem('userDetails');
+    return storedUserDetails ? JSON.parse(storedUserDetails) : undefined;
+  });
 
   const navigate = useNavigate();
   const signin = async (user: Auth) => {
     try {
       const response = await window.electron.login(user);
-      setUserDetails(response);
-      // response === true && setAuthed(true);
-      setAuthed(true);
-      return response;
+
+      if (response !== false) {
+        setUserDetails(response);
+        setAuthed(true);
+        localStorage.setItem('userDetails', JSON.stringify(response));
+        CommonUtils().showToast(
+          TOAST_TYPE.SUCCESS,
+          `${response?.name} logged in as ${response?.role}`,
+        );
+        return response;
+      } else {
+        CommonUtils().showToast(
+          TOAST_TYPE.ERROR,
+          'Please give the correct login Credential',
+        );
+      }
     } catch (error) {
       console.error('Signin failed:', error);
       throw error;
@@ -48,14 +66,20 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
-    setUserDetails(undefined); // Clear userDetails on logout
+    // Clear userDetails on logout
+    setUserDetails(undefined);
     setAuthed(false);
+
+    // Remove user details from local storage on logout
+    localStorage.removeItem('userDetails');
   };
 
   useEffect(() => {
-    // You might want to add logic here to check the initial authentication state on app load
-  }, []);
-
+    // Check if user is already authenticated on component mount
+    if (userDetails) {
+      setAuthed(true);
+    }
+  }, [userDetails]);
   const value = { authed, userDetails, signin, register, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

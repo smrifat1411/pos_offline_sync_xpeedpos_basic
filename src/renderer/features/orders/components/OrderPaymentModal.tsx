@@ -302,11 +302,9 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
 
   // Function to handle the print action
   const handlePrint = async () => {
-    const img = new Image();
-    img.onload = () => {
-      // Call printOrPreviewComponent with the data URL after the image is loaded
-      window.electron.printOrPreviewComponent(printContent, true);
-    };
+    // Call printOrPreviewComponent with the data URL after the image is loaded
+    window.electron.printOrPreviewComponent(printContent, true);
+
     // img.src = logo;
   };
 
@@ -588,7 +586,7 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
                       <TableCell align="right">{order.changeAmount}</TableCell>
                     ) : (
                       <TableCell align="right">
-                        {(cashPaid - netPayable).toFixed(2)}
+                        {Math.max(cashPaid - netPayable, 0).toFixed(2)}
                       </TableCell>
                     )}
                   </TableRow>

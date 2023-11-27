@@ -4,6 +4,8 @@ import { TextField, MenuItem, Card } from '@material-ui/core';
 import { useAuth } from 'renderer/context/AuthContextProvider';
 import { Expense } from 'renderer/types/expense.type';
 import { useExpenseContext } from 'renderer/context/ExpenseContext';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
+import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 type Props = {
   setRows: any;
   closeModal: any;
@@ -25,6 +27,11 @@ const CreateExpForm = ({ setRows, closeModal }: Props) => {
       setRows((prev: any) => [...prev, data]);
 
       data !== undefined && closeModal();
+    } else {
+      CommonUtils().showToast(
+        TOAST_TYPE.ERROR,
+        'Please login again to cost any amount',
+      );
     }
   };
 

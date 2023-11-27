@@ -65,7 +65,7 @@ const CartItemPod: React.FC = () => {
             </div>
             <button
               className="flex items-center justify-center grow rounded-r-md bg-gray-200 p-1 transition hover:bg-black hover:text-white"
-              disabled={item.quantity >= item.stockAmount}
+              disabled={item.quantity > item.stockAmount}
               onClick={() => {
                 item.id && increaseQuantity(item.id);
                 item.id && updateStock(item.id, -1);

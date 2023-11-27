@@ -1,10 +1,11 @@
 export const TOAST_TYPE = Object.freeze({
-  SUCCESS: "success",
-  ERROR: "error",
-  INFO: "info",
-  WARNING:"warning"
+  SUCCESS: 'success',
+  ERROR: 'error',
+  INFO: 'info',
+  WARNING: 'warning',
+  DEFAULT: 'default',
 });
 export const API_STATUS = Object.freeze({
   SUCCESS: 201,
-  ERROR: "error",
+  ERROR: 'error',
 });

@@ -38,6 +38,8 @@ const showToast = (type: string, text: string) => {
       break;
     case TOAST_TYPE.WARNING:
       toast.warning(text);
+    case TOAST_TYPE.DEFAULT:
+      // toast.default(text);
       break;
     default:
       break;
