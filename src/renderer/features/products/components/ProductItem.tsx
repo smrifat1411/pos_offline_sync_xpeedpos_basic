@@ -1,3 +1,4 @@
+import { useProductContext } from 'renderer/context/ProductContext';
 import { useCart } from '../../../context/CartContext';
 import { Product } from '../../../types/product';
 import EditProduct from './EditProduct';
@@ -7,7 +8,26 @@ interface Props {
 }
 
 const ProductItem: React.FC<Props> = ({ data }) => {
+
+  const {setAllProducts} = useProductContext()
   const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    if (data.stockAmount > 0) {
+      // Decrement stockAmount
+      const updatedProduct = { ...data, stockAmount: data.stockAmount - 1 };
+      setAllProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((product) =>
+          product.id === data.id ? updatedProduct : product
+        );
+        return updatedProducts;
+      });
+
+      // Add to cart
+      addToCart(updatedProduct);
+    }
+  };
+
 
   return (
     <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border">
@@ -32,7 +52,7 @@ const ProductItem: React.FC<Props> = ({ data }) => {
     {
       data.stockAmount >0?  <button
       className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden rounded-md text-gray-600"
-      onClick={() => addToCart(data)}
+      onClick={() => handleAddToCart()}
     >
       <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
         Add

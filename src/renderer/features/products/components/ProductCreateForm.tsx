@@ -22,7 +22,7 @@ interface Props {
 
 const ProductCreateForm = ({ onSuccess, product }: Props) => {
   const { createProduct, updateProductById } = useProductContext();
-  const {userDetails} = useAuth()
+  const { userDetails } = useAuth();
 
   const handleCategoryChange = (option: Option | null) => {
     formik.setFieldValue('category', option ? option.value : '');
@@ -55,7 +55,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
       category: product?.category || '',
       discountable: product?.discountable || 0,
       discount: product?.discount || 0,
-      stockAmount: product?.stockAmount || 1,
+      stockAmount: product?.stockAmount || 0,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -204,9 +204,9 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         </div>
         {/* discount */}
         <div className="group relative z-0 mb-6 w-full">
-        <FormControlLabel
+          <FormControlLabel
             required
-            control={<Checkbox checked={formik.values.discountable!=0}  />}
+            control={<Checkbox checked={formik.values.discountable != 0} />}
             label="Discountable Product"
             onChange={(e) => handleDiscountableCheckbox(e)}
             value={true}

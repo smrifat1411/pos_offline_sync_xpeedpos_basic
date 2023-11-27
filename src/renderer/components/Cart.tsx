@@ -7,7 +7,7 @@ import { useOrders } from 'renderer/context/OrderContextProvider';
 import OrderSuccessModal from 'renderer/features/products/components/OrderSuccessModal';
 
 const Cart: React.FC = () => {
-  const { cart, getTotalPrice, totalPriceWithoutDis } = useCart();
+  const { cart, getTotalPrice, totalPriceWithoutDis, clearCart } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
   // const { setOrderData } = useOrders();
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -33,6 +33,7 @@ const Cart: React.FC = () => {
     // Update the order state
     setOrder({ ...newOrder, order_id: fetchedNewData.order_id });
     setIsOpenModal(true);
+    clearCart();
   };
 
   const renderButtonOrError = () => {
