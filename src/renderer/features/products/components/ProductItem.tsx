@@ -42,7 +42,7 @@ const ProductItem: React.FC<Props> = ({ data }) => {
               </p>
               <p className="mr-3 text-xs">
                 <span className="line-through">৳{data.sellingPrice}</span> -
-                {data.discount}%
+                {data.discount.toFixed(0)}%
               </p>
             </>
           ) : (

@@ -191,6 +191,19 @@ export default function InventoryTable() {
     width: 150,
     editable: true,
   };
+  const totalAmountColumn: GridColDef = {
+    field: 'totalAmount',
+    headerName: 'Total Amount',
+    type: 'number',
+    width: 180,
+    editable: false,
+    valueGetter: (params: any) => {
+      const sellingPrice = params.row.sellingPrice as number;
+      const stockAmount = params.row.stockAmount as number;
+      const totalAmount = sellingPrice * stockAmount;
+      return totalAmount;
+    },
+  };
   const columns: any[] = [
     { field: 'name', headerName: 'Name', width: 180, editable: true },
     { field: 'category', headerName: 'Category', width: 120, editable: false },
@@ -202,6 +215,7 @@ export default function InventoryTable() {
       width: 150,
       editable: true,
       renderCell: CustomSellingPriceCell,
+      cellClassName: ""
     },
     {
       field: 'discount',
@@ -238,6 +252,7 @@ export default function InventoryTable() {
       width: 150,
       editable: true,
     },
+    totalAmountColumn,
     {
       field: 'actions',
       type: 'actions',
@@ -308,6 +323,9 @@ export default function InventoryTable() {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
+          getRowClassName={(params) => ``}
+
+
           slots={{
             toolbar: EditToolbar,
           }}
