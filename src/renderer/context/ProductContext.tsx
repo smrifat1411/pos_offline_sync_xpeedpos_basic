@@ -9,6 +9,7 @@ import React, {
   useEffect,
 } from 'react';
 import { Product } from 'renderer/types/product';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
 
 interface ProductContextProps {
   allProducts: Product[];
@@ -44,12 +45,12 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
   ) => {
     try {
       // Call the API or perform the update operation
-      const newData = await window.electron.updateProductById(
+      const result = await window.electron.updateProductById(
         productId,
         updatedProduct,
       );
 
-      if (newData !== undefined) {
+      if (result.success) {
         setAllProducts((prev: Product[]) => {
           // Find the index of the product with the matching ID
           const index = prev.findIndex((product) => product.id === productId);
@@ -57,35 +58,46 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
           // If the product is found, replace it with the updated product
           if (index !== -1) {
             const newProducts = [...prev];
-            newProducts[index] = newData;
+            newProducts[index] = result.data;
             return newProducts;
           }
           return prev;
         });
+        CommonUtils().showToast('success', 'Product updated successfully');
+      } else {
+        CommonUtils().showToast(
+          'error',
+          result.error || 'Error updating product',
+        );
       }
     } catch (error) {
       console.error('Error updating product:', error);
+      CommonUtils().showToast('error', 'Error updating product');
     }
   };
 
   const createProduct = async (newProduct: Product): Promise<void> => {
     try {
-      const fetchNewProduct = await window.electron.insertProduct(newProduct);
-      if (fetchNewProduct) {
-        // Handle the newly created product
-        setAllProducts((prevProducts) => [...prevProducts, fetchNewProduct]);
-        console.log('Product created successfully:', fetchNewProduct);
+      const result = await window.electron.insertProduct(newProduct);
+
+      if (result.success) {
+        setAllProducts((prevProducts) => [...prevProducts, result.data]);
+        CommonUtils().showToast('success', 'Product created successfully');
       } else {
-        console.log('Error creating product. Fetch result is null.');
+        CommonUtils().showToast(
+          'error',
+          result.error || 'Error creating product',
+        );
       }
     } catch (error) {
       console.error('Error creating product:', error);
+      CommonUtils().showToast('error', 'Error creating product');
     }
   };
 
   useEffect(() => {
-    window.electron.getAllProducts().then((products: Product[]) => {
-      setAllProducts(products);
+    window.electron.getAllProducts().then(({ data }) => {
+      setAllProducts(data);
     });
   }, []);
 

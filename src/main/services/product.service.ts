@@ -2,25 +2,31 @@ import { Product } from 'renderer/types/product';
 import { connect } from './Database.service';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 
-export async function createProduct(product: Product): Promise<Product | null> {
+export async function createProduct(
+  product: Product,
+): Promise<{ success: boolean; data?: Product; error?: string }> {
   try {
     const db = connect();
 
     // Check if a product with the same name already exists
-    const checkProduct = getProductByName(product.name);
+    const checkProduct = await getProductByName(product.name);
 
-    if (checkProduct) {
+    if (checkProduct.success && checkProduct.data) {
       console.log('Product with the same name already exists.');
-      return null;
+      return {
+        success: false,
+        error: 'Product with the same name already exists.',
+      };
     }
 
     const insertProduct = {
       ...product,
+      company: product.company || null, // Set company to null if not provided
     };
 
     const stm = db.prepare(
-      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice,stockAmount)
-      VALUES (@name, @category,  @sellingPrice, @discount, @discountable,@buyingPrice, @stockAmount)`,
+      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice, stockAmount, company)
+      VALUES (@name, @category, @sellingPrice, @discount, @discountable, @buyingPrice, @stockAmount, @company)`,
     );
 
     // Use await with a Promise for the synchronous SQLite operation
@@ -40,42 +46,50 @@ export async function createProduct(product: Product): Promise<Product | null> {
     const newProductId = result.lastInsertRowid;
 
     // Use await with getProductById to ensure it completes before proceeding
-    const newProduct = await getProductById(newProductId);
+    const newProduct = (await getProductById(newProductId)).data as Product;
 
     if (!newProduct) {
       console.error('Error retrieving the newly created product.');
-      return null;
+      return {
+        success: false,
+        error: 'Error retrieving the newly created product.',
+      };
     }
 
     console.log('Product created successfully.');
-    return newProduct;
+    return { success: true, data: newProduct };
   } catch (error) {
     console.error('Error creating product:', error);
-    return null;
+    return { success: false, error: 'Error creating product.' };
   }
 }
 
-export function getProductByName(name: string): Product | undefined {
+export async function getProductByName(
+  name: string,
+): Promise<{ success: boolean; data?: Product; error?: string }> {
   try {
     const db = connect();
 
     const stm = db.prepare('SELECT * FROM products WHERE name = @name');
     const product = stm.get({ name }) as Product | undefined;
 
-    return product;
+    return { success: true, data: product, error: undefined };
   } catch (error) {
     console.error('Error getting product:', error);
-    return undefined;
+    return { success: false, data: undefined, error: 'Error getting product.' };
   }
 }
-export function getProductById(id: number | bigint): Product | undefined {
+
+export async function getProductById(
+  id: number,
+): Promise<{ success: boolean; data?: Product; error?: string }> {
   try {
     const db = connect();
 
     console.log('Attempting to fetch product with ID:', id);
 
     const stm = db.prepare('SELECT * FROM products WHERE id = @id');
-    const product = stm.get({ id: Number(id) }) as Product | undefined;
+    const product = stm.get({ id }) as Product | undefined;
 
     if (product) {
       console.log('Product found:', product);
@@ -83,28 +97,43 @@ export function getProductById(id: number | bigint): Product | undefined {
       console.log('Product not found for ID:', id);
     }
 
-    return product;
+    return { success: true, data: product, error: undefined };
   } catch (error) {
     console.error('Error getting product by ID:', error);
-    return undefined;
+    return {
+      success: false,
+      data: undefined,
+      error: 'Error getting product by ID.',
+    };
   }
 }
 
-export function getAllProducts(): Product[] {
+export async function getAllProducts(): Promise<{
+  success: boolean;
+  data?: Product[];
+  error?: string;
+}> {
   try {
     const db = connect();
 
     const stm = db.prepare('SELECT * FROM products');
     const products = stm.all() as Product[];
 
-    return products;
+    return { success: true, data: products, error: undefined };
   } catch (error) {
     console.error('Error getting all products:', error);
-    return [];
+    return {
+      success: false,
+      data: undefined,
+      error: 'Error getting all products.',
+    };
   }
 }
 
-export async function updateProductById(id: number, updatedProductData: any): Promise<any> {
+export async function updateProductById(
+  id: number,
+  updatedProductData: any,
+): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
     const db = connect();
 
@@ -133,39 +162,54 @@ export async function updateProductById(id: number, updatedProductData: any): Pr
     });
 
     // Fetch the updated product data from the database
-    const updatedProduct = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+    const updatedProduct = db
+      .prepare('SELECT * FROM products WHERE id = ?')
+      .get(id);
     console.log('Product updated successfully.');
-    return updatedProduct;
+    return { success: true, data: updatedProduct };
   } catch (error) {
     console.error('Error updating product:', error);
-    throw error;
+    return { success: false, error: 'Error updating product.' };
   }
 }
 
-
-export function getAllCategories(): CategoryDocumentType[] {
+export async function getAllCategories(): Promise<{
+  success: boolean;
+  data?: CategoryDocumentType[];
+  error?: string;
+}> {
   try {
     const db = connect();
 
     const stm = db.prepare('SELECT * FROM categories');
     const categories = stm.all() as CategoryDocumentType[];
 
-    return categories;
+    return { success: true, data: categories, error: undefined };
   } catch (error) {
-    console.error('Error getting all products:', error);
-    return [];
+    console.error('Error getting all categories:', error);
+    return {
+      success: false,
+      data: undefined,
+      error: 'Error getting all categories.',
+    };
   }
 }
-export function createCategory(category: CategoryDocumentType): boolean {
+
+export async function createCategory(
+  category: CategoryDocumentType,
+): Promise<{ success: boolean; error?: string }> {
   try {
     const db = connect();
 
     // Check if a category with the same name already exists
-    const checkCategory = getCategoryByName(category.label);
+    const checkCategory = await getCategoryByName(category.label);
 
-    if (checkCategory) {
+    if (checkCategory.success && checkCategory.data) {
       console.log('Category with the same name already exists.');
-      return false;
+      return {
+        success: false,
+        error: 'Category with the same name already exists.',
+      };
     }
 
     const insertCategory = {
@@ -173,32 +217,36 @@ export function createCategory(category: CategoryDocumentType): boolean {
     };
 
     const stm = db.prepare(
-      `INSERT INTO categories (label,value)
+      `INSERT INTO categories (label, value)
       VALUES (@label, @value)`,
     );
 
     stm.run(insertCategory);
 
     console.log('Category created successfully.');
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('Error creating category:', error);
-    return false;
+    return { success: false, error: 'Error creating category.' };
   }
 }
 
-export function getCategoryByName(
+export async function getCategoryByName(
   label: string,
-): CategoryDocumentType | undefined {
+): Promise<{ success: boolean; data?: CategoryDocumentType; error?: string }> {
   try {
     const db = connect();
 
     const stm = db.prepare('SELECT * FROM categories WHERE label = @label');
     const category = stm.get({ label }) as CategoryDocumentType | undefined;
 
-    return category;
+    return { success: true, data: category, error: undefined };
   } catch (error) {
     console.error('Error getting category:', error);
-    return undefined;
+    return {
+      success: false,
+      data: undefined,
+      error: 'Error getting category.',
+    };
   }
 }

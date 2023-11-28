@@ -19,30 +19,38 @@ const Cart: React.FC = () => {
   const handlePlaceOrder = async () => {
     const newOrder: Order = {
       items: cart,
-      kot: Date.now(),
       orderTime: Date.now(),
       paymentStatus: 'Pending',
       subTotal: getTotalPrice(),
       discount: 0,
       discountAmount: 0,
-      vat: 0,
-      vatAmount: 0,
+      cashPaid: undefined,
+      vat: undefined,
+      vatAmount: undefined,
       netPayable: getTotalPrice(),
+      changeAmount: undefined,
+      paymentMethod: undefined,
+      customerId: undefined,
     };
-    const fetchedNewData = await window.electron.createOrder(newOrder);
+    const { data, success, error } = await window.electron.createOrder(
+      newOrder,
+    );
 
-    fetchedNewData !== false &&
+    if (success) {
       CommonUtils().showToast(
         TOAST_TYPE.INFO,
         `An ordered is placed with amount ${newOrder.netPayable}tk`,
       );
-
-    getAllOrdersData();
-
-    // Update the order state
-    setOrder({ ...newOrder, order_id: fetchedNewData.order_id });
-    setIsOpenModal(true);
-    clearCart();
+      setOrder({ ...newOrder, id: data.id });
+      getAllOrdersData();
+      setIsOpenModal(true);
+      clearCart();
+    } else {
+      CommonUtils().showToast(
+        TOAST_TYPE.ERROR,
+        error || `An ordered is placed with amount ${newOrder.netPayable}tk`,
+      );
+    }
   };
 
   const renderButtonOrError = () => {

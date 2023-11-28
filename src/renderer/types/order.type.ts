@@ -1,18 +1,25 @@
 import { CartItem } from './product';
 
 export interface Order {
-  order_id?:number
+  id?: number;
   items: CartItem[];
-  kot: number;
   orderTime: number;
   paymentStatus: string;
   subTotal: number;
-  discount: number;
-  discountAmount: number;
-  vat: number;
-  vatAmount: number;
+  discount?: number | undefined;
+  discountAmount?: number | undefined;
+  vat?: number | undefined;
+  vatAmount?: number | undefined;
   netPayable: number;
-  cashPaid?: number;
-  changeAmount?: number;
-  paymentMethod?: string;
+  cashPaid?: number | undefined;
+  changeAmount?: number | undefined;
+  paymentMethod?: string | undefined;
+  customerId?: number | undefined;
+}
+export interface OrderItem {
+  id?: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  price: number;
 }

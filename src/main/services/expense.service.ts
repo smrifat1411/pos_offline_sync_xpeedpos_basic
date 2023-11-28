@@ -9,7 +9,13 @@ export interface Expense {
   details?: string;
 }
 
-export function createExpense(expense: Expense): Expense | null {
+export interface Result<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export async function createExpense(expense: Expense): Promise<Result<Expense | null>> {
   try {
     const db = connect();
 
@@ -17,7 +23,7 @@ export function createExpense(expense: Expense): Expense | null {
     const insertExpense = {
       amount: expense.amount,
       name: expense.username,
-      time:  Date.now(),
+      time: Date.now(),
       details: expense.details,
     };
 
@@ -25,6 +31,7 @@ export function createExpense(expense: Expense): Expense | null {
       `INSERT INTO expenses (amount, name, time, details)
         VALUES (@amount, @name, @time, @details)`,
     );
+
     const { lastInsertRowid: expenseId } = insertExpenseStatement.run(insertExpense);
 
     // Retrieve the created expense and return
@@ -35,15 +42,14 @@ export function createExpense(expense: Expense): Expense | null {
     const expenseData: any = selectExpenseStatement.get({ expenseId });
 
     console.log('Expense created successfully.');
-    return expenseData;
+    return { success: true, data: expenseData as Expense };
   } catch (error) {
     console.error('Error creating expense:', error);
-    return null;
+    return { success: false, error: 'Error creating expense.' };
   }
 }
 
-
-export function getExpensesByPeriod(period: string): Expense[] {
+export async function getExpensesByPeriod(period: string): Promise<Result<Expense[]>> {
   try {
     const db = connect();
 
@@ -71,11 +77,10 @@ export function getExpensesByPeriod(period: string): Expense[] {
     const stm = db.prepare(query);
     const expenses: any = stm.all();
 
-    console.log("expenses found:", expenses.length);
-    return expenses;
+    console.log('Expenses found:', expenses.length);
+    return { success: true, data: expenses as Expense[] };
   } catch (error) {
     console.error(`Error getting ${period} expenses:`, error);
-    return [];
+    return { success: false, error: `Error getting ${period} expenses.` };
   }
 }
-

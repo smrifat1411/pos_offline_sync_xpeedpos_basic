@@ -34,38 +34,61 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const response = await window.electron.login(user);
 
-      if (response !== false) {
-        setUserDetails(response);
+      if (response.success) {
+        setUserDetails(response.data);
         setAuthed(true);
-        localStorage.setItem('userDetails', JSON.stringify(response));
+        localStorage.setItem('userDetails', JSON.stringify(response.data));
         CommonUtils().showToast(
           TOAST_TYPE.SUCCESS,
-          `${response?.name} logged in as ${response?.role}`,
+          `${response?.data?.name} logged in as ${response?.data?.role}`,
         );
-        return response;
+        return response.data;
       } else {
         CommonUtils().showToast(
           TOAST_TYPE.ERROR,
-          'Please give the correct login Credential',
+          response.error || 'Login failed. Please check your credentials.',
         );
       }
     } catch (error) {
       console.error('Signin failed:', error);
+      CommonUtils().showToast(
+        TOAST_TYPE.ERROR,
+        'Signin failed. Please try again.',
+      );
       throw error;
     }
   };
 
   const register = async (user: Auth) => {
     try {
-      const registered = await window.electron.register(user);
-      registered === true && navigate('/login');
+      const response = await window.electron.register(user);
+
+      if (response.success) {
+        navigate('/login');
+        CommonUtils().showToast(
+          TOAST_TYPE.SUCCESS,
+          'Registration successful. Please login.',
+        );
+      } else {
+        CommonUtils().showToast(
+          TOAST_TYPE.ERROR,
+          response.error || 'Registration failed. Please try again.',
+        );
+      }
     } catch (error) {
       console.error('Registration failed:', error);
+      CommonUtils().showToast(
+        TOAST_TYPE.ERROR,
+        'Registration failed. Please try again.',
+      );
       throw error;
     }
   };
 
   const logout = () => {
+    const userName = userDetails?.name || 'User';
+    CommonUtils().showToast(TOAST_TYPE.INFO, `${userName}, you are logged out.`);
+
     // Clear userDetails on logout
     setUserDetails(undefined);
     setAuthed(false);

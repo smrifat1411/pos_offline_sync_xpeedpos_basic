@@ -12,7 +12,7 @@ import {
   getAllOrders,
   getOrderDetails,
   getOrdersByPeriod,
-  updateOrder,
+  updateOrderById,
 } from './services/Order.service';
 import {
   createCategory,
@@ -189,7 +189,6 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
   });
   const dataUrl = `data:text/html;charset=UTF-8,${encodeURIComponent(url)}`;
 
-
   await win.loadURL(dataUrl);
 
   return isPreview ? 'shown preview window' : 'shown print dialog';
@@ -199,72 +198,71 @@ app
   .whenReady()
   .then(() => {
     ipcMain.handle('product:insert', async (_, product: Product) => {
-      const createdProduct = await createProduct(product);
-      return createdProduct;
+      return await createProduct(product);
     });
 
     ipcMain.handle('product:getByName', async (_, name: string) => {
-      return getProductByName(name);
+      return await getProductByName(name);
     });
     ipcMain.handle('product:getById', async (_, id: number) => {
-      return getProductById(id);
+      return await getProductById(id);
     });
     ipcMain.handle(
       'product:updateById',
       async (_, id: number, data: Product) => {
-        return updateProductById(id, data);
+        return await updateProductById(id, data);
       },
     );
     ipcMain.handle('product:getAll', async () => {
-      return getAllProducts();
+      return await getAllProducts();
     });
     ipcMain.handle('category:getAll', async () => {
-      return getAllCategories();
+      return await getAllCategories();
     });
     ipcMain.handle(
       'category:create',
       async (_, category: CategoryDocumentType) => {
-        return createCategory(category);
+        return await createCategory(category);
       },
     );
     ipcMain.handle('order:create', async (_, order) => {
-      return createOrder(order);
+      return await createOrder(order);
     });
 
     ipcMain.handle('order:update', async (_, orderId, updatedOrder) => {
-      return updateOrder(orderId, updatedOrder);
+      return await updateOrderById(orderId, updatedOrder);
     });
 
     ipcMain.handle('order:delete', async (_, orderId) => {
-      return deleteOrder(orderId);
+      return await deleteOrder(orderId);
     });
     ipcMain.handle('order:getAll', async () => {
-      return getAllOrders();
+      return await getAllOrders();
     });
     ipcMain.handle('order:getById', async (_, id: number) => {
-      return getOrderDetails(id);
+      return await getOrderDetails(id);
     });
     ipcMain.handle('auth:login', async (_, user: Auth) => {
-      return login(user);
+      return await login(user);
     });
-    ipcMain.handle('auth:register', async (_, user: Auth) => {
-      return register(user);
+    ipcMain.handle('auth:register', async (_, user: User) => {
+      return await register(user);
     });
     ipcMain.handle('auth:getUser', async (_, username: string) => {
-      return getUser(username);
+      return await getUser(username);
     });
     ipcMain.handle('order:getByPeriod', async (_, period: string) => {
-      return getOrdersByPeriod(period);
+      return await getOrdersByPeriod(period);
     });
     ipcMain.handle('expense:createExpense', async (_, expenseData: Expense) => {
-      return createExpense(expenseData);
+      return await createExpense(expenseData);
     });
     ipcMain.handle('auth:getAllUsers', async () => {
-      return getAllUsers();
+      return await getAllUsers();
     });
     // Expense
     ipcMain.handle('expense:getExpensesByPeriod', async (_, period: string) => {
-      return getExpensesByPeriod(period);
+      return await getExpensesByPeriod(period);
     });
 
     createWindow();

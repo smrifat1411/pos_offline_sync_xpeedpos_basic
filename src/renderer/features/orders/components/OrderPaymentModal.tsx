@@ -364,7 +364,7 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
             id="orderItems"
           >
             <div className="border-b">
-              <h4 className="text-xl text-start">ORDER #: {order.kot}</h4>
+              <h4 className="text-xl text-start">ORDER #: {order.id}</h4>
               <div className="flex justify-between flex-wrap">
                 <p>
                   Time:{' '}
@@ -553,7 +553,7 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
                   <TableRow>
                     <TableCell>VAT(+{order?.vat}%)</TableCell>
                     <TableCell align="right">
-                      {order?.vatAmount.toFixed(2)}
+                      {order.vatAmount && order?.vatAmount.toFixed(2)}
                     </TableCell>
                   </TableRow>
                   <TableRow>

@@ -36,7 +36,7 @@ const CategoryDropdown: React.FC<Props> = ({
   };
 
   const handleCollectionChange = async () => {
-    const data = await window.electron.getAllCategories();
+    const { data } = await window.electron.getAllCategories();
     setMyOptions(data);
   };
 
@@ -71,7 +71,9 @@ const CategoryDropdown: React.FC<Props> = ({
       <Select
         options={options}
         value={selectedOption} // Use the 'value' prop instead of 'defaultValue'
-        onChange={(option) => handleOptionChange(option as CategoryDocumentType)}
+        onChange={(option) =>
+          handleOptionChange(option as CategoryDocumentType)
+        }
       />
       {selectedOption?.value === 'createNew' && (
         <CategoryInputField
@@ -85,6 +87,3 @@ const CategoryDropdown: React.FC<Props> = ({
 };
 
 export default CategoryDropdown;
-
-
-

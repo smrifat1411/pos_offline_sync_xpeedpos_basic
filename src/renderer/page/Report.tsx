@@ -1,130 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Grid,
-  Paper,
-  Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-} from '@material-ui/core';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-import { useOrders } from 'renderer/context/OrderContextProvider';
-import { Order } from 'renderer/types/order.type';
-import SummaryCard from 'renderer/features/report/components/SummaryCard';
-import { useExpenseContext } from 'renderer/context/ExpenseContext';
+import React from 'react';
+import ReportSection from 'renderer/features/report/components/ReportSection';
 
-const Report = () => {
-  const [chartData, setChartData] = useState([]);
-  const [chartType, setChartType] = useState('daily');
-  const { totalAmount: totalExpense, getExpensesByPeriod } =
-    useExpenseContext();
+type Props = {};
 
-  const handleChartTypeChange = async (type: any) => {
-    setChartType(String(type));
-    try {
-      const newData = await window.electron.getOrderByPeriod(type);
-      getExpensesByPeriod(String(type));
-      setChartData(newData);
-    } catch (error) {
-      console.error(`Error fetching ${type} orders:`, error);
-      // Handle the error as needed
-    }
-  };
-  useEffect(() => {
-    handleChartTypeChange('daily');
-  }, []);
-
-  const totalOrders = chartData.length;
-  const totalRevenue = chartData.reduce(
-    (sum, dataPoint: Order) =>
-      dataPoint.paymentStatus === "payment done" ? sum + dataPoint.netPayable : sum,
-    0
-  );
-
-  const totalDueOrders = chartData.filter(
-    (order: Order) => order.paymentStatus === 'Pending',
-  ).length;
-
+const Report = (props: Props) => {
   return (
-    <section>
-      <Grid container spacing={2} className="p-4">
-        <Grid item sm={12} className="flex justify-end w-full">
-          <Paper className="flex flex-col gap-2 min-w-[120px] mr-6">
-            <FormControl>
-              <InputLabel>Time Period</InputLabel>
-              <Select
-                value={chartType}
-                onChange={(e) => handleChartTypeChange(e.target.value)}
-              >
-                <MenuItem value="daily">Daily</MenuItem>
-                <MenuItem value="weekly">Weekly</MenuItem>
-                <MenuItem value="monthly">Monthly</MenuItem>
-                <MenuItem value="yearly">Yearly</MenuItem>
-              </Select>
-            </FormControl>
-          </Paper>
-        </Grid>
-
-        <Grid container item sm={12} spacing={2}>
-          <Grid item sm={4}>
-            <SummaryCard title="Total Orders" value={totalOrders} />
-          </Grid>
-          <Grid item sm={4}>
-            <SummaryCard title="Total Sell" value={totalRevenue} />
-          </Grid>
-          <Grid item sm={4}>
-            <SummaryCard title="Total Due Orders" value={totalDueOrders} />
-          </Grid>
-          <Grid item sm={4}>
-            <SummaryCard title="Total Expense" value={totalExpense} />
-          </Grid>
-          {chartType === 'daily' && (
-            <>
-              <Grid item sm={4}>
-                <SummaryCard
-                  title="In Cash"
-                  value={totalRevenue - totalExpense}
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
-
-        <Grid item sm={6}>
-          <Paper>
-            <Typography variant="h6" gutterBottom>
-              {chartType === 'daily'
-                ? 'Daily'
-                : chartType.charAt(0).toUpperCase() + chartType.slice(1)}{' '}
-              Revinue Chart
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
-                <XAxis dataKey="order" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="bumpX"
-                  dataKey="netPayable"
-                  name="Net Payable"
-                  stroke="#82ca9d"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-    </section>
+    <div>
+      <ReportSection />
+    </div>
   );
 };
 

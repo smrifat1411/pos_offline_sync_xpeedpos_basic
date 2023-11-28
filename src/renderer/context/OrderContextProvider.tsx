@@ -6,19 +6,19 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-
+import { CommonUtils } from '../utils/CommonUtils';
 import { Order } from '../types/order.type';
 
 interface OrderContextType {
-  orders: (Order | any)[];
-  getAllOrdersData:()=>void;
-  setOrdersData: (data: Order | any) => void;
+  orders: Order[];
+  getAllOrdersData: () => void;
+  setOrdersData: (data: Order) => void;
   setSortField: Dispatch<SetStateAction<string>>;
   setSortOrder: Dispatch<SetStateAction<'desc' | 'asc'>>;
   sortField: string;
   sortOrder: 'asc' | 'desc';
   updateOrder: (id: string, updatedOrder: Order) => Promise<void>;
-  cancleOrder: (kot: number) => Promise<void>;
+  cancelOrder: (id: number) => Promise<void>;
   updateOrderStatus: (data: any) => Promise<void>;
 }
 
@@ -29,10 +29,10 @@ const ORDER_CONTEXT = createContext<OrderContextType>({
   sortField: 'orderTime',
   setSortOrder: () => {},
   sortOrder: 'desc',
-  getAllOrdersData:() =>{},
+  getAllOrdersData: () => {},
   updateOrder: () => Promise.resolve(),
-  cancleOrder: () => Promise.resolve(),
-  updateOrderStatus: (data: any) => Promise.resolve(),
+  cancelOrder: () => Promise.resolve(),
+  updateOrderStatus: () => Promise.resolve(),
 });
 
 export const useOrders = () => useContext(ORDER_CONTEXT);
@@ -43,41 +43,64 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const getAllOrdersData = async () => {
-    const fetchedAllData = await window.electron.getAllOrder();
-    setOrders(fetchedAllData);
+    try {
+      const result = await window.electron.getAllOrder();
+      if (result.success) {
+        setOrders(result.data);
+      } else {
+        CommonUtils().showToast(
+          'error',
+          result.error || 'Error fetching orders',
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      CommonUtils().showToast('error', 'Error fetching orders');
+    }
   };
 
   const setOrdersData = async (data: Order) => {
-    // await postData(newOrderData, ordersCollection);
+    // You can implement this if needed
   };
 
   const updateOrder = async (id: string, data: Order) => {
     try {
-      const fetchedData = await window.electron.updateOrder(id, data);
+      const result = await window.electron.updateOrder(id, data);
+      if (result.success) {
+        CommonUtils().showToast('success', 'Order updated successfully');
+        await getAllOrdersData();
+      } else {
+        CommonUtils().showToast(
+          'error',
+          result.error || 'Error updating order',
+        );
+      }
     } catch (error) {
       console.log(error);
+      CommonUtils().showToast('error', 'Error updating order');
     }
   };
 
   const updateOrderStatus = async (data: any) => {
     try {
-      await window.electron.updateOrder(data.order_id, data);
-     getAllOrdersData()
+      const result = await window.electron.updateOrder(data.order_id, data);
+      if (result.success) {
+        CommonUtils().showToast('success', 'Order status updated successfully');
+        await getAllOrdersData();
+      } else {
+        CommonUtils().showToast(
+          'error',
+          result.error || 'Error updating order status',
+        );
+      }
     } catch (error) {
       console.log(error);
+      CommonUtils().showToast('error', 'Error updating order status');
     }
   };
 
-  const fetchUpdatedOrders = async () => {
-    const data = await window.electron.getAllOrder();
-    setOrders(data);
-  };
-
-  const cancleOrder = async (kot: number) => {
-    try {
-    } catch (error) {
-      console.log(error);
-    }
+  const cancelOrder = async (id: number) => {
+    // Implement cancelOrder if needed
   };
 
   useEffect(() => {
@@ -95,7 +118,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
         sortOrder,
         setSortOrder,
         updateOrder,
-        cancleOrder,
+        cancelOrder,
         updateOrderStatus,
       }}
     >
