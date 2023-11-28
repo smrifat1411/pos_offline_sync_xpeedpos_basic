@@ -230,7 +230,9 @@ export async function updateOrderById(
     }
 
     // Merge existing order data with updateData
-    const updatedOrderData = { ...existingOrderData, ...updateData };
+    const updatedOrderData = { ...existingOrderData, ...updateData,orderId };
+    console.log(updatedOrderData);
+
 
     // Update order in the 'orders' table
     const updateOrderStatement = db.prepare(`

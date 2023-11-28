@@ -19,7 +19,6 @@ import OrderPaymentModal from './OrderPaymentModal';
 type Props = { order: Order };
 
 const OrderTableRow = ({ order }: Props) => {
-
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
 
@@ -43,10 +42,10 @@ const OrderTableRow = ({ order }: Props) => {
   }));
 
   return (
-    <StyledTableRow key={order?.kot}>
+    <StyledTableRow key={order?.id}>
       <StyledTableCell component="th" scope="row">
         <div className="flex justify-center items-start flex-col w-full h-full">
-          <p className="capitalize text-lg">{order?.kot}</p>
+          <p className="capitalize text-lg">{order?.id}</p>
           <p className="capitalize text-gray-400 text-xs">
             Time:{' '}
             {new Date(order?.orderTime).toLocaleString('en-BD', {
@@ -55,9 +54,9 @@ const OrderTableRow = ({ order }: Props) => {
           </p>
         </div>
       </StyledTableCell>
-      <StyledTableCell className='' align="right">
-        <div className="flex justify-center items-end flex-col w-full h-full">
-          <p className="text-lg flex flex-wrap items-center justify-center">
+      <StyledTableCell className="" align="left">
+        <div className="flex flex-col w-full h-full">
+          <p className="text-lg">
             <FontAwesomeIcon
               icon={faBangladeshiTakaSign}
               className="mr-0.5 w-3"
@@ -69,11 +68,17 @@ const OrderTableRow = ({ order }: Props) => {
           </p>
         </div>
       </StyledTableCell>
-      <StyledTableCell className='' align="right">
+      <StyledTableCell className="" align="right">
         <div className="flex flex-col gap-1 max-w-[140px] mx-auto h-full">
           <Chip
             label={order?.paymentStatus}
-            color={order?.paymentStatus === 'payment due' ? 'error' : 'success'}
+            color={
+              order?.paymentStatus === 'Pending'
+                ? 'warning'
+                : order?.paymentStatus === 'payment done'
+                ? 'success'
+                : 'error'
+            }
             variant={
               order?.paymentStatus === 'canceled' ? 'outlined' : 'filled'
             }
@@ -106,13 +111,13 @@ const OrderTableRow = ({ order }: Props) => {
         setIsOpenViewModal={setIsOpenViewModal}
         order={order}
       />
-      { (
+      {
         <OrderPaymentModal
           isOpenPaymentModal={isOpenPaymentModal}
           setIsOpenPaymentModal={setIsOpenPaymentModal}
           order={order}
         />
-      )}
+      }
     </StyledTableRow>
   );
 };

@@ -29,6 +29,11 @@ import {
   createExpense,
   getExpensesByPeriod,
 } from './services/expense.service';
+import {
+  createCustomer,
+  getCustomerDetails,
+  updateCustomerById,
+} from './services/customer.service';
 const fs = require('fs');
 
 let mainWindow: BrowserWindow | null = null;
@@ -263,6 +268,19 @@ app
     // Expense
     ipcMain.handle('expense:getExpensesByPeriod', async (_, period: string) => {
       return await getExpensesByPeriod(period);
+    });
+    // Customer
+
+    ipcMain.handle('customer:create', async (_, customer) => {
+      return await createCustomer(customer);
+    });
+
+    ipcMain.handle('customer:getById', async (_, id) => {
+      return await getCustomerDetails(id);
+    });
+
+    ipcMain.handle('customer:updateById', async (_, id, updatedData) => {
+      return await updateCustomerById(id, updatedData);
     });
 
     createWindow();

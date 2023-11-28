@@ -6,6 +6,7 @@ import { Product } from 'renderer/types/product';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 import { Order } from 'renderer/types/order.type';
 import { Expense } from 'renderer/types/expense.type';
+import { Customer } from 'renderer/types/customer.type';
 
 export type Channels = 'ipc-example';
 
@@ -63,6 +64,12 @@ const electronHandler = {
     ipcRenderer.invoke('expense:getExpensesByPeriod', period),
   generateReciept: (data: any) =>
     ipcRenderer.invoke('generateHtmlContent', data),
+
+  createCustomer: (customer: Customer) =>
+    ipcRenderer.invoke('customer:create', customer),
+  getCustomerById: (id: number) => ipcRenderer.invoke('customer:getById', id),
+  updateCustomerById: (customerId: number, updatedData: Customer) =>
+    ipcRenderer.invoke('customer:updateById', customerId, updatedData),
 };
 contextBridge.exposeInMainWorld('electron', electronHandler);
 

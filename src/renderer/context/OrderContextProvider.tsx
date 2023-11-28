@@ -83,7 +83,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const updateOrderStatus = async (data: any) => {
     try {
-      const result = await window.electron.updateOrder(data.order_id, data);
+      const result = await window.electron.updateOrder(data.id, data);
       if (result.success) {
         CommonUtils().showToast('success', 'Order status updated successfully');
         await getAllOrdersData();
