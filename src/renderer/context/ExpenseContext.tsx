@@ -58,16 +58,20 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
 
   const createExpense = async (newExpense: Expense): Promise<void> => {
     try {
-      const newExpenseData = await window.electron.createExpense(newExpense);
+      const result = await window.electron.createExpense(newExpense);
 
-      newExpenseData &&
+      if (result.success && result.data) {
         CommonUtils().showToast(
           TOAST_TYPE.WARNING,
-          `You have costed ${newExpenseData.amount}`,
+          `You have costed ${result.data.amount}`,
         );
 
-      setAllExpenses((prev) => [...prev, newExpenseData]);
-      return newExpenseData;
+        setAllExpenses((prev) => [...prev, result.data]);
+
+        return result.data
+      } else {
+        console.error('Error creating expense:', result.error);
+      }
     } catch (error) {
       console.error('Error creating expense:', error);
     }
@@ -83,16 +87,17 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
 
   const getExpensesByPeriod = async (period: string): Promise<void> => {
     try {
-      const expenses = await window.electron.getAllExpensesByPeriod(period);
-      setAllExpenses(expenses);
+      const result = await window.electron.getAllExpensesByPeriod(period);
+
+      if (result.success) {
+        setAllExpenses(result.data || []);
+      } else {
+        console.error(`Error getting ${period} expenses:`, result.error);
+      }
     } catch (error) {
-      console.error(`Error fetching expenses for ${period} period:`, error);
+      console.error(`Error getting ${period} expenses:`, error);
     }
   };
-
-  // useEffect(() => {
-  //   getAllExpenses();
-  // }, []);
 
   useEffect(() => {
     const calculateTotalAmount = () => {

@@ -65,17 +65,18 @@ const ProductItem: React.FC<Props> = ({ data }) => {
       )}
       {userDetails?.role === 'admin' && (
         <>
-          {' '}
           <div className="absolute top-2 right-2">
             <EditProduct product={data} />
           </div>
-          <div className="absolute top-2 left-2">
-            <Badge badgeContent={data.stockAmount}>
-              <Inventory2OutlinedIcon />
-            </Badge>
-          </div>
         </>
       )}
+      <div className="absolute top-2 left-2">
+        {data.stockAmount > 0 && (
+          <Badge badgeContent={data.stockAmount}>
+            <Inventory2OutlinedIcon />
+          </Badge>
+        )}
+      </div>
     </section>
   );
 };
