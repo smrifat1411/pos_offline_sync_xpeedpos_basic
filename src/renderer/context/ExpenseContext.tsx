@@ -68,7 +68,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
 
         setAllExpenses((prev) => [...prev, result.data]);
 
-        return result.data
+        return result.data;
       } else {
         console.error('Error creating expense:', result.error);
       }
@@ -86,16 +86,12 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
   };
 
   const getExpensesByPeriod = async (period: string): Promise<void> => {
-    try {
-      const result = await window.electron.getAllExpensesByPeriod(period);
+    const result = await window.electron.getAllExpensesByPeriod(period);
 
-      if (result.success) {
-        setAllExpenses(result.data || []);
-      } else {
-        console.error(`Error getting ${period} expenses:`, result.error);
-      }
-    } catch (error) {
-      console.error(`Error getting ${period} expenses:`, error);
+    if (result.success) {
+      setAllExpenses(result.data);
+    } else {
+      console.error(`Error getting ${period} expenses:`, result.error);
     }
   };
 

@@ -11,11 +11,11 @@ import {
 } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import Button from 'renderer/components/Button';
+import Modal from 'renderer/components/Modal';
 
 import { useExpenseContext } from 'renderer/context/ExpenseContext';
 import { Expense } from 'renderer/types/expense.type';
 import CreateExpForm from './CreateExpForm';
-import { Modal } from '@mui/material';
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: Expense[]) => Expense[]) => void;
@@ -24,7 +24,7 @@ interface EditToolbarProps {
   ) => void;
 }
 
-function EditToolbar({setRows}: EditToolbarProps) {
+function EditToolbar({ setRows }: EditToolbarProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const openModal = () => {
@@ -42,9 +42,29 @@ function EditToolbar({setRows}: EditToolbarProps) {
   return (
     <div className="px-4  py-2 flex justify-between items-center">
       <Button onclick={openModal} txt="Create Expense" />
-      <Modal className='flex justify-center items-center h-full' open={modalIsOpen} onClose={closeModal}>
-        <CreateExpForm closeModal ={closeModal} setRows = {setRows}  />
-      </Modal>
+      {/* <Modal
+        className="flex justify-center items-center h-full"
+        open={modalIsOpen}
+        onClose={closeModal}
+      >
+        <div className='relative'>
+          <IconButton
+            aria-label="close"
+            onClick={closeModal}
+            className='absolute top-0 right-0'
+          >
+            <CloseOutlined />
+          </IconButton>
+          <CreateExpForm closeModal={closeModal} setRows={setRows} />
+        </div>
+      </Modal> */}
+      <Modal
+        isOpen={modalIsOpen}
+        closeModal={closeModal}
+        content={<CreateExpForm closeModal={closeModal} setRows={setRows} />}
+      />
+
+      {/* </Modal> */}
     </div>
   );
 }

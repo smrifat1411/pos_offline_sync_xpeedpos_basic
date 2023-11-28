@@ -49,7 +49,7 @@ const CreateExpForm = ({ setRows, closeModal }: Props) => {
           name="amount"
           rules={[{ required: true, message: 'Please input the amount!' }]}
         >
-          <Input />
+          <Input type='number' />
         </Form.Item>
 
         <Form.Item

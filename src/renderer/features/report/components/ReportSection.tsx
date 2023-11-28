@@ -22,38 +22,35 @@ import SummaryCard from 'renderer/features/report/components/SummaryCard';
 import { Order } from 'renderer/types/order.type';
 
 const ReportSection = () => {
-
-  const {allExpenses} = useExpenseContext()
-  const [chartData, setChartData] = useState(allExpenses);
+  const { allExpenses } = useExpenseContext();
+  const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState('daily');
   const { totalAmount: totalExpense, getExpensesByPeriod } =
     useExpenseContext();
 
   const handleChartTypeChange = async (type: any) => {
     setChartType(String(type));
-    try {
-      const newData = await window.electron.getOrderByPeriod(type);
-      getExpensesByPeriod(String(type));
-      setChartData(newData);
-    } catch (error) {
-      console.error(`Error fetching ${type} orders:`, error);
-      // Handle the error as needed
-    }
+
+    const { data } = await window.electron.getOrderByPeriod(type);
+    getExpensesByPeriod(String(type));
+    setChartData(data);
   };
   useEffect(() => {
     handleChartTypeChange('daily');
   }, []);
 
   const totalOrders = chartData.length;
-  // const totalRevenue = chartData.reduce(
-  //   (sum, dataPoint: Order) =>
-  //     dataPoint.paymentStatus === "payment done" ? sum + dataPoint.netPayable : sum,
-  //   0
-  // );
+  const totalRevenue = chartData.reduce(
+    (sum, dataPoint: Order) =>
+      dataPoint.paymentStatus === 'payment done'
+        ? sum + dataPoint.netPayable
+        : sum,
+    0,
+  );
 
-  // const totalDueOrders = chartData.filter(
-  //   (order: Order) => order.paymentStatus === 'Pending',
-  // ).length;
+  const totalDueOrders = chartData.filter(
+    (order: Order) => order.paymentStatus === 'Pending',
+  ).length;
 
   return (
     <section>
