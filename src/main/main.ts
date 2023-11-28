@@ -22,6 +22,7 @@ import {
   getAllProducts,
   getProductById,
   getProductByName,
+  searchProductsByName,
   updateProductById,
 } from './services/product.service';
 import { encodeImageToBase64, resolveHtmlPath } from './util';
@@ -245,7 +246,7 @@ app
     ipcMain.handle(
       'order:getAll',
       async (_, page, pageSize, sortBy, sortOrder) => {
-       return await getAllOrders(page, pageSize, sortBy, sortOrder);
+        return await getAllOrders(page, pageSize, sortBy, sortOrder);
       },
     );
     ipcMain.handle('order:getById', async (_, id: number) => {
@@ -290,8 +291,9 @@ app
     ipcMain.handle('getTotalItemsCount', async (_, tableName: string) => {
       return await getTotalItemsCount(tableName);
     });
-
-
+    ipcMain.handle('searchProductByName', async (_, searchString: string) => {
+      return await searchProductsByName(searchString);
+    });
 
     createWindow();
 

@@ -21,7 +21,7 @@ export async function createProduct(
 
     const insertProduct = {
       ...product,
-      company: product.company || null, // Set company to null if not provided
+      company: product.company || null,
     };
 
     const stm = db.prepare(
@@ -77,6 +77,27 @@ export async function getProductByName(
   } catch (error) {
     console.error('Error getting product:', error);
     return { success: false, data: undefined, error: 'Error getting product.' };
+  }
+}
+
+export async function searchProductsByName(
+  partialName: string,
+): Promise<{ success: boolean; data?: Product[]; error?: string }> {
+  try {
+    const db = connect();
+
+    const stm = db.prepare(
+      'SELECT * FROM products WHERE name LIKE @partialName',
+    );
+    const products = stm.all({ partialName: `%${partialName}%` }) as Product[];
+
+    return { success: true, data: products, error: undefined };
+  } catch (error) {
+    console.error('Error searching products:', error);
+    return {
+      success: false,
+      error: 'Error searching products.',
+    };
   }
 }
 

@@ -42,7 +42,7 @@ const ORDER_CONTEXT = createContext<OrderContextType>({
   updateOrder: async () => {},
   cancelOrder: async () => {},
   updateOrderStatus: async () => {},
-  currentPage: 0,
+  currentPage: 1,
   setCurrentPage: () => {},
 });
 
@@ -52,7 +52,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortField, setSortField] = useState<string>('orderTime');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [totalOrderCount, setTotalOrderCount] = useState(0);
 

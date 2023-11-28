@@ -80,6 +80,8 @@ const electronHandler = {
 
   updateCustomerById: (customerId: number, updatedData: Customer) =>
     ipcRenderer.invoke('customer:updateById', customerId, updatedData),
+  searchProductByname: (searchString: string) =>
+    ipcRenderer.invoke('searchProductByName', searchString),
 };
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
