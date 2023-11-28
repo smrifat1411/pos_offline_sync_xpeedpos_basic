@@ -85,7 +85,14 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const result = await window.electron.updateOrder(data.id, data);
       if (result.success) {
-        CommonUtils().showToast('success', 'Order status updated successfully');
+        CommonUtils().showToast(
+          'success',
+          `${
+            result.data.paymentStatus === 'payment done'
+              ? `Payment Done, give back ${result.data.changeAmount}tk`
+              : 'Order status updated successfully'
+          }`,
+        );
         await getAllOrdersData();
       } else {
         CommonUtils().showToast(

@@ -1,11 +1,7 @@
+import { Customer } from 'renderer/types/customer.type';
 import { connect } from './Database.service';
 
-interface Customer {
-  id?: number;
-  name: string;
-  mobile: string;
-  discount: number;
-}
+
 
 interface Result<T> {
   success: boolean;
@@ -13,7 +9,7 @@ interface Result<T> {
   error?: string;
 }
 
-export async function createCustomer(customer: Customer): Promise<Result<Customer | null>> {
+export async function createCustomer(customer: Partial<Customer>): Promise<Result<Customer | null>> {
   try {
     const db = connect();
 
@@ -28,13 +24,19 @@ export async function createCustomer(customer: Customer): Promise<Result<Custome
       return { success: true, data: typedExistingCustomer };
     }
 
+    // Insert null if discount is not provided
+    const { discount = null, ...customerWithoutDiscount } = customer as Partial<Customer & { discount?: number }>;
+
     const insertCustomerStatement = db.prepare(`
       INSERT INTO customers (name, mobile, discount)
       VALUES (@name, @mobile, @discount)
     `);
 
     // Insert the customer into the database
-    const { lastInsertRowid: customerId } = insertCustomerStatement.run(customer);
+    const { lastInsertRowid: customerId } = insertCustomerStatement.run({
+      ...customerWithoutDiscount,
+      discount,
+    });
 
     // Retrieve the customer details from the database
     const customerDetailsResult = await getCustomerDetails(Number(customerId));
@@ -51,6 +53,8 @@ export async function createCustomer(customer: Customer): Promise<Result<Custome
     return { success: false, error: 'Error creating customer.' };
   }
 }
+
+
 
 
 export async function getCustomerDetails(customerId: number): Promise<Result<Customer>> {

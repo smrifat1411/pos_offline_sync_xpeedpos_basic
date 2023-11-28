@@ -22,7 +22,7 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Order } from '../../../types/order.type';
 import { Form, Input } from 'antd';
@@ -50,6 +50,8 @@ const OrderPaymentModal = ({
     (discount * initialOrder.subTotal) / 100,
   );
   const [form] = Form.useForm();
+  const [customerDetails, setCustomerDetails] = useState<any | null>(null);
+
   const handleDiscountedAmountChange = (value: number) => {
     setDiscountedAmount(value);
     const newDiscount = (value / order.subTotal) * 100;
@@ -111,27 +113,56 @@ const OrderPaymentModal = ({
           cashPaid: cashPaid,
           paymentMethod: 'cash',
         };
-
-        // Call the context function to update the order status
         await updateOrderStatus(updatedOrder);
         setOrder(updatedOrder);
-
-        // Show a success toast
-        CommonUtils().showToast(
-          TOAST_TYPE.SUCCESS,
-          'Order Paid and Completed Successfully',
-        );
+        setIsOpenPaymentModal(false);
       } else {
         CommonUtils().showToast(TOAST_TYPE.ERROR, 'Something Wrong');
       }
-
-      // Close the payment modal
-      setIsOpenPaymentModal(false);
     } catch (error) {
       // Handle validation error (display error message, etc.)
       console.error('Form validation failed:', error);
     }
   };
+
+  const fetchCustomerDetails = async (customerId: number) => {
+    try {
+      const customerResult = await window.electron.getCustomerById(customerId);
+      if (customerResult.success && customerResult.data) {
+        setCustomerDetails(customerResult.data);
+      } else {
+        console.error('Error fetching customer details:', customerResult.error);
+      }
+    } catch (error) {
+      console.error('Error fetching customer details:', error);
+    }
+  };
+
+  // Fetch customer details when the component mounts
+  useEffect(() => {
+    const fetchCustomerDetails = async (customerId: number) => {
+      try {
+        const customerResult = await window.electron.getCustomerById(customerId);
+        if (customerResult.success && customerResult.data) {
+          setCustomerDetails(customerResult.data);
+
+          // Update the form fields with the fetched customer details
+          form.setFieldsValue({
+            customerName: customerResult.data.name,
+            phoneNumber: customerResult.data.mobile,
+          });
+        } else {
+          console.error('Error fetching customer details:', customerResult.error);
+        }
+      } catch (error) {
+        console.error('Error fetching customer details:', error);
+      }
+    };
+
+    if (initialOrder.customerId) {
+      fetchCustomerDetails(initialOrder.customerId);
+    }
+  }, [initialOrder.customerId, form]);
 
   return (
     <Modal
@@ -165,11 +196,13 @@ const OrderPaymentModal = ({
                   })}
                 </p>
               </div>
+              {/* customer form */}
               <Form form={form} onFinish={() => ''} layout="vertical">
                 <div className="flex gap-2">
                   <Form.Item
                     label="Customer Name"
                     name="customerName"
+                    initialValue={customerDetails?.name}
                     rules={[
                       {
                         required: true,
@@ -188,6 +221,7 @@ const OrderPaymentModal = ({
                   <Form.Item
                     label="Phone Number"
                     name="phoneNumber"
+                    initialValue={customerDetails?.mobile}
                     rules={[
                       {
                         required: true,
