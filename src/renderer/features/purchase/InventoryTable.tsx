@@ -24,6 +24,7 @@ import { useProductContext } from 'renderer/context/ProductContext';
 import ProductCreateForm from '../products/components/ProductCreateForm';
 import { Card, Modal } from '@mui/material';
 import { useAuth } from 'renderer/context/AuthContextProvider';
+import LinearProgress from '@mui/material/LinearProgress';
 
 interface Product {
   id?: number;
@@ -215,7 +216,7 @@ export default function InventoryTable() {
       width: 150,
       editable: true,
       renderCell: CustomSellingPriceCell,
-      cellClassName: ""
+      cellClassName: '',
     },
     {
       field: 'discount',
@@ -319,15 +320,15 @@ export default function InventoryTable() {
           rows={rows}
           columns={columns}
           editMode="row"
+          // loading={}
           rowModesModel={rowModesModel}
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
           getRowClassName={(params) => ``}
-
-
           slots={{
             toolbar: EditToolbar,
+            loadingOverlay: LinearProgress,
           }}
           slotProps={{
             toolbar: { setRows, setRowModesModel },

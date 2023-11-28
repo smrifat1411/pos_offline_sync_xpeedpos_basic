@@ -12,6 +12,7 @@ import {
   getAllOrders,
   getOrderDetails,
   getOrdersByPeriod,
+  getTotalItemsCount,
   updateOrderById,
 } from './services/Order.service';
 import {
@@ -241,9 +242,12 @@ app
     ipcMain.handle('order:delete', async (_, orderId) => {
       return await deleteOrder(orderId);
     });
-    ipcMain.handle('order:getAll', async () => {
-      return await getAllOrders();
-    });
+    ipcMain.handle(
+      'order:getAll',
+      async (_, page, pageSize, sortBy, sortOrder) => {
+       return await getAllOrders(page, pageSize, sortBy, sortOrder);
+      },
+    );
     ipcMain.handle('order:getById', async (_, id: number) => {
       return await getOrderDetails(id);
     });
@@ -282,6 +286,12 @@ app
     ipcMain.handle('customer:updateById', async (_, id, updatedData) => {
       return await updateCustomerById(id, updatedData);
     });
+
+    ipcMain.handle('getTotalItemsCount', async (_, tableName: string) => {
+      return await getTotalItemsCount(tableName);
+    });
+
+
 
     createWindow();
 

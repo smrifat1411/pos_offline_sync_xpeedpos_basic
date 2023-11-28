@@ -49,7 +49,13 @@ const electronHandler = {
   updateOrder: (orderId: string, updatedOrder: any) =>
     ipcRenderer.invoke('order:update', orderId, updatedOrder),
   deleteOrder: (orderId: string) => ipcRenderer.invoke('order:delete', orderId),
-  getAllOrder: () => ipcRenderer.invoke('order:getAll'),
+  getAllOrder: (
+    page?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ) => ipcRenderer.invoke('order:getAll', page, pageSize, sortBy, sortOrder),
+
   getOrderById: (id: number) => ipcRenderer.invoke('order:getById', id),
   login: (user: Auth) => ipcRenderer.invoke('auth:login', user),
   register: (user: Auth) => ipcRenderer.invoke('auth:register', user),
@@ -68,6 +74,10 @@ const electronHandler = {
   createCustomer: (customer: Customer) =>
     ipcRenderer.invoke('customer:create', customer),
   getCustomerById: (id: number) => ipcRenderer.invoke('customer:getById', id),
+
+  getTotalItemsCount: (tableName: string) =>
+    ipcRenderer.invoke('getTotalItemsCount', tableName),
+
   updateCustomerById: (customerId: number, updatedData: Customer) =>
     ipcRenderer.invoke('customer:updateById', customerId, updatedData),
 };

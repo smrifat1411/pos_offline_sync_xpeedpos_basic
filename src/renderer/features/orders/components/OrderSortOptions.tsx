@@ -1,22 +1,34 @@
-import { useOrders } from "../../../context/OrderContextProvider";
+import { useEffect } from 'react';
+import { useOrders } from '../../../context/OrderContextProvider';
 import {
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
-} from "@mui/material";
+} from '@mui/material';
 
 const OrderSortOptions = () => {
-  const { sortField, sortOrder, setSortField, setSortOrder } = useOrders();
+  const {
+    sortField,
+    sortOrder,
+    setSortField,
+    setSortOrder,
+    getAllOrdersData,
+    currentPage,
+  } = useOrders();
 
   const handleSortFieldChange = (event: SelectChangeEvent) => {
     setSortField(event.target.value as string);
   };
 
   const handleSortOrderChange = (event: SelectChangeEvent) => {
-    setSortOrder(event.target.value as "asc" | "desc");
+    setSortOrder(event.target.value as 'asc' | 'desc');
   };
+
+  useEffect(() => {
+    getAllOrdersData(currentPage, 8, sortField, sortOrder);
+  }, [sortField, sortOrder, currentPage]);
 
   return (
     <div className="flex gap-2 p-2">
@@ -30,9 +42,9 @@ const OrderSortOptions = () => {
             label="Sort By"
             onChange={handleSortFieldChange}
           >
-            <MenuItem value={"orderTime"}>Time</MenuItem>
-            <MenuItem value={"totalPrice"}>Price</MenuItem>
-            <MenuItem value={"paymentStatus"}>Status</MenuItem>
+            <MenuItem value={'orderTime'}>Time</MenuItem>
+            <MenuItem value={'netPayable'}>Price</MenuItem>
+            <MenuItem value={'paymentStatus'}>Status</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -46,8 +58,8 @@ const OrderSortOptions = () => {
             label="Sort Order"
             onChange={handleSortOrderChange}
           >
-            <MenuItem value={"asc"}>ASC</MenuItem>
-            <MenuItem value={"desc"}>DESC</MenuItem>
+            <MenuItem value={'asc'}>ASC</MenuItem>
+            <MenuItem value={'desc'}>DESC</MenuItem>
           </Select>
         </FormControl>
       </div>

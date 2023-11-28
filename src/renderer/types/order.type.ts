@@ -15,6 +15,7 @@ export interface Order {
   changeAmount?: number | undefined;
   paymentMethod?: string | undefined;
   customerId?: number | undefined;
+  totalItems?: number | undefined;
 }
 export interface OrderItem {
   id?: number;

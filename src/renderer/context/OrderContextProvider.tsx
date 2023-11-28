@@ -11,7 +11,13 @@ import { Order } from '../types/order.type';
 
 interface OrderContextType {
   orders: Order[];
-  getAllOrdersData: () => void;
+  getAllOrdersData: (
+    page?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ) => void;
+  totalOrderCount: number;
   setOrdersData: (data: Order) => void;
   setSortField: Dispatch<SetStateAction<string>>;
   setSortOrder: Dispatch<SetStateAction<'desc' | 'asc'>>;
@@ -20,19 +26,24 @@ interface OrderContextType {
   updateOrder: (id: string, updatedOrder: Order) => Promise<void>;
   cancelOrder: (id: number) => Promise<void>;
   updateOrderStatus: (data: any) => Promise<void>;
+  currentPage: number;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
 const ORDER_CONTEXT = createContext<OrderContextType>({
   orders: [],
+  totalOrderCount: 0,
   setOrdersData: () => {},
   setSortField: () => {},
   sortField: 'orderTime',
   setSortOrder: () => {},
-  sortOrder: 'desc',
+  sortOrder: 'asc',
   getAllOrdersData: () => {},
-  updateOrder: () => Promise.resolve(),
-  cancelOrder: () => Promise.resolve(),
-  updateOrderStatus: () => Promise.resolve(),
+  updateOrder: async () => {},
+  cancelOrder: async () => {},
+  updateOrderStatus: async () => {},
+  currentPage: 0,
+  setCurrentPage: () => {},
 });
 
 export const useOrders = () => useContext(ORDER_CONTEXT);
@@ -41,10 +52,29 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortField, setSortField] = useState<string>('orderTime');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const getAllOrdersData = async () => {
+  const [totalOrderCount, setTotalOrderCount] = useState(0);
+
+  const getTotalOrderCount = async () => {
+    const { data } = await window.electron.getTotalItemsCount('orders');
+
+    setTotalOrderCount(data);
+  };
+
+  const getAllOrdersData = async (
+    page?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ) => {
     try {
-      const result = await window.electron.getAllOrder();
+      const result = await window.electron.getAllOrder(
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
       if (result.success) {
         setOrders(result.data);
       } else {
@@ -110,14 +140,18 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     // Implement cancelOrder if needed
   };
 
+
   useEffect(() => {
-    getAllOrdersData();
-  }, []);
+
+   getTotalOrderCount()
+  }, [])
+
 
   return (
     <ORDER_CONTEXT.Provider
       value={{
         getAllOrdersData,
+        totalOrderCount,
         orders,
         setOrdersData,
         sortField,
@@ -127,6 +161,8 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
         updateOrder,
         cancelOrder,
         updateOrderStatus,
+        currentPage,
+        setCurrentPage,
       }}
     >
       {children}

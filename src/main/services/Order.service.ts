@@ -7,6 +7,7 @@ interface Result<T> {
   success: boolean;
   data?: T;
   error?: string;
+  totalItems?: number;
 }
 
 export async function createOrder(order: Order): Promise<Result<Order | null>> {
@@ -132,11 +133,34 @@ export async function deleteOrder(orderId: number): Promise<Result<boolean>> {
   }
 }
 
-export async function getAllOrders(): Promise<Result<Order[]>> {
+export async function getAllOrders(
+  page?: number,
+  pageSize?: number,
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
+): Promise<Result<Order[]>> {
   try {
     const db = connect();
 
-    const stm = db.prepare('SELECT * FROM orders');
+    let query = 'SELECT * FROM orders';
+
+    // If pagination and sorting parameters are provided, adjust the query
+    if (
+      page !== undefined &&
+      pageSize !== undefined &&
+      sortBy !== undefined &&
+      sortOrder !== undefined
+    ) {
+      // Calculate the offset based on pagination parameters
+      const offset = (page - 1) * pageSize;
+
+      query += `
+        ORDER BY ${sortBy} ${sortOrder}
+        LIMIT ${pageSize} OFFSET ${offset}
+      `;
+    }
+
+    const stm = db.prepare(query);
     const orders = stm.all() as any;
 
     for (const order of orders) {
@@ -230,9 +254,8 @@ export async function updateOrderById(
     }
 
     // Merge existing order data with updateData
-    const updatedOrderData = { ...existingOrderData, ...updateData,orderId };
+    const updatedOrderData = { ...existingOrderData, ...updateData, orderId };
     console.log(updatedOrderData);
-
 
     // Update order in the 'orders' table
     const updateOrderStatement = db.prepare(`
@@ -293,5 +316,37 @@ export async function updateOrderById(
   } catch (error) {
     console.error('Error updating order:', error);
     return { success: false, error: 'Error updating order.' };
+  }
+}
+
+// No time to do in another file,cause on rushh
+export async function getTotalItemsCount(
+  tableName: string,
+): Promise<Result<number>> {
+  try {
+    const db = connect();
+
+    const countStatement = db.prepare(
+      `SELECT COUNT(*) as totalItems FROM ${tableName}`,
+    );
+    const result = countStatement.get() as { totalItems: number } | undefined;
+
+    if (result) {
+      const totalItems = result.totalItems;
+      console.log(`Total items in '${tableName}': ${totalItems}`);
+      return { success: true, data: totalItems };
+    } else {
+      console.error(`Error getting total items count for '${tableName}'.`);
+      return {
+        success: false,
+        error: `Error getting total items count for '${tableName}'.`,
+      };
+    }
+  } catch (error) {
+    console.error(`Error getting total items count for '${tableName}':`, error);
+    return {
+      success: false,
+      error: `Error getting total items count for '${tableName}'.`,
+    };
   }
 }
