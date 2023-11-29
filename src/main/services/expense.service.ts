@@ -49,30 +49,50 @@ export async function createExpense(expense: Expense): Promise<Result<Expense | 
   }
 }
 
-export async function getExpensesByPeriod(period: string): Promise<Result<Expense[]>> {
+export async function getExpensesByPeriod(
+  period?: string,
+  page: number = 1,
+  pageSize: number = 10,
+  filterField?: string,
+  filterValue?: string,
+  sortOrder: 'asc' | 'desc' = 'asc' // Default value set here
+): Promise<Result<Expense[]>> {
   try {
     const db = connect();
 
     let query = 'SELECT * FROM expenses';
 
     // Adjust the query based on the specified time period
-    switch (period) {
-      case 'daily':
-        query += " WHERE time >= strftime('%s', 'now', 'start of day') * 1000";
-        break;
-
-      case 'weekly':
-        query += " WHERE time >= strftime('%s', 'now', '-7 days') * 1000";
-        break;
-      case 'monthly':
-        query += " WHERE time >= strftime('%s', 'now', 'start of month') * 1000 AND time < strftime('%s', 'now', 'start of month', '+1 month') * 1000";
-        break;
-      case 'yearly':
-        query += " WHERE time >= strftime('%s', 'now', 'start of year') * 1000 AND time < strftime('%s', 'now', 'start of year', '+1 year') * 1000";
-        break;
-      default:
-        break;
+    if (period) {
+      switch (period) {
+        case 'daily':
+          query += " WHERE time >= strftime('%s', 'now', 'start of day') * 1000";
+          break;
+        case 'weekly':
+          query += " WHERE time >= strftime('%s', 'now', '-7 days') * 1000";
+          break;
+        case 'monthly':
+          query += " WHERE time >= strftime('%s', 'now', 'start of month') * 1000 AND time < strftime('%s', 'now', 'start of month', '+1 month') * 1000";
+          break;
+        case 'yearly':
+          query += " WHERE time >= strftime('%s', 'now', 'start of year') * 1000 AND time < strftime('%s', 'now', 'start of year', '+1 year') * 1000";
+          break;
+        default:
+          break;
+      }
     }
+
+    // Apply filtering
+    if (filterField && filterValue) {
+      query += ` WHERE ${filterField} LIKE '%${filterValue}%'`;
+    }
+
+    // Apply sorting
+    query += ` ORDER BY ${filterField || 'time'} ${sortOrder.toUpperCase()}`;
+
+    // Apply pagination
+    const offset = (page - 1) * pageSize;
+    query += ` LIMIT ${pageSize} OFFSET ${offset}`;
 
     const stm = db.prepare(query);
     const expenses: any = stm.all();
@@ -80,7 +100,7 @@ export async function getExpensesByPeriod(period: string): Promise<Result<Expens
     console.log('Expenses found:', expenses.length);
     return { success: true, data: expenses as Expense[] };
   } catch (error) {
-    console.error(`Error getting ${period} expenses:`, error);
-    return { success: false, error: `Error getting ${period} expenses.` };
+    console.error(`Error getting ${period || 'all'} expenses:`, error);
+    return { success: false, error: `Error getting ${period || 'all'} expenses.` };
   }
 }

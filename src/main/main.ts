@@ -271,8 +271,8 @@ app
       return await getAllUsers();
     });
     // Expense
-    ipcMain.handle('expense:getExpensesByPeriod', async (_, period: string) => {
-      return await getExpensesByPeriod(period);
+    ipcMain.handle('expense:getExpensesByPeriod', async (_,  period, page, pageSize, filterField, filterValue, sortOrder ) => {
+      return await getExpensesByPeriod(period, page, pageSize, filterField, filterValue, sortOrder);
     });
     // Customer
 

@@ -70,12 +70,12 @@ function EditToolbar({ setRows }: EditToolbarProps) {
 }
 
 export default function ExpenseTable({
-  allExpenses,
+  // allExpenses,
 }: {
   allExpenses: Expense[];
 }) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-  const { getAllExpenses } = useExpenseContext();
+  const { getAllExpenses,allExpenses } = useExpenseContext();
 
   const [rows, setRows] = useState<Expense[]>(allExpenses);
   const [isNew, setIsNew] = useState(false);

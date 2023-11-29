@@ -66,8 +66,25 @@ const electronHandler = {
     ipcRenderer.invoke('expense:createExpense', data),
 
   getAllUsers: () => ipcRenderer.invoke('auth:getAllUsers'),
-  getAllExpensesByPeriod: (period: string) =>
-    ipcRenderer.invoke('expense:getExpensesByPeriod', period),
+  getAllExpensesByPeriod: async (
+    period?: string,
+    page?: number,
+    pageSize?: number,
+    filterField?: string,
+    filterValue?: string,
+    sortOrder?: 'asc' | 'desc'
+  ) => {
+    return ipcRenderer.invoke(
+      'expense:getExpensesByPeriod',
+      period,
+      page,
+      pageSize,
+      filterField,
+      filterValue,
+      sortOrder
+    );
+  },
+
   generateReciept: (data: any) =>
     ipcRenderer.invoke('generateHtmlContent', data),
 

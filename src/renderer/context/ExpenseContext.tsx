@@ -79,7 +79,8 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
 
   const getAllExpenses = async (): Promise<void> => {
     try {
-      await getExpensesByPeriod('daily');
+      const { data, success } = await window.electron.getAllExpensesByPeriod();
+      success && setAllExpenses(data);
     } catch (error) {
       console.error('Error fetching all expenses:', error);
     }
@@ -89,7 +90,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
     const result = await window.electron.getAllExpensesByPeriod(period);
 
     if (result.success) {
-      setAllExpenses(result.data);
+      // setAllExpenses(result.data);
     } else {
       console.error(`Error getting ${period} expenses:`, result.error);
     }
