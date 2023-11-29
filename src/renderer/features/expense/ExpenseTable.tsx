@@ -69,13 +69,9 @@ function EditToolbar({ setRows }: EditToolbarProps) {
   );
 }
 
-export default function ExpenseTable({
-  // allExpenses,
-}: {
-  allExpenses: Expense[];
-}) {
+export default function ExpenseTable({}: { allExpenses?: Expense[] }) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-  const { getAllExpenses,allExpenses } = useExpenseContext();
+  const { getAllExpenses, allExpenses } = useExpenseContext();
 
   const [rows, setRows] = useState<Expense[]>(allExpenses);
   const [isNew, setIsNew] = useState(false);
@@ -179,7 +175,7 @@ export default function ExpenseTable({
       }}
     >
       <DataGrid
-        rows={rows}
+        rows={allExpenses}
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}

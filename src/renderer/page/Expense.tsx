@@ -5,7 +5,7 @@ import {
 import ExpenseTable from 'renderer/features/expense/ExpenseTable';
 
 const Expense = () => {
-  const { allExpenses, getAllExpenses } = useExpenseContext();
+  const { getAllExpenses } = useExpenseContext();
 
   useEffect(() => {
     getAllExpenses();
@@ -15,7 +15,7 @@ const Expense = () => {
     // <ExpenseProvider>
     <div>
       {/* <CreateExpForm /> */}
-      <ExpenseTable allExpenses={allExpenses} />
+      <ExpenseTable />
     </div>
     // </ExpenseProvider>
   );
