@@ -196,7 +196,7 @@ export default function InventoryTable() {
     field: 'totalAmount',
     headerName: 'Total Amount',
     type: 'number',
-    width: 180,
+    width: 120,
     editable: false,
     valueGetter: (params: any) => {
       const sellingPrice = params.row.sellingPrice as number;
@@ -235,7 +235,7 @@ export default function InventoryTable() {
       field: 'discountedAmount',
       headerName: 'Discounted (tk)',
       type: 'number',
-      width: 180,
+      width: 130,
       editable: true,
       valueGetter: (params: any) => {
         const sellingPrice = params.row.sellingPrice as number;

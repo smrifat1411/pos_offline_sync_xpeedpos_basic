@@ -15,7 +15,9 @@ export interface Result<T> {
   error?: string;
 }
 
-export async function createExpense(expense: Expense): Promise<Result<Expense | null>> {
+export async function createExpense(
+  expense: Expense,
+): Promise<Result<Expense | null>> {
   try {
     const db = connect();
 
@@ -32,7 +34,8 @@ export async function createExpense(expense: Expense): Promise<Result<Expense | 
         VALUES (@amount, @name, @time, @details)`,
     );
 
-    const { lastInsertRowid: expenseId } = insertExpenseStatement.run(insertExpense);
+    const { lastInsertRowid: expenseId } =
+      insertExpenseStatement.run(insertExpense);
 
     // Retrieve the created expense and return
     const selectExpenseStatement = db.prepare(
@@ -51,11 +54,11 @@ export async function createExpense(expense: Expense): Promise<Result<Expense | 
 
 export async function getExpensesByPeriod(
   period?: string,
-  page: number = 1,
-  pageSize: number = 10,
+  page?: number,
+  pageSize?: number,
   filterField?: string,
   filterValue?: string,
-  sortOrder: 'asc' | 'desc' = 'asc' // Default value set here
+  sortOrder: 'asc' | 'desc' = 'desc',
 ): Promise<Result<Expense[]>> {
   try {
     const db = connect();
@@ -66,33 +69,42 @@ export async function getExpensesByPeriod(
     if (period) {
       switch (period) {
         case 'daily':
-          query += " WHERE time >= strftime('%s', 'now', 'start of day') * 1000";
+          query +=
+            " WHERE time >= strftime('%s', 'now', 'start of day') * 1000";
           break;
         case 'weekly':
           query += " WHERE time >= strftime('%s', 'now', '-7 days') * 1000";
           break;
         case 'monthly':
-          query += " WHERE time >= strftime('%s', 'now', 'start of month') * 1000 AND time < strftime('%s', 'now', 'start of month', '+1 month') * 1000";
+          query +=
+            " WHERE time >= strftime('%s', 'now', 'start of month') * 1000 AND time < strftime('%s', 'now', 'start of month', '+1 month') * 1000";
           break;
         case 'yearly':
-          query += " WHERE time >= strftime('%s', 'now', 'start of year') * 1000 AND time < strftime('%s', 'now', 'start of year', '+1 year') * 1000";
+          query +=
+            " WHERE time >= strftime('%s', 'now', 'start of year') * 1000 AND time < strftime('%s', 'now', 'start of year', '+1 year') * 1000";
           break;
         default:
           break;
       }
     }
 
-    // Apply filtering
+    // Apply filtering if filterField and filterValue are provided
     if (filterField && filterValue) {
-      query += ` WHERE ${filterField} LIKE '%${filterValue}%'`;
+      query +=
+        (period ? ' AND' : ' WHERE') +
+        ` ${filterField} LIKE '%${filterValue}%'`;
     }
 
     // Apply sorting
-    query += ` ORDER BY ${filterField || 'time'} ${sortOrder.toUpperCase()}`;
+    query += ` ORDER BY ${filterField || 'time'} ${
+      sortOrder?.toUpperCase() || 'ASC'
+    }`;
 
-    // Apply pagination
-    const offset = (page - 1) * pageSize;
-    query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+    // Apply pagination if page and pageSize are provided
+    if (page !== undefined && pageSize !== undefined) {
+      const offset = (page - 1) * pageSize;
+      query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+    }
 
     const stm = db.prepare(query);
     const expenses: any = stm.all();
@@ -101,6 +113,9 @@ export async function getExpensesByPeriod(
     return { success: true, data: expenses as Expense[] };
   } catch (error) {
     console.error(`Error getting ${period || 'all'} expenses:`, error);
-    return { success: false, error: `Error getting ${period || 'all'} expenses.` };
+    return {
+      success: false,
+      error: `Error getting ${period || 'all'} expenses.`,
+    };
   }
 }

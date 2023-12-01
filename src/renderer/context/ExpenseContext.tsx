@@ -90,7 +90,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
     const result = await window.electron.getAllExpensesByPeriod(period);
 
     if (result.success) {
-      // setAllExpenses(result.data);
+      setAllExpenses(result.data);
     } else {
       console.error(`Error getting ${period} expenses:`, result.error);
     }

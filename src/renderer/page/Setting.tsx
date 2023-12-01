@@ -11,21 +11,25 @@ const Setting = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const { userDetails } = useAuth();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const openModal = () => {
-navigate("/register")
+    navigate('/register');
   };
   const closeModal = () => {
     setModalOpen(false);
   };
 
   return (
-    <div className="flex w-full justify-center items-center h-full">
-      {
-        userDetails?.role ==="admin"?      <Button onclick={openModal} txt="Create/Add Manager" />:<span className="font-extrabold text-2xl text-red">Please Contact with your Owner to add another manager</span>
-      }
+    <div className="flex w-full justify-center items-center gap-5 h-full">
+      {userDetails?.role === 'admin' ? (
+        <Button onclick={openModal} txt="Create/Add Manager" />
+      ) : (
+        <span className="font-extrabold text-2xl text-red">
+          Please Contact with your Owner to add another manager
+        </span>
+      )}
 
-
+      <Button onclick={() => ''} txt="Close Shop for today" />
     </div>
   );
 };

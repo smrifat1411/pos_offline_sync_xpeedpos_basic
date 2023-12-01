@@ -5,11 +5,11 @@ import {
 import ExpenseTable from 'renderer/features/expense/ExpenseTable';
 
 const Expense = () => {
-  const { getAllExpenses } = useExpenseContext();
+  // const { getAllExpenses } = useExpenseContext();
 
-  useEffect(() => {
-    getAllExpenses();
-  }, []);
+  // useEffect(() => {
+  //   getAllExpenses();
+  // }, []);
 
   return (
     // <ExpenseProvider>

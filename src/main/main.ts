@@ -36,6 +36,7 @@ import {
   getCustomerDetails,
   updateCustomerById,
 } from './services/customer.service';
+import { createDailyCashEntry } from './services/cash.service';
 const fs = require('fs');
 
 let mainWindow: BrowserWindow | null = null;
@@ -271,9 +272,27 @@ app
       return await getAllUsers();
     });
     // Expense
-    ipcMain.handle('expense:getExpensesByPeriod', async (_,  period, page, pageSize, filterField, filterValue, sortOrder ) => {
-      return await getExpensesByPeriod(period, page, pageSize, filterField, filterValue, sortOrder);
-    });
+    ipcMain.handle(
+      'expense:getExpensesByPeriod',
+      async (
+        _,
+        period,
+        page,
+        pageSize,
+        filterField,
+        filterValue,
+        sortOrder,
+      ) => {
+        return await getExpensesByPeriod(
+          period,
+          page,
+          pageSize,
+          filterField,
+          filterValue,
+          sortOrder,
+        );
+      },
+    );
     // Customer
 
     ipcMain.handle('customer:create', async (_, customer) => {
@@ -294,6 +313,8 @@ app
     ipcMain.handle('searchProductByName', async (_, searchString: string) => {
       return await searchProductsByName(searchString);
     });
+
+    // Cash
 
     createWindow();
 

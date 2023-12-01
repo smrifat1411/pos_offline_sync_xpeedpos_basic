@@ -1,4 +1,6 @@
-import { Order } from '../types/order.type';
+import { Customer } from 'renderer/types/customer.type';
+import { Order, OrderItem } from '../types/order.type';
+import { CartItem } from 'renderer/types/product';
 
 // export const printChefSlip = async (order: Order) => {
 //   try {
@@ -152,7 +154,8 @@ import { Order } from '../types/order.type';
 //   newWin?.print();
 // };
 
-export const printContent = `<body style="padding:10px 20px 20px 10px; width: 90%; margin:30px auto auto auto; border:0.8px solid #101e46;border-radius: 8px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+export function printContent(order: Order, customer: Customer): string {
+  return `<body style="padding:10px 20px 20px 10px; width: 90%; margin:30px auto auto auto; border:0.8px solid #101e46;border-radius: 8px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
 <section>
 <!-- top heading -->
     <div style="display: flex; align-items:center; justify-content:space-between; position:relative">
@@ -274,16 +277,32 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
 <!-- bill to and invoice no. -->
 <div style="display: flex; align-items:center; justify-content:space-between">
   <div>
-    <p style="margin: 0; padding:10px 0px 0px 0px; font-size:18px;">Bill/Ship To :</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">Muhammad Adshraful</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">Total Amount : ৳1450</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">01362834587</p>
+    <p style="margin: 0; padding:10px 0px 0px 0px; font-size:18px;">Bill/Ship To : ${
+      customer.name
+    }</p>
+    <p style="margin: 0; padding:10px 0px 0px 0px;">Mobile : ${
+      customer.mobile
+    }</p>
   </div>
   <div>
-    <p style="margin: 0; padding:10px 0px 0px 0px; font-family: 'Inter', sans-serif; font-size:18px;">invoice# : Number</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px; font-family: 'Inter', sans-serif;">Billing Date : Date</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">Paid by : Cash?</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">Shopping Point : Address</p>
+    <p style="margin: 0; padding:10px 0px 0px 0px; font-family: 'Inter', sans-serif; font-size:18px;">invoice# : ${
+      order.orderTime
+    }</p>
+    <p style="margin: 0; padding:10px 0px 0px 0px; font-family: 'Inter', sans-serif;">Billing Date: ${new Date(
+      order.orderTime,
+    ).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true,
+    })}</p>
+    <p style="margin: 0; padding:10px 0px 0px 0px;">${
+      order.paymentMethod !== null ? `Paid by : ${order.paymentMethod}` : ''
+    }</p>
+
   </div>
 </div>
 <!-- items table -->
@@ -296,69 +315,28 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
         <th style="padding: 10px; text-align:left;">Quantity</th>
         <th style="padding: 10px; text-align:left;">Rate</th>
         <th style="padding: 10px; text-align:left;">Discounts %</th>
-        <th style="padding: 10px; text-align:left;">Tax %</th>
-        <th style="padding: 10px; text-align:left;">Unit price(inc tax)</th>
         <th style="padding: 10px; text-align:left;">Amount</th>
     </tr>
 
     <!-- First Item Row -->
-     <tr style="background-color:#fff;">
-        <td style="padding: 10px;">0</td>
-        <td style="padding: 10px;">Smartphone</td>
-        <td style="padding: 10px;">2</td>
-        <td style="padding: 10px;">৳500</td>
-        <td style="padding: 10px;">5%</td>
-        <td style="padding: 10px;">10%</td>
-        <td style="padding: 10px;">৳550</td>
-        <td style="padding: 10px;">৳1100</td>
-     </tr>
+    ${order.items.map((item: CartItem, i: number) => {
+      const discountedAmount: number =
+        item.discount !== undefined
+          ? (item.discount * item.sellingPrice) / 100
+          : 0;
+      return `<tr style="background-color:${i % 2 === 0 ? '#fff' : '#f2f2f2'};">
 
-    <!-- Second Item Row -->
-    <tr style="background-color:#f2f2f2;">
-        <td style="padding: 10px;">1</td>
-        <td style="padding: 10px;">Laptop</td>
-        <td style="padding: 10px;">1</td>
-        <td style="padding: 10px;">৳1200</td>
-        <td style="padding: 10px;">8%</td>
-        <td style="padding: 10px;">12%</td>
-        <td style="padding: 10px;">৳1450</td>
-        <td style="padding: 10px;">৳1450</td>
+        <td style="padding: 10px;">${i + 1}</td>
+        <td style="padding: 10px;">${item.name}</td>
+        <td style="padding: 10px;">${item.quantity}</td>
+        <td style="padding: 10px;">৳${item.sellingPrice}</td>
+        <td style="padding: 10px;">${item.discount}%</td>
+        <td style="padding: 10px;">${item.sellingPrice - discountedAmount}</td>
     </tr>
+        `;
+    })}
 
-      <!-- Third Item Row -->
-    <tr style="background-color:#fff;">
-        <td style="padding: 10px;">2</td>
-        <td style="padding: 10px;">Wireless Headphones</td>
-        <td style="padding: 10px;">3</td>
-        <td style="padding: 10px;">৳100</td>
-        <td style="padding: 10px;">3%</td>
-        <td style="padding: 10px;">8%</td>
-        <td style="padding: 10px;">৳109</td>
-        <td style="padding: 10px;">৳327</td>
-    </tr>
 
-  <!-- forth -->
-  <tr style="background-color:#f2f2f2;">
-        <td style="padding: 10px;">3</td>
-         <td style="padding: 10px;">Wireless Headphones</td>
-        <td style="padding: 10px;">3</td>
-        <td style="padding: 10px;">৳100</td>
-        <td style="padding: 10px;">3%</td>
-        <td style="padding: 10px;">8%</td>
-        <td style="padding: 10px;">৳109</td>
-        <td style="padding: 10px;">৳327</td>
-    </tr>
-  <!-- fifth -->
-  <tr style="background-color:#fff;">
-        <td style="padding: 10px;">4</td>
-        <td style="padding: 10px;">Laptop</td>
-        <td style="padding: 10px;">1</td>
-        <td style="padding: 10px;">৳1200</td>
-        <td style="padding: 10px;">8%</td>
-        <td style="padding: 10px;">12%</td>
-        <td style="padding: 10px;">৳1450</td>
-        <td style="padding: 10px;">৳1450</td>
-    </tr>
   </table>
 </div>
   <!-- calculation div should placed bellow amount row -->
@@ -383,20 +361,17 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
 
   <div style="display: flex; gap:10px; align-items:center; font-size:18px;">
     <p style="margin: 0px;">Sub Total :</p>
-    <p style="margin: 0px; width: 50px; text-align:right;">৳1450</p>
-  </div>
-  <div style="display: flex; gap:10px; align-items:center; font-size:18px;">
-    <p style="margin: 0px;">Shipping Charge :</p>
-    <p style="margin: 0px; width: 50px; text-align:right;">৳0</p>
+    <p style="margin: 0px; width: 50px; text-align:right;">৳${
+      order.netPayable
+    }</p>
   </div>
   <div style="display: flex; gap:10px; align-items:center; font-size:18px;">
     <p style="margin: 0px; ">Amount Paid :</p>
-    <p style="margin: 0px; width: 50px; text-align:right;">৳1450</p>
+    <p style="margin: 0px; width: 50px; text-align:right;">${
+      order.paymentStatus === 'payment done' ? order.netPayable : 'due'
+    }</p>
   </div>
-  <div style="display: flex; gap:10px; align-items:center; font-size:18px;">
-    <p style="margin: 0px;">Due Balance :</p>
-    <p style="margin: 0px; width: 50px; text-align:right;">৳0</p>
-  </div>
+
 </div>
 </div>
 <div style="font-family: monospace; font-size:15px;">
@@ -405,3 +380,4 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
 </div>
 </section>
 </body>`;
+}

@@ -28,6 +28,7 @@ import { Order } from '../../../types/order.type';
 import { Form, Input } from 'antd';
 import { CommonUtils } from 'renderer/utils/CommonUtils';
 import { TOAST_TYPE } from 'renderer/constants/AppConstants';
+import { printContent } from 'renderer/utils/print.utils';
 
 type Props = {
   isOpenPaymentModal: boolean;
@@ -61,7 +62,10 @@ const OrderPaymentModal = ({
   // Function to handle the print action
   const handlePrint = async () => {
     // Call printOrPreviewComponent with the data URL after the image is loaded
-    window.electron.printOrPreviewComponent('hello', true);
+    window.electron.printOrPreviewComponent(
+      printContent(order, customerDetails),
+      true,
+    );
 
     // img.src = logo;
   };
@@ -142,7 +146,9 @@ const OrderPaymentModal = ({
   useEffect(() => {
     const fetchCustomerDetails = async (customerId: number) => {
       try {
-        const customerResult = await window.electron.getCustomerById(customerId);
+        const customerResult = await window.electron.getCustomerById(
+          customerId,
+        );
         if (customerResult.success && customerResult.data) {
           setCustomerDetails(customerResult.data);
 
@@ -152,7 +158,10 @@ const OrderPaymentModal = ({
             phoneNumber: customerResult.data.mobile,
           });
         } else {
-          console.error('Error fetching customer details:', customerResult.error);
+          console.error(
+            'Error fetching customer details:',
+            customerResult.error,
+          );
         }
       } catch (error) {
         console.error('Error fetching customer details:', error);

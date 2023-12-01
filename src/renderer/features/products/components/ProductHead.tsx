@@ -12,7 +12,7 @@ type Props = {};
 const ProductHead = (props: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults] = useState([]);
 
   const { setAllProducts } = useProductContext();
   const user: any = {
@@ -47,8 +47,6 @@ const ProductHead = (props: Props) => {
       console.error('Error fetching search results:', error);
     }
   };
-
-  console.log(searchResults);
 
   const { Search } = Input;
 

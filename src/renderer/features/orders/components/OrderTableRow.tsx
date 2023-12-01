@@ -92,18 +92,18 @@ const OrderTableRow = ({ order }: Props) => {
         <div className="flex gap-2 justify-end items-center w-full h-full">
           <button
             className="p-2 flex gap-1 justify-center items-center bg-lime-400 hover:bg-slate-600 hover:text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm"
-            onClick={() => setIsOpenViewModal(true)}
+            onClick={() => setIsOpenPaymentModal(true)}
           >
             <FontAwesomeIcon icon={faEye} />
             View
           </button>
-          <button
+          {/* <button
             className={`p-2 flex gap-1 justify-center items-center bg-blue-950 hover:bg-blue-200 hover:text-black text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm`}
             onClick={() => setIsOpenPaymentModal(true)}
           >
             <FontAwesomeIcon icon={faMoneyCheckAlt} />
             Pay
-          </button>
+          </button> */}
         </div>
       </StyledTableCell>
       <OrderViewModal
