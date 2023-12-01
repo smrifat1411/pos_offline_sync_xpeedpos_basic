@@ -87,7 +87,8 @@ function EditToolbar(props: EditToolbarProps) {
 
 export default function InventoryTable() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-  const { updateProductById, allProducts } = useProductContext();
+  const { updateProductById, allProducts, getAllProducts } =
+    useProductContext();
   const [rows, setRows] = useState<Product[]>(allProducts);
   const [isNew, setIsNew] = useState(false);
 
@@ -121,8 +122,11 @@ export default function InventoryTable() {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteClick = (id: GridRowId) => async () => {
     setRows(rows?.filter((row) => row.id !== id));
+    const { success } = await window.electron.deleteProductById(id as number);
+
+    success && getAllProducts();
   };
 
   const handleCancelClick = (id: GridRowId) => () => {

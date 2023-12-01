@@ -20,6 +20,7 @@ interface ProductContextProps {
     updatedProduct: Product,
   ) => Promise<void>;
   createProduct: (newProduct: Product) => Promise<void>;
+  getAllProducts: () => Promise<void>; // Make getAllProducts return a promise
 }
 
 const ProductContext = createContext<ProductContextProps | undefined>(
@@ -95,10 +96,14 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
     }
   };
 
+  const getAllProducts = async () => {
+    const { data, success } = await window.electron.getAllProducts();
+
+    success && setAllProducts(data);
+  };
+
   useEffect(() => {
-    window.electron.getAllProducts().then(({ data }) => {
-      setAllProducts(data);
-    });
+    getAllProducts();
   }, []);
 
   return (
@@ -109,6 +114,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         getProductById,
         updateProductById,
         createProduct,
+        getAllProducts,
       }}
     >
       {children}

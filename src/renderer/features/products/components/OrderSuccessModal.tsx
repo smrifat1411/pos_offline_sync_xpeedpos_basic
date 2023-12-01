@@ -26,9 +26,9 @@ const OrderSuccessModal = ({
 
 
   // Function to handle the print action
-  const handlePrint = async () => {
-    window.electron.printOrPreviewComponent(printContent, true);
-  };
+  // const handlePrint = async () => {
+  //   window.electron.printOrPreviewComponent(printContent, true);
+  // };
   return (
     <div>
       <Modal
@@ -71,7 +71,7 @@ const OrderSuccessModal = ({
             >
               Make Payment
             </Button>
-
+{/*
             <Button
               onClick={() => {
                 handlePrint();
@@ -81,7 +81,7 @@ const OrderSuccessModal = ({
               color="info"
             >
               <PrintTwoTone></PrintTwoTone> Without Payment
-            </Button>
+            </Button> */}
           </div>
         </Box>
       </Modal>

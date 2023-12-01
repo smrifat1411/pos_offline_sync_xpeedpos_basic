@@ -18,15 +18,16 @@ import {
   YAxis,
 } from 'recharts';
 import { useExpenseContext } from 'renderer/context/ExpenseContext';
+import { useProductContext } from 'renderer/context/ProductContext';
 import SummaryCard from 'renderer/features/report/components/SummaryCard';
 import { Order } from 'renderer/types/order.type';
 
 const ReportSection = () => {
-  const { allExpenses } = useExpenseContext();
   const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState('daily');
   const { totalAmount: totalExpense, getExpensesByPeriod } =
     useExpenseContext();
+  const { allProducts } = useProductContext();
 
   const handleChartTypeChange = async (type: any) => {
     setChartType(String(type));
@@ -51,6 +52,10 @@ const ReportSection = () => {
   const totalDueOrders = chartData.filter(
     (order: Order) => order.paymentStatus === 'Pending',
   ).length;
+  const totalStockItems = allProducts.reduce(
+    (sum, product) => sum + product.stockAmount,
+    0,
+  );
 
   return (
     <section>
@@ -95,6 +100,9 @@ const ReportSection = () => {
               </Grid>
             </>
           )}
+          <Grid item sm={4}>
+            <SummaryCard title="Total Stock Items" value={totalStockItems} />
+          </Grid>
         </Grid>
 
         <Grid item sm={6}>

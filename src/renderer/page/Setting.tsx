@@ -4,11 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'renderer/components/Button';
 import RegistrationForm from 'renderer/components/RegistrationForm';
 import { useAuth } from 'renderer/context/AuthContextProvider';
+import ClosingForm from 'renderer/features/closing/components/ClosingForm';
 
 type Props = {};
 
 const Setting = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const [isClosingModalOpen, setIsClosingModalOpen] = useState(false);
   const { userDetails } = useAuth();
 
   const navigate = useNavigate();
@@ -17,6 +20,14 @@ const Setting = (props: Props) => {
   };
   const closeModal = () => {
     setModalOpen(false);
+  };
+
+  const openClosingModal = () => {
+    setIsClosingModalOpen(true);
+  };
+
+  const closeClosingModal = () => {
+    setIsClosingModalOpen(false);
   };
 
   return (
@@ -29,7 +40,14 @@ const Setting = (props: Props) => {
         </span>
       )}
 
-      <Button onclick={() => ''} txt="Close Shop for today" />
+      <Button onclick={openClosingModal}  txt="Close Shop for today" />
+      <Modal
+        open={isClosingModalOpen}
+        onClose={closeClosingModal}
+        className="flex justify-center items-center"
+      >
+        <ClosingForm />
+      </Modal>
     </div>
   );
 };

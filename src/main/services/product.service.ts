@@ -271,3 +271,32 @@ export async function getCategoryByName(
     };
   }
 }
+
+export async function deleteProductById(
+  id: number,
+): Promise<{ success: boolean; data?: Product; error?: string }> {
+  try {
+    const db = connect();
+
+    // Retrieve the product before deletion
+    const productToDelete = await getProductById(id);
+
+    if (!productToDelete.success || !productToDelete.data) {
+      return {
+        success: false,
+        error: 'Product not found for deletion.',
+      };
+    }
+
+    // Delete the product by ID
+    const stm = db.prepare('DELETE FROM products WHERE id = @id');
+    stm.run({ id });
+
+    console.log('Product deleted successfully.');
+
+    return { success: true, data: productToDelete.data };
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return { success: false, error: 'Error deleting product.' };
+  }
+}

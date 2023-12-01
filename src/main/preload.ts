@@ -72,7 +72,7 @@ const electronHandler = {
     pageSize?: number,
     filterField?: string,
     filterValue?: string,
-    sortOrder?: 'asc' | 'desc'
+    sortOrder?: 'asc' | 'desc',
   ) => {
     return ipcRenderer.invoke(
       'expense:getExpensesByPeriod',
@@ -81,7 +81,7 @@ const electronHandler = {
       pageSize,
       filterField,
       filterValue,
-      sortOrder
+      sortOrder,
     );
   },
 
@@ -99,6 +99,34 @@ const electronHandler = {
     ipcRenderer.invoke('customer:updateById', customerId, updatedData),
   searchProductByname: (searchString: string) =>
     ipcRenderer.invoke('searchProductByName', searchString),
+
+  // Add new IPC handlers for cash services
+  getDailyCashEntryByDate: async (date: number) => {
+    return ipcRenderer.invoke('cash:getDailyCashEntryByDate', date);
+  },
+  getClosingBalanceFromPreviousDay: async (currentDate: number) => {
+    return ipcRenderer.invoke(
+      'cash:getClosingBalanceFromPreviousDay',
+      currentDate,
+    );
+  },
+  createDailyCashEntry: async (entry: any) => {
+    return ipcRenderer.invoke('cash:createDailyCashEntry', entry);
+  },
+  updateDailyCashEntry: async (date: number, updatedEntryData: any) => {
+    return ipcRenderer.invoke(
+      'cash:updateDailyCashEntry',
+      date,
+      updatedEntryData,
+    );
+  },
+  createOrUpdateDailyCashEntry: async (entry: any) => {
+    return ipcRenderer.invoke('cash:createOrUpdateDailyCashEntry', entry);
+  },
+
+  deleteProductById: async (productId: number) => {
+    return ipcRenderer.invoke('product:deleteById', productId);
+  },
 };
 contextBridge.exposeInMainWorld('electron', electronHandler);
 

@@ -18,6 +18,7 @@ import {
 import {
   createCategory,
   createProduct,
+  deleteProductById,
   getAllCategories,
   getAllProducts,
   getProductById,
@@ -36,7 +37,13 @@ import {
   getCustomerDetails,
   updateCustomerById,
 } from './services/customer.service';
-import { createDailyCashEntry } from './services/cash.service';
+import {
+  createDailyCashEntry,
+  createOrUpdateDailyCashEntry,
+  getClosingBalanceFromPreviousDay,
+  getDailyCashEntryByDate,
+  updateDailyCashEntry,
+} from './services/cash.service';
 const fs = require('fs');
 
 let mainWindow: BrowserWindow | null = null;
@@ -224,6 +231,9 @@ app
     ipcMain.handle('product:getAll', async () => {
       return await getAllProducts();
     });
+    ipcMain.handle('product:deleteById', async (_, id: number) => {
+      return await deleteProductById(id);
+    });
     ipcMain.handle('category:getAll', async () => {
       return await getAllCategories();
     });
@@ -315,6 +325,31 @@ app
     });
 
     // Cash
+    ipcMain.handle('cash:getDailyCashEntryByDate', async (_, date: number) => {
+      return await getDailyCashEntryByDate(date);
+    });
+
+    ipcMain.handle(
+      'cash:getClosingBalanceFromPreviousDay',
+      async (_, currentDate: number) => {
+        return await getClosingBalanceFromPreviousDay(currentDate);
+      },
+    );
+
+    ipcMain.handle('cash:createDailyCashEntry', async (_, entry) => {
+      return await createDailyCashEntry(entry);
+    });
+
+    ipcMain.handle(
+      'cash:updateDailyCashEntry',
+      async (_, date, updatedEntryData) => {
+        return await updateDailyCashEntry(date, updatedEntryData);
+      },
+    );
+
+    ipcMain.handle('cash:createOrUpdateDailyCashEntry', async (_, entry) => {
+      return await createOrUpdateDailyCashEntry(entry);
+    });
 
     createWindow();
 

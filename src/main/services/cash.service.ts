@@ -14,6 +14,8 @@ export async function getDailyCashEntryByDate(
     const db = connect();
 
     const stm = db.prepare('SELECT * FROM dailycash WHERE date = @date');
+
+
     const entry = stm.get({ date }) as DailyCashEntry | undefined;
 
     return { success: true, data: entry, error: undefined };
@@ -36,14 +38,21 @@ export async function getClosingBalanceFromPreviousDay(
     const previousDay = new Date(currentDate - 24 * 60 * 60 * 1000); // Subtract one day in milliseconds
     const previousDayTimestamp = previousDay.getTime();
 
-    const stm = db.prepare('SELECT closingBalance FROM dailycash WHERE date = @date');
-    const result = stm.get({ date: previousDayTimestamp }) as { closingBalance?: number };
+    const stm = db.prepare(
+      'SELECT closingBalance FROM dailycash WHERE date = @date',
+    );
+    const result = stm.get({ date: previousDayTimestamp }) as {
+      closingBalance?: number;
+    };
 
     const closingBalance = result?.closingBalance;
 
     return { success: true, data: closingBalance || 0, error: undefined };
   } catch (error) {
-    console.error('Error getting closing balance from the previous day:', error);
+    console.error(
+      'Error getting closing balance from the previous day:',
+      error,
+    );
     return {
       success: false,
       data: undefined,
@@ -76,7 +85,8 @@ export async function createDailyCashEntry(
 
     const newEntryId = result.lastInsertRowid;
 
-    const newEntry = (await getDailyCashEntryByDate(entry.date)).data as DailyCashEntry;
+    const newEntry = (await getDailyCashEntryByDate(entry.date))
+      .data as DailyCashEntry;
 
     if (!newEntry) {
       console.error('Error retrieving the newly created daily cash entry.');
@@ -149,20 +159,26 @@ export async function createOrUpdateDailyCashEntry(
       return await updateDailyCashEntry(entry.date, entry);
     } else {
       // If entry doesn't exist, create it with the closing balance from the previous day
-      const closingBalanceFromPreviousDayResult = await getClosingBalanceFromPreviousDay(entry.date);
-      const closingBalanceFromPreviousDay = closingBalanceFromPreviousDayResult.success
-        ? closingBalanceFromPreviousDayResult.data || 0
-        : 0;
+      const closingBalanceFromPreviousDayResult =
+        await getClosingBalanceFromPreviousDay(entry.date);
+      const closingBalanceFromPreviousDay =
+        closingBalanceFromPreviousDayResult.success
+          ? closingBalanceFromPreviousDayResult.data || 0
+          : 0;
 
-      // Set the closing balance to the sum of the previous day's closing balance and any additional changes
-      const newClosingBalance = closingBalanceFromPreviousDay + (entry.closingBalance || 0);
+      const newClosingBalance =
+        closingBalanceFromPreviousDay + (entry.closingBalance || 0);
 
-      return await createDailyCashEntry({ ...entry, closingBalance: newClosingBalance });
+      return await createDailyCashEntry({
+        ...entry,
+        closingBalance: newClosingBalance,
+      });
     }
   } catch (error) {
     console.error('Error creating or updating daily cash entry:', error);
-    return { success: false, error: 'Error creating or updating daily cash entry.' };
+    return {
+      success: false,
+      error: 'Error creating or updating daily cash entry.',
+    };
   }
 }
-
-// Add more functions as needed...
