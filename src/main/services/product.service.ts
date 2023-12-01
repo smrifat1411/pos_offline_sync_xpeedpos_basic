@@ -22,6 +22,7 @@ export async function createProduct(
     const insertProduct = {
       ...product,
       company: product.company || null,
+      isDeleted: false,
     };
 
     const stm = db.prepare(
@@ -109,7 +110,10 @@ export async function getProductById(
 
     console.log('Attempting to fetch product with ID:', id);
 
-    const stm = db.prepare('SELECT * FROM products WHERE id = @id');
+    const stm = db.prepare(
+      'SELECT * FROM products WHERE id = @id AND isDeleted = false',
+    );
+
     const product = stm.get({ id }) as Product | undefined;
 
     if (product) {
@@ -137,7 +141,8 @@ export async function getAllProducts(): Promise<{
   try {
     const db = connect();
 
-    const stm = db.prepare('SELECT * FROM products');
+    const stm = db.prepare('SELECT * FROM products WHERE isDeleted = false');
+
     const products = stm.all() as Product[];
 
     return { success: true, data: products, error: undefined };
@@ -280,7 +285,6 @@ export async function deleteProductById(
 
     // Retrieve the product before deletion
     const productToDelete = await getProductById(id);
-
     if (!productToDelete.success || !productToDelete.data) {
       return {
         success: false,
@@ -288,8 +292,17 @@ export async function deleteProductById(
       };
     }
 
-    // Delete the product by ID
-    const stm = db.prepare('DELETE FROM products WHERE id = @id');
+    if (productToDelete.data.isDeleted) {
+      return {
+        success: false,
+        error: 'Product is already deleted.',
+      };
+    }
+
+    // Update isDeleted to true (soft delete)
+    const stm = db.prepare(
+      'UPDATE products SET isDeleted = true WHERE id = @id',
+    );
     stm.run({ id });
 
     console.log('Product deleted successfully.');

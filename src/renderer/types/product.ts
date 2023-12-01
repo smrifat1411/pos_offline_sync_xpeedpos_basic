@@ -18,6 +18,7 @@ export interface Product {
   buyingPrice: number;
   stockAmount: number;
   company?: string;
+  isDeleted?: boolean;
 }
 export interface CartItem extends Product {
   discountedPrice: number;
