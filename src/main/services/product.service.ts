@@ -22,12 +22,12 @@ export async function createProduct(
     const insertProduct = {
       ...product,
       company: product.company || null,
-      isDeleted: false,
+      isDeleted: product.isDeleted !== undefined ? product.isDeleted : 0, // Set to 0 if not provided
     };
 
     const stm = db.prepare(
-      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice, stockAmount, company)
-      VALUES (@name, @category, @sellingPrice, @discount, @discountable, @buyingPrice, @stockAmount, @company)`,
+      `INSERT INTO products (name, category, sellingPrice, discount, discountable, buyingPrice, stockAmount, company, isDeleted)
+      VALUES (@name, @category, @sellingPrice, @discount, @discountable, @buyingPrice, @stockAmount, @company, @isDeleted)`,
     );
 
     // Use await with a Promise for the synchronous SQLite operation

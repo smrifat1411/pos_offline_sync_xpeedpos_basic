@@ -2,7 +2,7 @@ import { Card, CardContent, Typography } from '@mui/material';
 
 interface Props {
   title: string;
-  value: number;
+  value: any;
 }
 
 export default function SummaryCard ({ title, value }:Props) {

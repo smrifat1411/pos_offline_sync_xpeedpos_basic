@@ -65,11 +65,32 @@ export async function createDailyCashEntry(
   entry: DailyCashEntry,
 ): Promise<{ success: boolean; data?: DailyCashEntry; error?: string }> {
   try {
+    const existingEntryResult = await getDailyCashEntryByDate(entry.date);
+
+    if (existingEntryResult.success && existingEntryResult.data) {
+      // If entry already exists, update it
+      return await updateDailyCashEntry(entry.date, entry);
+    } else {
+      // If entry doesn't exist, create it
+      return await insertDailyCashEntry(entry);
+    }
+  } catch (error) {
+    console.error('Error creating or updating daily cash entry:', error);
+    return {
+      success: false,
+      error: 'Error creating or updating daily cash entry.',
+    };
+  }
+}
+
+async function insertDailyCashEntry(
+  entry: DailyCashEntry,
+): Promise<{ success: boolean; data?: DailyCashEntry; error?: string }> {
+  try {
     const db = connect();
 
     const stm = db.prepare(
-      `INSERT INTO dailycash (date, closingBalance, withdrawnAmount)
-      VALUES (@date, @closingBalance, @withdrawnAmount)`,
+      'INSERT INTO dailycash (date, closingBalance, withdrawnAmount) VALUES (@date, @closingBalance, @withdrawnAmount)',
     );
 
     const result: { lastInsertRowid: number } = await new Promise(
@@ -103,7 +124,6 @@ export async function createDailyCashEntry(
     return { success: false, error: 'Error creating daily cash entry.' };
   }
 }
-
 export async function updateDailyCashEntry(
   date: number,
   updatedEntryData: any,

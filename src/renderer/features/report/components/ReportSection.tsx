@@ -21,6 +21,7 @@ import { useExpenseContext } from 'renderer/context/ExpenseContext';
 import { useProductContext } from 'renderer/context/ProductContext';
 import SummaryCard from 'renderer/features/report/components/SummaryCard';
 import { Order } from 'renderer/types/order.type';
+import { CartItem } from 'renderer/types/product';
 
 const ReportSection = () => {
   const [chartData, setChartData] = useState([]);
@@ -56,6 +57,24 @@ const ReportSection = () => {
     (sum, product) => sum + product.stockAmount,
     0,
   );
+
+  const totalBuyingPrice = chartData.reduce((sum, dataPoint: Order) => {
+    if (dataPoint.paymentStatus === 'payment done') {
+      const orderBuyingPrice = dataPoint.items.reduce(
+        (orderSum, item: CartItem) => orderSum + item.buyingPrice,
+        0,
+      );
+      return sum + orderBuyingPrice;
+    } else {
+      return sum;
+    }
+  }, 0);
+
+  const totalProfit = totalRevenue - totalBuyingPrice;
+
+  // Calculate percentage of total profit
+  const totalProfitPercentage =
+    totalRevenue !== 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
   return (
     <section>
@@ -100,6 +119,13 @@ const ReportSection = () => {
               </Grid>
             </>
           )}
+
+          <Grid item sm={4}>
+            <SummaryCard
+              title="Total Profit Percentage"
+              value={`${totalProfitPercentage.toFixed(2)}%`}
+            />
+          </Grid>
           <Grid item sm={4}>
             <SummaryCard title="Total Stock Items" value={totalStockItems} />
           </Grid>

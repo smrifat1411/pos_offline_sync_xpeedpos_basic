@@ -25,6 +25,9 @@ import ProductCreateForm from '../products/components/ProductCreateForm';
 import { Card, Modal } from '@mui/material';
 import { useAuth } from 'renderer/context/AuthContextProvider';
 import LinearProgress from '@mui/material/LinearProgress';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
+import { Toast } from 'react-toastify/dist/components';
+import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 
 interface Product {
   id?: number;
@@ -125,8 +128,13 @@ export default function InventoryTable() {
   const handleDeleteClick = (id: GridRowId) => async () => {
     setRows(rows?.filter((row) => row.id !== id));
     const { success } = await window.electron.deleteProductById(id as number);
-
-    success && getAllProducts();
+    if (success) {
+      CommonUtils().showToast(
+        TOAST_TYPE.WARNING,
+        'Product Deleted Successfully',
+      );
+      getAllProducts();
+    }
   };
 
   const handleCancelClick = (id: GridRowId) => () => {

@@ -1,5 +1,7 @@
 import { Form, Input, Radio, Button } from 'antd';
+import { electron } from 'process';
 import { useEffect, useState } from 'react';
+import { Toast } from 'react-toastify/dist/components';
 import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 import { Expense } from 'renderer/types/expense.type';
 import { Order } from 'renderer/types/order.type';
@@ -11,6 +13,14 @@ const ClosingForm = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [existingCash, setExistingCash] = useState(0);
 
+  const currentDateObj = new Date();
+
+  // Extract the date part
+  const currentDate = new Date(
+    currentDateObj.getFullYear(),
+    currentDateObj.getMonth(),
+    currentDateObj.getDate(),
+  ).getTime();
   const fetchExistingCash = async () => {
     const cashEntry = await window.electron.getDailyCashEntryByDate(Date.now());
     if (cashEntry.data !== undefined && cashEntry.success) {
@@ -53,12 +63,34 @@ const ClosingForm = () => {
     fetchOrdersData();
   }, []);
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = async (values: any) => {
     // Handle the form submission logic here
-    // console.log('Form values:', values);
+
+    // Determine the withdrawal amount based on the selected option
+    // let withdrawnAmount = 0;
+    // if (values.withdrawalOption === 'partial') {
+    //   withdrawnAmount = parseFloat(values.withdrawalAmount) || 0;
+    // } else {
+    //   withdrawnAmount = totalIncome;
+    // }
+
+    // // Create the DailyCashEntry object
+    // const dailyCashEntry = {
+    //   date: currentDate,
+    //   closingBalance: existingCash - withdrawnAmount,
+    //   withdrawnAmount: withdrawnAmount,
+    // };
+
+    // totalIncome > withdrawnAmount
+    //   ? await window.electron.createDailyCashEntry(dailyCashEntry)
+    //   : CommonUtils().showToast(
+    //       TOAST_TYPE.ERROR,
+    //       'Not Enough Balance On your Cash',
+    //     );
+
     CommonUtils().showToast(
       TOAST_TYPE.INFO,
-      'This Feature is coming, please keep patience',
+      'This Feature is coming please wait',
     );
   };
 
@@ -68,11 +100,11 @@ const ClosingForm = () => {
         form={form}
         className="p-4 bg-white shadow-lg rounded-lg"
         onFinish={handleSubmit}
-        initialValues={{ withdrawalOption: 'full' }} // Set default value for withdrawalOption
+        initialValues={{ withdrawalOption: 'full' }}
       >
         <h1 className="text-2xl">This Feature is coming soon...</h1>
         <Form.Item>
-          <p className=" font-bold mb-4">
+          <p className="font-bold mb-4">
             You have {existingCash + totalIncome - totalCost}tk in your cash
           </p>
         </Form.Item>
@@ -90,17 +122,26 @@ const ClosingForm = () => {
         </Form.Item>
 
         <Form.Item
-          name="withdrawalAmount"
-          dependencies={['withdrawalOption']}
-          rules={[
-            // {
-            //   required: form.getFieldValue('withdrawalOption') === 'partial',
-            //   message: 'Please enter withdrawal amount',
-            // },
-            // { type: 'number', min: 0, message: 'Please enter a valid amount' },
-          ]}
+          noStyle
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.withdrawalOption !== currentValues.withdrawalOption
+          }
         >
-          <Input placeholder="Enter withdrawal amount" />
+          {({ getFieldValue }) =>
+            getFieldValue('withdrawalOption') === 'partial' ? (
+              <Form.Item
+                name="withdrawalAmount"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please enter withdrawal amount',
+                  },
+                ]}
+              >
+                <Input placeholder="Enter withdrawal amount" />
+              </Form.Item>
+            ) : null
+          }
         </Form.Item>
 
         <Form.Item>

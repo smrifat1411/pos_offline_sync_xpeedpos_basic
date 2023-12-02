@@ -43,6 +43,8 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
     discountable: Yup.boolean().required(
       'Please define if this product is discountable or not',
     ),
+    company: Yup.string(),
+
     discount: Yup.number(),
     stockAmount: Yup.number().required('Please add at least one stock'),
   });
@@ -56,6 +58,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
       discountable: product?.discountable || 0,
       discount: product?.discount || 0,
       stockAmount: product?.stockAmount || 0,
+      company: product?.company || "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -112,26 +115,44 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         )}
       </div>
 
-      <div className="mb-6 w-full">
-        <label htmlFor="buyingPrice" className="text-sm text-gray-500">
-          Buying Price
-        </label>
-        <input
-          type="number"
-          name="buyingPrice"
-          id="buyingPrice"
-          className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500 ${
-            formik.errors.buyingPrice && 'border-red-500'
-          }`}
-          placeholder=" "
-          onChange={formik.handleChange}
-          value={formik.values.buyingPrice}
-        />
-        {formik.errors.buyingPrice && (
-          <p className="text-red-500 text-sm mt-1">
-            {formik.errors.buyingPrice}
-          </p>
-        )}
+      <div className="w-full flex gap-2">
+        <div className="mb-6 w-full">
+          <label htmlFor="buyingPrice" className="text-sm text-gray-500">
+            Buying Price
+          </label>
+          <input
+            type="number"
+            name="buyingPrice"
+            id="buyingPrice"
+            className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500 ${
+              formik.errors.buyingPrice && 'border-red-500'
+            }`}
+            placeholder=" "
+            onChange={formik.handleChange}
+            value={formik.values.buyingPrice}
+          />
+          {formik.errors.buyingPrice && (
+            <p className="text-red-500 text-sm mt-1">
+              {formik.errors.buyingPrice}
+            </p>
+          )}
+        </div>
+
+        {/* Company */}
+        <div className="mb-6 w-full">
+          <label htmlFor="company" className="text-sm text-gray-500">
+            Company
+          </label>
+          <input
+            type="text"
+            name="company"
+            id="company"
+            className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500`}
+            placeholder=" "
+            onChange={formik.handleChange}
+            value={formik.values.company}
+          />
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 w-full md:gap-6">
@@ -202,6 +223,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
             </p>
           )}
         </div>
+
         {/* discount */}
         <div className="group relative z-0 mb-6 w-full">
           <FormControlLabel

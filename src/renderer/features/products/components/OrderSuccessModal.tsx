@@ -24,7 +24,6 @@ const OrderSuccessModal = ({
 
   // HTML content to be printed
 
-
   // Function to handle the print action
   // const handlePrint = async () => {
   //   window.electron.printOrPreviewComponent(printContent, true);
@@ -37,7 +36,7 @@ const OrderSuccessModal = ({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className="rounded border-gray-300 w-11/12 sm:w-3/4 lg:w-2/4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center">
+        <Box className="rounded border-gray-300 w-[420px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center">
           <FontAwesomeIcon
             icon={faCheck}
             className="text-center mx-auto text-[#21e321] w-20 h-20"
@@ -45,11 +44,8 @@ const OrderSuccessModal = ({
           <h4 className="text-3xl text-green-600">
             Order Created Successfully
           </h4>
-          <div className="text-start w-3/4 mx-auto mt-3" id="slipArea">
-            {/* ... Other content ... */}
-          </div>
 
-          <div className="w-full flex justify-between gap-2 mt-2">
+          <div className="w-full flex justify-evenly gap-2 mt-2">
             <Button
               onClick={() => {
                 setIsOpenModal(false);
@@ -71,7 +67,7 @@ const OrderSuccessModal = ({
             >
               Make Payment
             </Button>
-{/*
+            {/*
             <Button
               onClick={() => {
                 handlePrint();
