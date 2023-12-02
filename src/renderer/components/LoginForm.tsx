@@ -94,9 +94,9 @@ export default function LoginForm() {
               </Link>
             </Grid> */}
             <Grid item>
-              <Link to={'/register'} className="text-blue-500">
+              {/* <Link to={'/register'} className="text-blue-500">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </Link> */}
             </Grid>
           </Grid>
         </Box>
