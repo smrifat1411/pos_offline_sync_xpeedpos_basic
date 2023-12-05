@@ -39,7 +39,16 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
     name: Yup.string().required('Product Name is required'),
     sellingPrice: Yup.number().required('Price is required'),
     buyingPrice: Yup.number().required('Buying Price is required'),
-    category: Yup.string().required('Category is required'),
+    category: Yup.string().test(
+      'isCreateNew',
+      'Category is required',
+      function (value) {
+        if (value === 'createNew') {
+          return false;
+        }
+        return true;
+      },
+    ),
     discountable: Yup.boolean().required(
       'Please define if this product is discountable or not',
     ),
@@ -115,7 +124,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         )}
       </div>
 
-      <div className="w-full flex gap-2">
+      <div className="w-full flex items-center gap-2">
         <div className="mb-6 w-full">
           <label htmlFor="buyingPrice" className="text-sm text-gray-500">
             Buying Price
