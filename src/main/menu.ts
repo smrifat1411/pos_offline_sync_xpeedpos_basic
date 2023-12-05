@@ -32,7 +32,7 @@ export default class MenuBuilder {
     const template =
       process.platform === 'darwin'
         ? this.buildDarwinTemplate()
-        : this.buildDefaultTemplate();
+        : this.buildWindowsTemplate();
 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
@@ -70,11 +70,20 @@ export default class MenuBuilder {
       : path
           .join(__dirname, '../../database.db')
           .replace('app.asar', 'app.asar.unpacked');
-    const userChosenPath = dialog.showSaveDialogSync({
-      title: 'Export Database',
-      defaultPath: 'database_copy.db',
-      filters: [{ name: 'SQLite Database', extensions: ['db'] }],
-    });
+          const userChosenPath =
+          process.platform === 'darwin'
+            ? dialog.showSaveDialogSync({
+                title: 'Export Database',
+                defaultPath: 'database_copy.db',
+                filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+              })
+            : dialog.showSaveDialogSync({
+                title: 'Export Database',
+                defaultPath: 'database_copy.db',
+                filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+                properties: ['showOverwriteConfirmation'], // Fix: Use 'showOverwriteConfirmation' instead of 'openFile'
+              });
+
 
     if (userChosenPath) {
       fs.copyFileSync(sourcePath, userChosenPath);
@@ -237,73 +246,42 @@ export default class MenuBuilder {
     return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow, subMenuHelp];
   }
 
-  buildDefaultTemplate() {
-    const templateDefault = [
+  buildWindowsTemplate(): MenuItemConstructorOptions[] {
+    const isDevelopment =
+      process.env.NODE_ENV === 'development' ||
+      process.env.DEBUG_PROD === 'true';
+
+    const template: MenuItemConstructorOptions[] = [
       {
-        label: '&File',
+        label: 'File',
         submenu: [
           {
-            label: '&Open',
-            accelerator: 'Ctrl+O',
-          },
-          {
-            label: '&Close',
-            accelerator: 'Ctrl+W',
+            label: 'Export Database',
+            accelerator: 'Ctrl+Shift+E',
             click: () => {
-              this.mainWindow.close();
+              this.exportDatabase();
             },
           },
+          isDevelopment
+            ? { role: 'reload' }
+            : { role: 'close' }, // Use 'close' instead of 'quit' for Windows
         ],
       },
       {
-        label: '&View',
-        submenu:
-          process.env.NODE_ENV === 'development' ||
-          process.env.DEBUG_PROD === 'true'
-            ? [
-                {
-                  label: '&Reload',
-                  accelerator: 'Ctrl+R',
-                  click: () => {
-                    this.mainWindow.webContents.reload();
-                  },
-                },
-                {
-                  label: 'Toggle &Full Screen',
-                  accelerator: 'F11',
-                  click: () => {
-                    this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen(),
-                    );
-                  },
-                },
-                {
-                  label: 'Toggle &Developer Tools',
-                  accelerator: 'Alt+Ctrl+I',
-                  click: () => {
-                    this.mainWindow.webContents.toggleDevTools();
-                  },
-                },
-                // Add the "Export Database" menu item
-                {
-                  label: 'Export Database',
-                  accelerator: 'Ctrl+Shift+E',
-                  click: () => {
-                    this.exportDatabase();
-                  },
-                },
-              ]
-            : [
-                {
-                  label: 'Toggle &Full Screen',
-                  accelerator: 'F11',
-                  click: () => {
-                    this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen(),
-                    );
-                  },
-                },
-              ],
+        label: 'View',
+        submenu: [
+          {
+            label: 'Toggle Full Screen',
+            accelerator: 'F11',
+            click: () => {
+              this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
+            },
+          },
+          (isDevelopment
+            ? { role: 'toggledevtools' }
+            : { label: 'Toggle Developer Tools', role: 'toggledevtools' }) as unknown as MenuItemConstructorOptions,
+
+        ],
       },
       {
         label: 'Help',
@@ -338,6 +316,8 @@ export default class MenuBuilder {
       },
     ];
 
-    return templateDefault;
+    return template;
   }
+
+
 }
