@@ -70,20 +70,19 @@ export default class MenuBuilder {
       : path
           .join(__dirname, '../../database.db')
           .replace('app.asar', 'app.asar.unpacked');
-          const userChosenPath =
-          process.platform === 'darwin'
-            ? dialog.showSaveDialogSync({
-                title: 'Export Database',
-                defaultPath: 'database_copy.db',
-                filters: [{ name: 'SQLite Database', extensions: ['db'] }],
-              })
-            : dialog.showSaveDialogSync({
-                title: 'Export Database',
-                defaultPath: 'database_copy.db',
-                filters: [{ name: 'SQLite Database', extensions: ['db'] }],
-                properties: ['showOverwriteConfirmation'], // Fix: Use 'showOverwriteConfirmation' instead of 'openFile'
-              });
-
+    const userChosenPath =
+      process.platform === 'darwin'
+        ? dialog.showSaveDialogSync({
+            title: 'Export Database',
+            defaultPath: 'database_copy.db',
+            filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+          })
+        : dialog.showSaveDialogSync({
+            title: 'Export Database',
+            defaultPath: 'database_copy.db',
+            filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+            properties: ['showOverwriteConfirmation'], // Fix: Use 'showOverwriteConfirmation' instead of 'openFile'
+          });
 
     if (userChosenPath) {
       fs.copyFileSync(sourcePath, userChosenPath);
@@ -262,9 +261,7 @@ export default class MenuBuilder {
               this.exportDatabase();
             },
           },
-          isDevelopment
-            ? { role: 'reload' }
-            : { role: 'close' }, // Use 'close' instead of 'quit' for Windows
+          isDevelopment ? { role: 'reload' } : { role: 'close' }, // Use 'close' instead of 'quit' for Windows
         ],
       },
       {
@@ -277,10 +274,6 @@ export default class MenuBuilder {
               this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
             },
           },
-          (isDevelopment
-            ? { role: 'toggledevtools' }
-            : { label: 'Toggle Developer Tools', role: 'toggledevtools' }) as unknown as MenuItemConstructorOptions,
-
         ],
       },
       {
@@ -289,27 +282,7 @@ export default class MenuBuilder {
           {
             label: 'Learn More',
             click() {
-              shell.openExternal('https://electronjs.org');
-            },
-          },
-          {
-            label: 'Documentation',
-            click() {
-              shell.openExternal(
-                'https://github.com/electron/electron/tree/main/docs#readme',
-              );
-            },
-          },
-          {
-            label: 'Community Discussions',
-            click() {
-              shell.openExternal('https://www.electronjs.org/community');
-            },
-          },
-          {
-            label: 'Search Issues',
-            click() {
-              shell.openExternal('https://github.com/electron/electron/issues');
+              shell.openExternal('https://xpeedlab.com');
             },
           },
         ],
@@ -318,6 +291,4 @@ export default class MenuBuilder {
 
     return template;
   }
-
-
 }

@@ -58,7 +58,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
       discountable: product?.discountable || 0,
       discount: product?.discount || 0,
       stockAmount: product?.stockAmount || 0,
-      company: product?.company || "",
+      company: product?.company || '',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -138,20 +138,18 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
           )}
         </div>
 
-        {/* Company */}
-        <div className="mb-6 w-full">
-          <label htmlFor="company" className="text-sm text-gray-500">
-            Company
-          </label>
-          <input
-            type="text"
-            name="company"
-            id="company"
-            className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500`}
-            placeholder=" "
-            onChange={formik.handleChange}
-            value={formik.values.company}
+        {/* Category */}
+
+        <div className="w-full">
+          <CategoryDropdown
+            selectedCategory={formik.values.category}
+            onCategoryChange={handleCategoryChange}
           />
+          {formik.touched.category && formik.errors.category && (
+            <p className="text-red-500 text-sm mt-1">
+              {formik.errors.category}
+            </p>
+          )}
         </div>
       </div>
 
@@ -182,16 +180,20 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
             </p>
           )}
         </div>
+        {/* Company */}
         <div className="mb-6 w-full">
-          <CategoryDropdown
-            selectedCategory={formik.values.category}
-            onCategoryChange={handleCategoryChange}
+          <label htmlFor="company" className="text-sm text-gray-500">
+            Company
+          </label>
+          <input
+            type="text"
+            name="company"
+            id="company"
+            className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500`}
+            placeholder=" "
+            onChange={formik.handleChange}
+            value={formik.values.company}
           />
-          {formik.touched.category && formik.errors.category && (
-            <p className="text-red-500 text-sm mt-1">
-              {formik.errors.category}
-            </p>
-          )}
         </div>
       </div>
 

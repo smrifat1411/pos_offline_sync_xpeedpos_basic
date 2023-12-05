@@ -70,7 +70,8 @@ const CategoryDropdown: React.FC<Props> = ({
     <div className="flex flex-col gap-2 w-full">
       <Select
         options={options}
-        value={selectedOption} // Use the 'value' prop instead of 'defaultValue'
+        value={selectedOption}
+
         onChange={(option) =>
           handleOptionChange(option as CategoryDocumentType)
         }
