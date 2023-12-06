@@ -56,12 +56,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [totalOrderCount, setTotalOrderCount] = useState(0);
 
-  const getTotalOrderCount = async () => {
-    const { data } = await window.electron.getTotalItemsCount('orders');
-
-    setTotalOrderCount(data);
-  };
-
   const getAllOrdersData = async (
     page?: number,
     pageSize?: number,
@@ -139,13 +133,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const cancelOrder = async (id: number) => {
     // Implement cancelOrder if needed
   };
-
-
-  useEffect(() => {
-
-   getTotalOrderCount()
-  }, [])
-
 
   return (
     <ORDER_CONTEXT.Provider
