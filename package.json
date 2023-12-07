@@ -245,7 +245,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "forceCodeSigning": false
     },
     "linux": {
       "target": [
