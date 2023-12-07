@@ -40,10 +40,10 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
     sellingPrice: Yup.number().required('Price is required'),
     buyingPrice: Yup.number().required('Buying Price is required'),
     category: Yup.string().test(
-      'isCreateNew',
+      'isCategorySelected',
       'Category is required',
       function (value) {
-        if (value === 'createNew') {
+        if (!value || value === 'createNew') {
           return false;
         }
         return true;
@@ -79,6 +79,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         category: values.category,
         discount: values.discount,
         stockAmount: values.stockAmount,
+        company: values.company,
       };
 
       try {
