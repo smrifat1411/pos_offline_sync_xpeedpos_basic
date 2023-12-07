@@ -1,6 +1,7 @@
 import { CartItem } from './product';
 
 export interface Order {
+  kot: ReactNode;
   id?: number;
   items: CartItem[];
   orderTime: number;

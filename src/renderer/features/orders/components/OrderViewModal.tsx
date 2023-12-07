@@ -18,7 +18,7 @@ import {
   Dispatch,
   FunctionComponent,
   SetStateAction,
-  useState
+  useState,
 } from 'react';
 import { ClearIndicatorProps } from 'react-select';
 import { useOrders } from '../../../context/OrderContextProvider';
@@ -41,14 +41,8 @@ const OrderViewModal = ({
   setIsOpenViewModal,
   order,
 }: Props) => {
-
   // const { settings } = useSettings();
-  const {allProducts} = useProductContext()
-
-
-
-
-
+  const { allProducts } = useProductContext();
 
   return (
     <Modal
@@ -93,7 +87,7 @@ const OrderViewModal = ({
               Pay With: {order?.paymentMethod}
             </p>
           </div>
-          <form  className="flex py-2">
+          <form className="flex py-2">
             <FormControl fullWidth size="small" sx={{ zIndex: 1 }}>
               <InputLabel id="new-product-select">Add New Product</InputLabel>
               <MuiSelect
@@ -114,7 +108,8 @@ const OrderViewModal = ({
                         <span className="line-through text-xs text-gray-400 mx-2">
                           {p?.price}
                         </span>
-                        {p.discount && p?.price - (p?.price * p?.discount) / 100}
+                        {p.discount &&
+                          p?.price - (p?.price * p?.discount) / 100}
                       </>
                     ) : (
                       p?.price
@@ -129,9 +124,7 @@ const OrderViewModal = ({
             </Button>
           </form>
 
-          <div>
-
-          </div>
+          <div></div>
         </div>
         <div className="w-full flex justify-center flex-wrap gap-2 mt-2">
           <Button
