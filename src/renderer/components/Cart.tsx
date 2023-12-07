@@ -31,6 +31,7 @@ const Cart: React.FC = () => {
       changeAmount: undefined,
       paymentMethod: undefined,
       customerId: undefined,
+      kot: undefined,
     };
     const { data, success, error } = await window.electron.createOrder(
       newOrder,
@@ -64,7 +65,7 @@ const Cart: React.FC = () => {
       return (
         <button
           type="button"
-          className="group inline-flex w-full items-center justify-center rounded-md bg-gray-900 px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
+          className="group inline-flex w-full items-center justify-center rounded-md bg-gray-900 px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800 hover:shadow-xl hover:text-slate-300"
           onClick={handlePlaceOrder}
         >
           Place Order
@@ -74,7 +75,7 @@ const Cart: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto w-[100%] px-2">
+    <div className="mx-auto w-[100%] p-2">
       <div className="mx-auto max-w-2xl border rounded-lg overflow-hidden">
         <div className="bg-white shadow">
           <div className="px-4">
@@ -114,7 +115,7 @@ const Cart: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-6 text-center">{renderButtonOrError()}</div>
+            <div className="p-6 text-center">{renderButtonOrError()}</div>
           </div>
         </div>
       </div>

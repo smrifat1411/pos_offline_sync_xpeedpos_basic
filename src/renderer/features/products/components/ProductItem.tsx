@@ -37,23 +37,25 @@ const ProductItem: React.FC<Props> = ({ data }) => {
         <div className="mb-2">
           {data.discount && data?.discount > 0 ? (
             <>
-              <p className="mr-3 text-base font-semibold">
+              <p className="px-3 text-base font-semibold">
                 ৳{data.sellingPrice - (data.sellingPrice * data.discount) / 100}
               </p>
               <p className="mr-3 text-xs">
-                <span className="line-through">৳{data.sellingPrice}</span> -
-                {data.discount.toFixed(0)}%
+                <span className="line-through text-lg">
+                  ৳{data.sellingPrice}
+                </span>{' '}
+                -{data.discount.toFixed(0)}%
               </p>
             </>
           ) : (
-            <p className="mr-3 text-base font-semibold">৳{data.sellingPrice}</p>
+            <p className="mr-3 text-lg font-semibold">৳{data.sellingPrice}</p>
           )}
         </div>
         <h3 className="mb-2 text-lg text-center text-gray-700">{data.name}</h3>
       </div>
       {data.stockAmount > 0 ? (
         <button
-          className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden rounded-md text-gray-600"
+          className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden shadow-sm shadow-green-950 rounded-md text-gray-600 hover:shadow-xl transition-all duration-300"
           onClick={() => handleAddToCart()}
         >
           <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
@@ -61,7 +63,7 @@ const ProductItem: React.FC<Props> = ({ data }) => {
           </div>
         </button>
       ) : (
-        <span className="text-red-500">Out of Stock</span>
+        <span className="text-red-500 font-bold">Out of Stock</span>
       )}
       {userDetails?.role === 'admin' && (
         <>
@@ -70,10 +72,27 @@ const ProductItem: React.FC<Props> = ({ data }) => {
           </div>
         </>
       )}
-      <div className="absolute top-2 left-2">
+      <div className="absolute top-2 left-2 p-1 hover:shadow-md rounded-lg hover:translate-x-1 transition-all duration-300">
         {data.stockAmount > 0 && (
-          <Badge badgeContent={data.stockAmount}>
-            <Inventory2OutlinedIcon />
+          <Badge
+            className="my-1"
+            badgeContent={data.stockAmount}
+            sx={{
+              '& .MuiBadge-badge': {
+                backgroundColor: 'green',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '16px',
+                padding: '7px',
+              },
+            }}
+          >
+            <Inventory2OutlinedIcon
+              sx={{
+                fontSize: '25px',
+                color: 'green',
+              }}
+            />
           </Badge>
         )}
       </div>

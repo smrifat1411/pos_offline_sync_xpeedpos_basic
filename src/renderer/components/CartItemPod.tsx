@@ -45,7 +45,9 @@ const CartItemPod: React.FC = () => {
               <div className="font-semibold text-gray-900">
                 <p>
                   {getItemTotalPrice(item)}
-                  <span className="text-xs font-normal text-gray-400">TK</span>
+                  <span className="text-xs font-normal text-gray-400 px-1">
+                    tk
+                  </span>
                 </p>
               </div>
             </div>
