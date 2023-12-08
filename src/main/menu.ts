@@ -183,6 +183,13 @@ export default class MenuBuilder {
           },
         },
         {
+          label: 'Reload',
+          accelerator: 'Command+R',
+          click: () => {
+            this.mainWindow.webContents.reload();
+          },
+        },
+        {
           label: 'Export Database',
           accelerator: 'Ctrl+Command+E',
           click: () => {
@@ -259,6 +266,13 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+Shift+E',
             click: () => {
               this.exportDatabase();
+            },
+          },
+          {
+            label: 'Reload',
+            accelerator: 'Ctrl+R',
+            click: () => {
+              this.mainWindow.webContents.reload();
             },
           },
           isDevelopment ? { role: 'reload' } : { role: 'close' }, // Use 'close' instead of 'quit' for Windows
