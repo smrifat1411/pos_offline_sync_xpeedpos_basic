@@ -51,7 +51,9 @@ const ProductItem: React.FC<Props> = ({ data }) => {
             <p className="mr-3 text-lg font-semibold">৳{data.sellingPrice}</p>
           )}
         </div>
-        <h3 className="mb-2 text-lg text-center text-gray-700">{data.name}</h3>
+        <h3 className="mb-2 text-lg text-center text-gray-800 font-bold">
+          {data.name}
+        </h3>
       </div>
       {data.stockAmount > 0 ? (
         <button
