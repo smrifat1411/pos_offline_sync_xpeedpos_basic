@@ -180,9 +180,9 @@ const OrderPaymentModal = ({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box className="rounded border-gray-300 w-11/12 sm:w-4/5 lg:w-3/4 h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center">
+      <Box className="rounded border-gray-300 w-11/12 sm:w-4/5 lg:w-3/4 h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-200 shadow-2xl p-4 text-center">
         <button
-          className="absolute top-0 right-0 p-1 bg-gray-300 rounded"
+          className="absolute top-0 right-0 p-1 bg-gray-400 rounded"
           onClick={() => setIsOpenPaymentModal(false)}
         >
           <Close />
