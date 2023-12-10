@@ -62,19 +62,30 @@ const CategoryDropdown: React.FC<Props> = ({
   };
 
   const options: CategoryDocumentType[] = [
-    ...myoptions,
     { value: 'createNew', label: 'Create New' },
+    ...myoptions,
   ];
+
+  // create new in different color
+  const customStyles = {
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor:
+        state.data.value === 'createNew' ? '#f5c242' : provided.backgroundColor,
+      color: state.data.value === 'createNew' ? 'black' : provided.color,
+      // Adjust the colors as needed
+    }),
+  };
 
   return (
     <div className="flex flex-col gap-2 w-full">
       <Select
         options={options}
         value={selectedOption}
-
         onChange={(option) =>
           handleOptionChange(option as CategoryDocumentType)
         }
+        styles={customStyles}
       />
       {selectedOption?.value === 'createNew' && (
         <CategoryInputField
