@@ -109,7 +109,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
           className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500 ${
             formik.errors.name && 'border-red-500'
           }`}
-          placeholder=" "
+          placeholder=""
           onChange={formik.handleChange}
           value={formik.values.name}
         />

@@ -32,35 +32,35 @@ const ProductItem: React.FC<Props> = ({ data }) => {
   };
 
   return (
-    <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border">
+    <section className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border shadow-md shadow-cyan-700 hover:shadow-sm transition-all duration-300 bg-slate-400 bg-opacity-10 hover:translate-x-1">
       <div className="my-4 mx-auto flex flex-col items-center justify-between">
         <div className="mb-2">
           {data.discount && data?.discount > 0 ? (
             <>
-              <p className="px-3 text-base font-semibold">
+              <p className="p-4 text-base font-semibold">
                 ৳{data.sellingPrice - (data.sellingPrice * data.discount) / 100}
               </p>
               <p className="mr-3 text-xs">
                 <span className="line-through text-lg">
                   ৳{data.sellingPrice}
                 </span>{' '}
-                -{data.discount.toFixed(0)}%
+                -{data.discount.toFixed(2)}%
               </p>
             </>
           ) : (
-            <p className="mr-3 text-lg font-semibold">৳{data.sellingPrice}</p>
+            <p className="p-3 text-lg font-semibold">৳{data.sellingPrice}</p>
           )}
         </div>
-        <h3 className="mb-2 text-lg text-center text-gray-800 font-bold">
+        <h3 className="p-2 text-lg text-center text-gray-800 font-bold">
           {data.name}
         </h3>
       </div>
       {data.stockAmount > 0 ? (
         <button
-          className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden shadow-sm shadow-green-950 rounded-md text-gray-600 hover:shadow-xl transition-all duration-300"
+          className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden shadow-sm shadow-cyan-700 rounded-md text-gray-600 hover:shadow-xl transition-all duration-300"
           onClick={() => handleAddToCart()}
         >
-          <div className="flex w-full items-center justify-center bg-gray-100 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
+          <div className="flex w-full items-center justify-center bg-gray-400 bg-opacity-30 text-xs uppercase transition group-hover:bg-emerald-600 group-hover:text-white">
             Add
           </div>
         </button>

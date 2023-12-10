@@ -6,7 +6,7 @@ const ProductList: React.FC = () => {
   const { allProducts } = useProductContext();
 
   return (
-    <div className="grid p-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 w-full">
+    <div className="grid p-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 w-full">
       {allProducts.length > 0 &&
         allProducts.map((product: any, i: any) => (
           <ProductItem data={product} key={i} />

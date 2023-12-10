@@ -54,7 +54,7 @@ const ProductHead = (props: Props) => {
 
   return (
     <div className="flex w-full justify-evenly px-2 items-center">
-      <h1 className="text-xl font-medium">Product Menu</h1>
+      <h1 className="text-xl font-semibold text-cyan-900">Product Menu</h1>
       <Search
         placeholder="input search text"
         allowClear
