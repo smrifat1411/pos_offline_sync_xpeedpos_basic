@@ -53,8 +53,8 @@ const ProductHead = (props: Props) => {
   const debounceSearch = debounce(onSearchChange, 500);
 
   return (
-    <div className="flex w-full justify-evenly px-2 items-center">
-      <h1 className="text-xl font-semibold text-cyan-900">Product Menu</h1>
+    <div className="flex w-full justify-evenly px-2 py-4 items-center">
+      <h1 className="text-xl font-semibold text-black px-1">Product Menu</h1>
       <Search
         placeholder="input search text"
         allowClear

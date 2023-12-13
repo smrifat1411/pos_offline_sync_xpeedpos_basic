@@ -98,10 +98,15 @@ const EditProduct = ({ product }: Props) => {
         }}
         aria-labelledby="add-inventory-item"
         aria-describedby="add-inventory-item"
-        content={<ProductCreateForm onSuccess={() => {
-          setIsOpenEditModal(false);
-          formik.resetForm();
-        }} product={product} />}
+        content={
+          <ProductCreateForm
+            onSuccess={() => {
+              setIsOpenEditModal(false);
+              formik.resetForm();
+            }}
+            product={product}
+          />
+        }
       />
     </>
   );

@@ -49,7 +49,7 @@ const SideNav = (props: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-2 bg-gray-50 min-h-full h-fit sticky left-0 top-0">
+    <div className="flex flex-col gap-3 p-2 min-h-full h-fit sticky left-0 top-0 rounded-md bg-cyan-700 shadow-lg shadow-slate-500 hover:bg-opacity-95 hover:shadow transition-all ease-in-out duration-300">
       <div id="imageWrapper" className="w-36 mx-auto">
         <img src={logo} alt="Brand Logo" className=" rounded" />
       </div>

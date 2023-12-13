@@ -10,8 +10,8 @@ const SideNavItem = ({ name, link, svgPath }: Props) => {
     <>
       <Link
         to={link}
-        className={`grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 justify-items-center items-center text-center relative gap-0.5 text-gray-600 p-2 rounded hover:bg-gray-800 hover:text-white ${
-          'ab' === link ? 'bg-gray-800 text-white' : ''
+        className={`grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 justify-items-center items-center text-center relative gap-0.5 text-black p-2 rounded hover:bg-black hover:text-white hover:shadow-lg hover:translate-y-1  transition-all ease-in-out duration-300 ${
+          'ab' === link ? 'bg-gray-900 text-white' : ''
         } transition-colors ease-out duration-500`}
       >
         <div className="md:col-span-1 ">
@@ -24,7 +24,7 @@ const SideNavItem = ({ name, link, svgPath }: Props) => {
             // className="w-full h-auto"
           ></img>
         </div>
-        <p className="md:col-span-3 font-bold lg:col-span-4 self-center">
+        <p className="md:col-span-3 text-lg font-bold lg:col-span-4 self-center">
           {name}
         </p>
       </Link>

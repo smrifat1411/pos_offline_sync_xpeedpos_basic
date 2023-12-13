@@ -35,9 +35,13 @@ const CartItemPod: React.FC = () => {
             <p className="font-semibold text-gray-900">{item.name}</p>
             <div className="text-end">
               {item.discountable !== 0 && (
-                <p className="text-sm text-gray-600">
-                  <span className="line-through">{item.sellingPrice}</span> -{' '}
-                  {''}
+                <p className="text-md text-black">
+                  <span className="line-through text-base">
+                    {item.sellingPrice} <span>tk</span>
+                  </span>{' '}
+                  <span className="text-sm font-mono text-red-600">
+                    {' discount with'}
+                  </span>{' '}
                   {item.discount}% = {item.discountedPrice}
                   {/* <span className="font-thin">tk</span> */}
                 </p>
@@ -45,7 +49,7 @@ const CartItemPod: React.FC = () => {
               <div className="font-semibold text-gray-900">
                 <p>
                   {getItemTotalPrice(item)}
-                  <span className="text-xs font-normal text-gray-400 px-1">
+                  <span className="text-xs font-normal text-gray-800 px-1">
                     tk
                   </span>
                 </p>
@@ -54,7 +58,7 @@ const CartItemPod: React.FC = () => {
           </div>
           <div className="flex justify-stretch items-stretch text-xl">
             <button
-              className="flex items-center justify-center grow rounded-l-md bg-gray-200 p-1 transition hover:bg-black hover:text-white"
+              className="flex items-center justify-center grow rounded-l-md bg-gray-200 p-1 transition hover:bg-red-600 hover:text-white"
               onClick={() => {
                 item.id && decreaseQuantity(item.id);
                 item.id && updateStock(item.id, 1);
@@ -66,7 +70,7 @@ const CartItemPod: React.FC = () => {
               {item.quantity}
             </div>
             <button
-              className="flex items-center justify-center grow rounded-r-md bg-gray-200 p-1 transition hover:bg-black hover:text-white"
+              className="flex items-center justify-center grow rounded-r-md bg-gray-200 p-1 transition hover:bg-green-600 hover:text-white"
               disabled={item.quantity > item.stockAmount}
               onClick={() => {
                 item.id && increaseQuantity(item.id);

@@ -75,14 +75,16 @@ const Cart: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto w-[100%] p-2">
-      <div className="mx-auto max-w-2xl border rounded-lg overflow-hidden">
-        <div className="bg-white shadow">
+    <div className="mx-auto w-[100%] p-[1.5px] rounded-md bg-gradient-to-br from-green-500 via-violet-500 to-red-500">
+      <div className="mx-auto w-full border rounded-md overflow-hidden p-[1.4px] bg-slate-400 bg-opacity-50">
+        <div className="bg-slate-100 shadow rounded-md">
           <div className="px-4">
             <div className="flow-root">
               <div className="flex flex-col gap-2">
                 <div className="w-full pt-2 flex gap-2 font-bold text-xl justify-between">
-                  <h1>Order</h1>
+                  <h1 className="text-green-700 text-2xl font-semibold">
+                    Order
+                  </h1>
                 </div>
                 <CartItemPod />
               </div>
