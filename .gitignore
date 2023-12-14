@@ -30,3 +30,4 @@ npm-debug.log.*
 
 yarn.lock
 release/app/database.db
+release/app/database.db
