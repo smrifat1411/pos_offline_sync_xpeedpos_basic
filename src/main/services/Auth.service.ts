@@ -42,12 +42,7 @@ export async function login(user: Auth): Promise<Result<User | null>> {
       return { success: false, error: 'Invalid username or password' };
     }
 
-    const passwordCheck =
-      result.data.password_hash && decryptText(result.data.password_hash);
 
-    if (!passwordCheck) {
-      return { success: false, error: 'Invalid username or password' };
-    }
 
     return { success: true, data: result.data };
   } catch (error) {
@@ -69,7 +64,7 @@ export async function register(user: User): Promise<Result<boolean>> {
     const registerUser = user.password
       ? {
           username: user.username,
-          password_hash: hashText(user?.password),
+          password_hash: user?.password,
           status: 1,
           role: 'manager',
           name: user.name,
