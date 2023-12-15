@@ -65,11 +65,6 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
           return prev;
         });
         CommonUtils().showToast('success', 'Product updated successfully');
-      } else {
-        CommonUtils().showToast(
-          'error',
-          result.error || 'Error updating product',
-        );
       }
     } catch (error) {
       console.error('Error updating product:', error);

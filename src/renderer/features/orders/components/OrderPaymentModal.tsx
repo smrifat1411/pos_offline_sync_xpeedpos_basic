@@ -59,15 +59,51 @@ const OrderPaymentModal = ({
     setDiscount(parseFloat(newDiscount.toFixed(2)));
   };
 
-  // Function to handle the print action
-  const handlePrint = async () => {
-    // Call printOrPreviewComponent with the data URL after the image is loaded
-    window.electron.printOrPreviewComponent(
-      printContent(order, customerDetails),
-      true,
-    );
+  const handleDue = async () => {
+    try {
+      if (!customerDetails) {
+        const values = await form.validateFields();
 
-    // img.src = logo;
+        const customerName = values.customerName;
+        const phoneNumber = values.phoneNumber;
+
+        const createCustomerResult = await window.electron.createCustomer({
+          name: customerName,
+          mobile: phoneNumber,
+        });
+
+        if (createCustomerResult.success && createCustomerResult.data.id) {
+          const updatedOrder = {
+            ...order,
+            customerId: createCustomerResult.data.id,
+          };
+          await updateOrderStatus(updatedOrder);
+          setOrder(updatedOrder);
+          setCustomerDetails({
+            name: createCustomerResult.data.name,
+            mobile: createCustomerResult.data.mobile,
+          });
+        }
+      }
+    } catch (error) {}
+  };
+
+  const handlePrint = async () => {
+    try {
+      if (customerDetails.name !== null) {
+        await window.electron.printOrPreviewComponent(
+          printContent(order, customerDetails),
+          true,
+        );
+      } else {
+        CommonUtils().showToast(
+          TOAST_TYPE.ERROR,
+          'Please add customer details',
+        );
+      }
+    } catch (error) {
+      console.error('Error during printing:', error);
+    }
   };
 
   const handleDiscountPercentiageChanged = (value: string) => {
@@ -86,8 +122,6 @@ const OrderPaymentModal = ({
   const netPayable = order.subTotal - discountedAmount;
 
   const changeAmount = cashPaid - netPayable;
-
-  const navigate = useNavigate();
 
   const handlePayNow = async () => {
     try {
@@ -117,9 +151,14 @@ const OrderPaymentModal = ({
           cashPaid: cashPaid,
           paymentMethod: 'cash',
         };
+        await setCustomerDetails({
+          name: createCustomerResult.data.name,
+          mobile: createCustomerResult.data.mobile,
+        });
         await updateOrderStatus(updatedOrder);
         setOrder(updatedOrder);
-        setIsOpenPaymentModal(false);
+
+        // setIsOpenPaymentModal(false);
       } else {
         CommonUtils().showToast(TOAST_TYPE.ERROR, 'Something Wrong');
       }
@@ -529,6 +568,25 @@ const OrderPaymentModal = ({
                   PAY NOW
                 </Button>
               )}
+            {order.paymentStatus === 'Pending' && (
+              <Button
+                onClick={async () => {
+                  try {
+                    await handleDue();
+                    handlePrint();
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }}
+                component="label"
+                variant="outlined"
+                startIcon={<Print />}
+                sx={{ my: 1, width: '100%' }}
+              >
+                Print Slip without payment
+              </Button>
+            )}
+
             {order.paymentStatus === 'payment done' && (
               <Button
                 onClick={() => handlePrint()}

@@ -1,6 +1,6 @@
 import { User } from 'renderer/types/user.type';
 import { connect } from './Database.service';
-import { decriptText, hashText } from '../utils/encrypt';
+import { decryptText, hashText } from '../utils/encrypt';
 
 export interface Auth {
   username: string;
@@ -25,8 +25,9 @@ export async function getUser(username: string): Promise<Result<User | null>> {
     }
 
     // Omit the password_hash from the returned user object
-    const { password_hash, ...userData } = user;
-    return { success: true, data: userData as User };
+    // const { password_hash, ...userData } = user;
+
+    return { success: true, data: user };
   } catch (error) {
     console.error('Error getting user:', error);
     return { success: false, error: 'Error getting user' };
@@ -42,9 +43,9 @@ export async function login(user: Auth): Promise<Result<User | null>> {
     }
 
     const passwordCheck =
-      result.data.password_hash && decriptText(result.data.password_hash);
+      result.data.password_hash && decryptText(result.data.password_hash);
 
-    if (passwordCheck && passwordCheck !== user.password) {
+    if (!passwordCheck || passwordCheck !== user.password) {
       return { success: false, error: 'Invalid username or password' };
     }
 

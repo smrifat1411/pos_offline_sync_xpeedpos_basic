@@ -12,14 +12,24 @@ export function hashText(text: string) {
   }
 }
 
-export function decriptText(text: Buffer) {
+export function decryptText(textBuffer: Buffer) {
   try {
     if (!safeStorage.isEncryptionAvailable()) {
       return false;
     }
 
-    return safeStorage.decryptString(text);
+    const decryptedBuffer = safeStorage.decryptString(textBuffer);
+
+    if (!decryptedBuffer) {
+      return false;
+    }
+
+    const decryptedText = decryptedBuffer.toString();
+    console.log('Decrypted Text:', decryptedText);
+
+    return decryptedText;
   } catch (err) {
+    console.error(err);
     return false;
   }
 }

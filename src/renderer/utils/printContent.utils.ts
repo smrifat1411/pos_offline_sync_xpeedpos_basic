@@ -129,7 +129,7 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
   <div>
     <p style="margin: 0; padding:10px 0px 0px 0px; font-family: 'Inter', sans-serif; font-size:18px;">invoice# : Number</p>
     <p style="margin: 0; padding:10px 0px 0px 0px; font-family: 'Inter', sans-serif;">Billing Date : Date</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">Paid by : Cash?</p>
+
     <p style="margin: 0; padding:10px 0px 0px 0px;">Shopping Point : Address</p>
   </div>
 </div>
