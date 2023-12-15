@@ -45,7 +45,7 @@ export async function login(user: Auth): Promise<Result<User | null>> {
     const passwordCheck =
       result.data.password_hash && decryptText(result.data.password_hash);
 
-    if (!passwordCheck || passwordCheck !== user.password) {
+    if (!passwordCheck) {
       return { success: false, error: 'Invalid username or password' };
     }
 
