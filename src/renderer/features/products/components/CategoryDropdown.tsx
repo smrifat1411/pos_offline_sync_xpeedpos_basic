@@ -62,8 +62,8 @@ const CategoryDropdown: React.FC<Props> = ({
   };
 
   const options: CategoryDocumentType[] = [
-    ...myoptions,
     { value: 'createNew', label: 'Create New' },
+    ...myoptions,
   ];
 
   return (
@@ -71,7 +71,7 @@ const CategoryDropdown: React.FC<Props> = ({
       <Select
         options={options}
         value={selectedOption}
-
+        maxMenuHeight={240}
         onChange={(option) =>
           handleOptionChange(option as CategoryDocumentType)
         }
