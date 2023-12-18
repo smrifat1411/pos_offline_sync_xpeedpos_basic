@@ -258,7 +258,7 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
                   c2.404,7.206,5.127,15.372,8.836,17.518c1.051,0.608,2.626,0.903,4.813,0.903c3.969,0,8.948-0.991,14.218-2.042
                   C242.195,343.466,248.951,342.121,256,342.121z"/>
                     </svg>
-                    <p style="margin: 0;">email_address@email.com</p>
+                    <p style="margin: 0;">electrotechworld14@gmail.com</p>
                 </div>
             </div>
         </div>
@@ -298,9 +298,7 @@ c0-16.588,13.572-30.16,30.16-30.16l0,0c16.588,0,30.16,13.572,30.16,30.16v93.034C
       second: 'numeric',
       hour12: true,
     })}</p>
-    <p style="margin: 0; padding:10px 0px 0px 0px;">${
-      order.paymentMethod !== null ? `Paid by : ${order.paymentMethod}` : ''
-    }</p>
+
 
   </div>
 </div>

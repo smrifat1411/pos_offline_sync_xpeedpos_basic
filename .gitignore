@@ -31,3 +31,9 @@ npm-debug.log.*
 yarn.lock
 release/app/database.db
 release/app/database.db
+<<<<<<< HEAD
+=======
+.erb/dll/renderer.dev.dll.js
+.erb/dll/renderer.dev.dll.js
+yarn.lock
+>>>>>>> 867bb77b71e82c24294f218595916312bde69189

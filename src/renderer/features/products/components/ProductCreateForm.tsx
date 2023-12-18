@@ -80,7 +80,6 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         discount: values.discount,
         stockAmount: values.stockAmount,
         company: values.company,
-        price: undefined,
       };
 
       try {

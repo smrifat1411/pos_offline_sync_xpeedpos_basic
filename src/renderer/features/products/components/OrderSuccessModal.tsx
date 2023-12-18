@@ -1,13 +1,10 @@
 // Import necessary dependencies
-import { Button, Modal, Box } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Order } from 'renderer/types/order.type';
-import logo from '../../../assets/images/logo.png';
-import { PrintTwoTone } from '@mui/icons-material';
+import { Box, Button, Modal } from '@mui/material';
+import { Dispatch, SetStateAction, useState } from 'react';
 import OrderPaymentModal from 'renderer/features/orders/components/OrderPaymentModal';
-import { printContent } from 'renderer/utils/print.utils';
+import { Order } from 'renderer/types/order.type';
 
 type Props = {
   isOpenModal: boolean;

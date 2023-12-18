@@ -9,7 +9,7 @@ export interface resProduct {
 }
 
 export interface Product {
-  price: ReactNode;
+
   id?: number;
   name: string;
   category: string;

@@ -15,13 +15,22 @@ import { useOrders } from '../../../context/OrderContextProvider';
 import OrderTableRow from './OrderTableRow';
 
 const OrderList = () => {
-  const { orders, totalOrderCount, currentPage, setCurrentPage } = useOrders();
+  const { orders, currentPage, setCurrentPage } = useOrders();
+  const [totalOrderCount, setTotalOrderCount] = useState();
+
+  const getTotalOrderCount = async () => {
+    const { data } = await window.electron.getTotalItemsCount('orders');
+
+    setTotalOrderCount(data);
+  };
 
   const ordersPerPage = 8;
 
-  const totalPages = Math.ceil(totalOrderCount / ordersPerPage);
+  const totalPages = totalOrderCount && Math.ceil(totalOrderCount / ordersPerPage);
 
-
+  useEffect(() => {
+    getTotalOrderCount();
+  }, []);
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
