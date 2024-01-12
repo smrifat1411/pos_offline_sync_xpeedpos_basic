@@ -1,8 +1,8 @@
-import { Order } from '../../../types/order.type';
 import {
   faBangladeshiTakaSign,
+  faDeleteLeft,
   faEye,
-  faMoneyCheckAlt,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -12,15 +12,18 @@ import {
   styled,
   tableCellClasses,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import OrderViewModal from './OrderViewModal';
+import { useState } from 'react';
+import { Order } from '../../../types/order.type';
 import OrderPaymentModal from './OrderPaymentModal';
+import OrderViewModal from './OrderViewModal';
+import { useOrders } from 'renderer/context/OrderContextProvider';
 
 type Props = { order: Order };
 
 const OrderTableRow = ({ order }: Props) => {
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
+  const { getAllOrdersData, currentPage, sortField, sortOrder } = useOrders();
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -40,6 +43,19 @@ const OrderTableRow = ({ order }: Props) => {
       border: 0,
     },
   }));
+
+  const handleDeleteOrder = async () => {
+    try {
+      if (order.id) {
+        await window.electron.deleteOrderById(order?.id);
+
+        getAllOrdersData(currentPage, 8, sortField, sortOrder);
+      }
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      // Handle error
+    }
+  };
 
   return (
     <StyledTableRow key={order?.id}>
@@ -83,9 +99,6 @@ const OrderTableRow = ({ order }: Props) => {
               order?.paymentStatus === 'canceled' ? 'outlined' : 'filled'
             }
           />
-          <p className="capitalize text-blue-600 text-xs font-bold text-center">
-            Pay With: {order?.paymentMethod}
-          </p>
         </div>
       </StyledTableCell>
       <StyledTableCell align="right">
@@ -97,13 +110,14 @@ const OrderTableRow = ({ order }: Props) => {
             <FontAwesomeIcon icon={faEye} />
             View
           </button>
-          {/* <button
+
+          <button
             className={`p-2 flex gap-1 justify-center items-center bg-blue-950 hover:bg-blue-200 hover:text-black text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm`}
-            onClick={() => setIsOpenPaymentModal(true)}
+            onClick={handleDeleteOrder}
           >
-            <FontAwesomeIcon icon={faMoneyCheckAlt} />
-            Pay
-          </button> */}
+            <FontAwesomeIcon icon={faTrash} />
+            Delete
+          </button>
         </div>
       </StyledTableCell>
       <OrderViewModal

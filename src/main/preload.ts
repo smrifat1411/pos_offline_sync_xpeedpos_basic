@@ -127,6 +127,9 @@ const electronHandler = {
   deleteProductById: async (productId: number) => {
     return ipcRenderer.invoke('product:deleteById', productId);
   },
+  deleteOrderById: async (orderId: number) => {
+    return ipcRenderer.invoke('order:deleteById', orderId);
+  },
 };
 contextBridge.exposeInMainWorld('electron', electronHandler);
 

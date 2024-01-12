@@ -8,7 +8,7 @@ import MenuBuilder from './menu';
 import { getAllUsers, getUser, login, register } from './services/Auth.service';
 import {
   createOrder,
-  deleteOrder,
+  deleteOrderById,
   getAllOrders,
   getOrderDetails,
   getOrdersByPeriod,
@@ -251,9 +251,7 @@ app
       return await updateOrderById(orderId, updatedOrder);
     });
 
-    ipcMain.handle('order:delete', async (_, orderId) => {
-      return await deleteOrder(orderId);
-    });
+  
     ipcMain.handle(
       'order:getAll',
       async (_, page, pageSize, sortBy, sortOrder) => {
@@ -263,10 +261,15 @@ app
     ipcMain.handle('order:getById', async (_, id: number) => {
       return await getOrderDetails(id);
     });
+    // Delete Order
+    ipcMain.handle('order:deleteById', async (_, orderId) => {
+      return await deleteOrderById(orderId);
+    });
+
     ipcMain.handle('auth:login', async (_, user: Auth) => {
       return await login(user);
     });
-    ipcMain.handle('auth:register', async (_, user: User) => {
+    ipcMain.handle('auth:register', async (_, user: any) => {
       return await register(user);
     });
     ipcMain.handle('auth:getUser', async (_, username: string) => {

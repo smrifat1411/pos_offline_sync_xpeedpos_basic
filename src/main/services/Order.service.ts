@@ -1,7 +1,7 @@
-import { CartItem, Product } from 'renderer/types/product';
+import { Order } from 'renderer/types/order.type';
+import { CartItem } from 'renderer/types/product';
 import { connect } from './Database.service';
 import { getProductById, updateProductById } from './product.service';
-import { Order } from 'renderer/types/order.type';
 
 interface Result<T> {
   success: boolean;
@@ -15,11 +15,11 @@ export async function createOrder(order: Order): Promise<Result<Order | null>> {
     const db = connect();
 
     const insertOrderStatement = db.prepare(`
-      INSERT INTO orders
-      (orderTime, paymentStatus, subTotal, discount, discountAmount, vat, vatAmount, netPayable, cashPaid, changeAmount, payment_method, customerId)
-      VALUES
-      (@orderTime, @paymentStatus, @subTotal, @discount, @discountAmount, @vat, @vatAmount, @netPayable, @cashPaid, @changeAmount, @paymentMethod, @customerId)
-    `);
+    INSERT INTO orders
+    (isDeleted, orderTime, paymentStatus, subTotal, discount, discountAmount, vat, vatAmount, netPayable, cashPaid, changeAmount, payment_method, customerId)
+    VALUES
+    (false, @orderTime, @paymentStatus, @subTotal, @discount, @discountAmount, @vat, @vatAmount, @netPayable, @cashPaid, @changeAmount, @paymentMethod, @customerId)
+  `);
 
     const { lastInsertRowid: orderId } = insertOrderStatement.run(order);
 
@@ -106,32 +106,7 @@ async function getOrderItems(db: any, orderId: number): Promise<CartItem[]> {
   return itemsStatement.all({ orderId }) as CartItem[];
 }
 
-export async function deleteOrder(orderId: number): Promise<Result<boolean>> {
-  try {
-    const db = connect();
 
-    // Start a transaction
-    await db.transaction(async () => {
-      // Delete order and related items
-      const deleteOrderStatement = db.prepare(
-        'DELETE FROM orders WHERE id = @orderId',
-      );
-      const deleteOrderItemsStatement = db.prepare(
-        'DELETE FROM order_items WHERE order_id = @orderId',
-      );
-
-      // Run delete statements
-      deleteOrderStatement.run({ orderId });
-      deleteOrderItemsStatement.run({ orderId });
-    })();
-
-    console.log('Order deleted successfully.');
-    return { success: true, data: true };
-  } catch (error) {
-    console.error('Error deleting order:', error);
-    return { success: false, error: 'Error deleting order.' };
-  }
-}
 
 export async function getAllOrders(
   page?: number,
@@ -142,7 +117,7 @@ export async function getAllOrders(
   try {
     const db = connect();
 
-    let query = 'SELECT * FROM orders';
+    let query = 'SELECT * FROM orders WHERE isDeleted != 1';
 
     // If pagination and sorting parameters are provided, adjust the query
     if (
@@ -259,22 +234,24 @@ export async function updateOrderById(
 
     // Update order in the 'orders' table
     const updateOrderStatement = db.prepare(`
-      UPDATE orders
-      SET
-        orderTime = @orderTime,
-        paymentStatus = @paymentStatus,
-        subTotal = @subTotal,
-        discount = @discount,
-        discountAmount = @discountAmount,
-        vat = @vat,
-        vatAmount = @vatAmount,
-        netPayable = @netPayable,
-        cashPaid = @cashPaid,
-        changeAmount = @changeAmount,
-        payment_method = @paymentMethod,
-        customerId = @customerId
-      WHERE id = @orderId
-    `);
+    UPDATE orders
+    SET
+      isDeleted = false,  -- Resetting to false in case it was previously deleted
+      orderTime = @orderTime,
+      paymentStatus = @paymentStatus,
+      subTotal = @subTotal,
+      discount = @discount,
+      discountAmount = @discountAmount,
+      vat = @vat,
+      vatAmount = @vatAmount,
+      netPayable = @netPayable,
+      cashPaid = @cashPaid,
+      changeAmount = @changeAmount,
+      payment_method = @paymentMethod,
+      customerId = @customerId
+    WHERE id = @orderId
+  `);
+  
 
     updateOrderStatement.run(updatedOrderData);
 
@@ -322,13 +299,19 @@ export async function updateOrderById(
 // No time to do in another file,cause on rushh
 export async function getTotalItemsCount(
   tableName: string,
+  includeDeleted: boolean = false,
 ): Promise<Result<number>> {
   try {
     const db = connect();
 
-    const countStatement = db.prepare(
-      `SELECT COUNT(*) as totalItems FROM ${tableName}`,
-    );
+    let query = `SELECT COUNT(*) as totalItems FROM ${tableName}`;
+
+    // Add condition to exclude deleted items if includeDeleted is false
+    if (!includeDeleted) {
+      query += ` WHERE isDeleted != 1`;
+    }
+
+    const countStatement = db.prepare(query);
     const result = countStatement.get() as { totalItems: number } | undefined;
 
     if (result) {
@@ -348,5 +331,27 @@ export async function getTotalItemsCount(
       success: false,
       error: `Error getting total items count for '${tableName}'.`,
     };
+  }
+}
+
+
+export async function deleteOrderById(
+  orderId: number,
+): Promise<Result<boolean>> {
+  try {
+    const db = connect();
+
+    // Update isDeleted to true (soft delete)
+    const updateOrderStatement = db.prepare(
+      'UPDATE orders SET isDeleted = true WHERE id = @orderId',
+    );
+
+    updateOrderStatement.run({ orderId });
+
+    console.log(`Order with id ${orderId} deleted successfully.`);
+    return { success: true, data: true };
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    return { success: false, error: 'Error deleting order.' };
   }
 }
