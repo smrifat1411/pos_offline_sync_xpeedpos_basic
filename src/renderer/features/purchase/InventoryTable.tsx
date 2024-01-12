@@ -17,17 +17,16 @@ import {
   GridValueFormatterParams,
 } from '@mui/x-data-grid';
 import { randomArrayItem } from '@mui/x-data-grid-generator';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from 'renderer/components/Button';
 // import Modal from 'renderer/components/Modal';
-import { useProductContext } from 'renderer/context/ProductContext';
-import ProductCreateForm from '../products/components/ProductCreateForm';
 import { Card, Modal } from '@mui/material';
-import { useAuth } from 'renderer/context/AuthContextProvider';
 import LinearProgress from '@mui/material/LinearProgress';
-import { CommonUtils } from 'renderer/utils/CommonUtils';
-import { Toast } from 'react-toastify/dist/components';
 import { TOAST_TYPE } from 'renderer/constants/AppConstants';
+import { useAuth } from 'renderer/context/AuthContextProvider';
+import { useProductContext } from 'renderer/context/ProductContext';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
+import ProductCreateForm from '../products/components/ProductCreateForm';
 
 interface Product {
   id?: number;
@@ -238,7 +237,7 @@ export default function InventoryTable() {
       editable: true,
       valueFormatter: (params: GridValueFormatterParams) => {
         // Format the discount value with no decimal places
-        const formattedDiscount = params.value.toFixed(0);
+        const formattedDiscount = params.value ? params.value.toFixed(0) : 0;
         return `${formattedDiscount}%`;
       },
     },
