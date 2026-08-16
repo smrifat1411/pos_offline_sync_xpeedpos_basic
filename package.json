@@ -1,35 +1,32 @@
 {
-  "description": "Xpeed advance pos system",
+  "name": "xpeed-pos",
+  "productName": "Xpeed POS",
+  "version": "1.0.0",
+  "description": "Cross-platform point-of-sale for restaurants and retailers: live table tracking, order and inventory management, and offline-first sync so sales continue through network loss.",
   "keywords": [
+    "point-of-sale",
+    "pos",
     "electron",
-    "boilerplate",
-    "react",
+    "offline-first",
+    "sqlite",
+    "restaurant",
     "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "react"
   ],
-  "homepage": "www.xpeedlab.com",
-  "bugs": {},
+  "homepage": "https://github.com/smrifat1411/pos_offline_sync_xpeedpos_basic",
+  "bugs": {
+    "url": "https://github.com/smrifat1411/pos_offline_sync_xpeedpos_basic/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/smrifat1411/new_pos"
+    "url": "https://github.com/smrifat1411/pos_offline_sync_xpeedpos_basic"
   },
   "license": "MIT",
   "author": {
-    "name": "Rifat the Xpeeders",
-    "email": "hello@xpeedlab.tech",
-    "url": "https://xpeedlab.tech"
+    "name": "Rifat Hossain",
+    "email": "smrifat1411@gmail.com",
+    "url": "https://smrifat1411.github.io"
   },
-  "contributors": [
-    {
-      "name": "Rifat",
-      "email": "smrifat1411@gmail.com",
-      "url": "https://github.com/smrifat1411/new_pos"
-    }
-  ],
   "main": "./src/main/main.ts",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -201,7 +198,7 @@
   },
   "build": {
     "productName": "XpeedPos",
-    "appId": "org.erb.ElectronReact",
+    "appId": "tech.xpeedlab.pos",
     "asar": true,
     "asarUnpack": [
       "**\\*.{node,dll}",
@@ -267,9 +264,6 @@
       "owner": "xpeedlab",
       "repo": "xpeedlab_pos"
     }
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
     "node": ">=14.x",

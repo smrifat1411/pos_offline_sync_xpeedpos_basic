@@ -1,12 +1,12 @@
 {
-  "name": "electron-react-boilerplate",
-  "version": "4.6.0",
-  "description": "A foundation for scalable desktop apps",
+  "name": "xpeed-pos",
+  "version": "1.0.0",
+  "description": "Xpeed POS desktop client",
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
+    "name": "Rifat Hossain",
+    "email": "smrifat1411@gmail.com",
+    "url": "https://smrifat1411.github.io"
   },
   "main": "./dist/main/main.js",
   "scripts": {
