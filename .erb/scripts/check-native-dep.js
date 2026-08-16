@@ -41,10 +41,8 @@ ${chalk.whiteBright.bgRed.bold('npm install your-package')}
 ${chalk.whiteBright.bgGreen.bold(
   'cd ./release/app && npm install your-package'
 )}
- Read more about native dependencies at:
-${chalk.bold(
-  'https://electron-react-boilerplate.js.org/docs/adding-dependencies/#module-structure'
-)}
+ Native modules must be installed in ./release/app so electron-builder
+ rebuilds them against Electron's ABI rather than Node's.
  `);
       process.exit(1);
     }
