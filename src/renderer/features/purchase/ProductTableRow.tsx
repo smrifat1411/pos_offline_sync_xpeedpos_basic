@@ -8,18 +8,45 @@ import { useProductContext } from 'renderer/context/ProductContext';
 
 type Props = { product: Product }; // Assuming you have a Product type
 
-const ProductTableRow = ({ product }: Props) => {
+function ProductTableRow({ product }: Props) {
   const { updateProductById } = useProductContext();
   const [isEditing, setIsEditing] = React.useState(false);
-  const [updatedValues, setUpdatedValues] = React.useState<Product>({ ...product });
+  const [updatedValues, setUpdatedValues] = React.useState<Product>({
+    ...product,
+  });
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Name', width: 150, editable: isEditing },
-    { field: 'category', headerName: 'Category', width: 150, editable: isEditing },
-    { field: 'buyingPrice', headerName: 'Buying Price', width: 150, editable: isEditing },
-    { field: 'sellingPrice', headerName: 'Selling Price', width: 150, editable: isEditing },
-    { field: 'stockAmount', headerName: 'Stock Amount', width: 150, editable: isEditing },
-    { field: 'discount', headerName: 'Discount', width: 150, editable: isEditing },
+    {
+      field: 'category',
+      headerName: 'Category',
+      width: 150,
+      editable: isEditing,
+    },
+    {
+      field: 'buyingPrice',
+      headerName: 'Buying Price',
+      width: 150,
+      editable: isEditing,
+    },
+    {
+      field: 'sellingPrice',
+      headerName: 'Selling Price',
+      width: 150,
+      editable: isEditing,
+    },
+    {
+      field: 'stockAmount',
+      headerName: 'Stock Amount',
+      width: 150,
+      editable: isEditing,
+    },
+    {
+      field: 'discount',
+      headerName: 'Discount',
+      width: 150,
+      editable: isEditing,
+    },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -89,6 +116,6 @@ const ProductTableRow = ({ product }: Props) => {
       />
     </div>
   );
-};
+}
 
 export default ProductTableRow;

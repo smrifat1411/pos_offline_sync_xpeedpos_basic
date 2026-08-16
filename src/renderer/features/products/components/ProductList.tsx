@@ -1,6 +1,6 @@
 import React from 'react';
-import ProductItem from './ProductItem';
 import { useProductContext } from 'renderer/context/ProductContext';
+import ProductItem from './ProductItem';
 
 const ProductList: React.FC = () => {
   const { allProducts } = useProductContext();

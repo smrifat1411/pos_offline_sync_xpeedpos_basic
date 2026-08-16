@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 
 export default function LoginForm() {
   const { authed, signin, register, logout } = useAuth();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -28,14 +28,9 @@ export default function LoginForm() {
     }
   };
 
-
   useEffect(() => {
-    authed ===true && navigate("/")
-
-
-  }, [authed])
-
-
+    authed === true && navigate('/');
+  }, [authed]);
 
   return (
     <Container component="main" maxWidth="sm">
@@ -51,9 +46,7 @@ export default function LoginForm() {
           alignItems: 'center',
         }}
       >
-        <p className='font-bold text-2xl'>
-          Sign in
-        </p>
+        <p className="font-bold text-2xl">Sign in</p>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"

@@ -4,11 +4,11 @@ type Props = {
   handleCreateNewOption: any;
 };
 
-const CategoryInputField = ({
+function CategoryInputField({
   newOptionValue,
   setNewOptionValue,
   handleCreateNewOption,
-}: Props) => {
+}: Props) {
   return (
     <div className="py-1 pb-4 flex gap-2">
       <input
@@ -28,6 +28,6 @@ const CategoryInputField = ({
       </button>
     </div>
   );
-};
+}
 
 export default CategoryInputField;

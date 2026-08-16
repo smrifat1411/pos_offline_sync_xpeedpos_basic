@@ -1,4 +1,5 @@
 import { Divider } from '@mui/material';
+import { useAuth } from 'renderer/context/AuthContextProvider';
 import navData from '../lib/navitem.json';
 import SideNavItem from './SideNavItem';
 
@@ -11,7 +12,6 @@ import salarySvgPath from '../assets/icon/salary.svg';
 import reportSvgPath from '../assets/icon/report.svg';
 import expenseSvgPath from '../assets/icon/users.svg';
 import settingSvgPath from '../assets/icon/setting.svg';
-import { useAuth } from 'renderer/context/AuthContextProvider';
 
 interface Item {
   id: number;
@@ -32,7 +32,7 @@ const svgPaths: { [key: string]: string } = {
   setting: settingSvgPath,
 };
 
-const SideNav = (props: Props) => {
+function SideNav(props: Props) {
   const { userDetails } = useAuth();
 
   const verifyUserRoute = (item: Item, index: number, type: string) => {
@@ -53,7 +53,7 @@ const SideNav = (props: Props) => {
       <div id="imageWrapper" className="w-36 mx-auto">
         <img src={logo} alt="Brand Logo" className=" rounded" />
       </div>
-      <Divider></Divider>
+      <Divider />
       {navData.map((item: Item, i) => verifyUserRoute(item, i, 'public'))}
       {(userDetails?.role === 'manager' || userDetails?.role === 'admin') &&
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'private'))}
@@ -61,6 +61,6 @@ const SideNav = (props: Props) => {
         navData.map((item: Item, i) => verifyUserRoute(item, i, 'protected'))}
     </div>
   );
-};
+}
 
 export default SideNav;

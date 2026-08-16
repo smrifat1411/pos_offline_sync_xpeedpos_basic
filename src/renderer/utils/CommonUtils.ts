@@ -1,11 +1,11 @@
-import { toast } from "react-toastify";
-import { TOAST_TYPE } from "../constants/AppConstants";
+import { toast } from 'react-toastify';
+import { TOAST_TYPE } from '../constants/AppConstants';
 
 function buildUrl(url: string, searchParam: any, pathParams: any) {
   url = url.trim();
   if (pathParams) {
     Object.keys(pathParams).forEach((key: any) => {
-      url = url.replace("{" + key + "}", pathParams[key]);
+      url = url.replace(`{${key}}`, pathParams[key]);
     });
   }
 
@@ -15,12 +15,12 @@ function buildUrl(url: string, searchParam: any, pathParams: any) {
         delete searchParam[key];
       }
     });
-    url += "?";
+    url += '?';
     url += Object.keys(searchParam)
       .map(function (key: any) {
-        return [key, searchParam[key]].map(encodeURIComponent).join("=");
+        return [key, searchParam[key]].map(encodeURIComponent).join('=');
       })
-      .join("&");
+      .join('&');
   }
 
   return url;
@@ -38,6 +38,7 @@ const showToast = (type: string, text: string) => {
       break;
     case TOAST_TYPE.WARNING:
       toast.warning(text);
+      break;
     case TOAST_TYPE.DEFAULT:
       // toast.default(text);
       break;
@@ -45,7 +46,6 @@ const showToast = (type: string, text: string) => {
       break;
   }
 };
-
 
 export function CommonUtils() {
   return {

@@ -53,10 +53,9 @@ export async function createOrder(order: Order): Promise<Result<Order | null>> {
     if (orderDetailsResult.success) {
       console.log('Order created successfully.');
       return { success: true, data: orderDetailsResult.data };
-    } else {
-      console.error('Error creating order:', orderDetailsResult.error);
-      return { success: false, error: 'Error creating order.' };
     }
+    console.error('Error creating order:', orderDetailsResult.error);
+    return { success: false, error: 'Error creating order.' };
   } catch (error) {
     console.error('Error creating order:', error);
     return { success: false, error: 'Error creating order.' };
@@ -105,8 +104,6 @@ async function getOrderItems(db: any, orderId: number): Promise<CartItem[]> {
 
   return itemsStatement.all({ orderId }) as CartItem[];
 }
-
-
 
 export async function getAllOrders(
   page?: number,
@@ -251,7 +248,6 @@ export async function updateOrderById(
       customerId = @customerId
     WHERE id = @orderId
   `);
-  
 
     updateOrderStatement.run(updatedOrderData);
 
@@ -286,10 +282,9 @@ export async function updateOrderById(
     if (updatedOrderDetailsResult.success) {
       console.log('Order updated successfully.');
       return { success: true, data: updatedOrderDetailsResult.data };
-    } else {
-      console.error('Error updating order:', updatedOrderDetailsResult.error);
-      return { success: false, error: 'Error updating order.' };
     }
+    console.error('Error updating order:', updatedOrderDetailsResult.error);
+    return { success: false, error: 'Error updating order.' };
   } catch (error) {
     console.error('Error updating order:', error);
     return { success: false, error: 'Error updating order.' };
@@ -315,16 +310,15 @@ export async function getTotalItemsCount(
     const result = countStatement.get() as { totalItems: number } | undefined;
 
     if (result) {
-      const totalItems = result.totalItems;
+      const { totalItems } = result;
       console.log(`Total items in '${tableName}': ${totalItems}`);
       return { success: true, data: totalItems };
-    } else {
-      console.error(`Error getting total items count for '${tableName}'.`);
-      return {
-        success: false,
-        error: `Error getting total items count for '${tableName}'.`,
-      };
     }
+    console.error(`Error getting total items count for '${tableName}'.`);
+    return {
+      success: false,
+      error: `Error getting total items count for '${tableName}'.`,
+    };
   } catch (error) {
     console.error(`Error getting total items count for '${tableName}':`, error);
     return {
@@ -333,7 +327,6 @@ export async function getTotalItemsCount(
     };
   }
 }
-
 
 export async function deleteOrderById(
   orderId: number,

@@ -7,7 +7,7 @@ import { Expense } from 'renderer/types/expense.type';
 import { Order } from 'renderer/types/order.type';
 import { CommonUtils } from 'renderer/utils/CommonUtils';
 
-const ClosingForm = () => {
+function ClosingForm() {
   const [form] = Form.useForm();
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
@@ -156,6 +156,6 @@ const ClosingForm = () => {
       </Form>
     </div>
   );
-};
+}
 
 export default ClosingForm;

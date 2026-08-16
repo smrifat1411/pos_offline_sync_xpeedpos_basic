@@ -6,7 +6,7 @@ import { Login, Logout } from '@mui/icons-material';
 
 type Props = {};
 
-const TopBar = (props: Props) => {
+function TopBar(props: Props) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -47,6 +47,6 @@ const TopBar = (props: Props) => {
       )}
     </div>
   );
-};
+}
 
 export default TopBar;

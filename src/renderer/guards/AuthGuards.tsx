@@ -13,13 +13,12 @@ interface Props {
   component: any;
 }
 
-const AuthGuard = ({ component }: Props) => {
+function AuthGuard({ component }: Props) {
   const { authed } = useAuth();
   // let authed = false;
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-
 
   return authed ? (
     <Suspense fallback={<div>Need to Logged in ....</div>}>
@@ -28,6 +27,6 @@ const AuthGuard = ({ component }: Props) => {
   ) : (
     <Navigate to="/login" />
   );
-};
+}
 
 export default AuthGuard;

@@ -1,6 +1,6 @@
 import { Customer } from 'renderer/types/customer.type';
-import { Order, OrderItem } from '../types/order.type';
 import { CartItem } from 'renderer/types/product';
+import { Order, OrderItem } from '../types/order.type';
 
 // export const printChefSlip = async (order: Order) => {
 //   try {

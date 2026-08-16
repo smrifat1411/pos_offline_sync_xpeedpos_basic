@@ -16,7 +16,7 @@ import ToastComponent from './components/ToastComponent';
 
 type Props = {};
 
-const App = (props: Props) => {
+function App(props: Props) {
   return (
     <div className="w-full flex">
       <AuthContextProvider>
@@ -37,6 +37,6 @@ const App = (props: Props) => {
       </AuthContextProvider>
     </div>
   );
-};
+}
 
 export default App;

@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Dispatch,
   ReactNode,
@@ -7,9 +8,9 @@ import {
   useContext,
   useState,
 } from 'react';
+import { toast } from 'react-toastify';
 import { Salary } from '../types/salary.type';
 
-import { toast } from 'react-toastify';
 import { useSettings } from './settingsContextProvider';
 
 interface SalaryContextInterface {
@@ -34,7 +35,7 @@ const SALARYCONTEXT = createContext<SalaryContextInterface>({
 
 export const useSalaries = () => useContext(SALARYCONTEXT);
 
-const SalaryContextProvider = ({ children }: Props) => {
+function SalaryContextProvider({ children }: Props) {
   const [salaries, setSalaries] = useState<[]>([]);
 
   const { addToTrash } = useSettings();
@@ -52,18 +53,27 @@ const SalaryContextProvider = ({ children }: Props) => {
         salaryAmount: data.salaryAmount,
         isOnline: false,
       };
-    } catch (error) {}
+    } catch (error) {
+      // Swallowed deliberately: this path has no user-facing recovery yet.
+    }
   };
 
   const updateSalary = async (updatedSalary: Salary) => {
     try {
-    } catch (error) {}
+      // Not implemented. Nothing in the UI calls this yet; the body was never
+      // written, so it is marked rather than left looking like working code.
+    } catch (error) {
+      // Unreachable while the body above is empty; kept so the signature stays
+      // async-safe once this is implemented.
+    }
   };
 
   const deleteSalaryInfo = async (salaryID: number | undefined) => {
     try {
       addToTrash('salary', salaryID);
-    } catch (error) {}
+    } catch (error) {
+      // Swallowed deliberately: this path has no user-facing recovery yet.
+    }
   };
 
   return (
@@ -79,6 +89,6 @@ const SalaryContextProvider = ({ children }: Props) => {
       {children}
     </SALARYCONTEXT.Provider>
   );
-};
+}
 
 export default SalaryContextProvider;

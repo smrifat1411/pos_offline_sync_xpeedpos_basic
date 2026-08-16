@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [config_dev_rif, main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      # --ignore-scripts skips postinstall, which rebuilds better-sqlite3 against
+      # Electron's ABI and pre-builds the dev DLL. Neither is needed to type-check,
+      # lint, build or test: better-sqlite3 is a webpack external, and the DLL is a
+      # dev-server optimisation. Skipping it keeps CI honest and quick.
+      - run: npm ci --ignore-scripts
+
+      # Every build script runs with TS_NODE_TRANSPILE_ONLY=true, so webpack strips
+      # types without checking them. Without this step nothing in CI would ever look
+      # at a type - which is how a Home/home import that only breaks on Linux, and a
+      # product price read from a field that does not exist, both survived in the
+      # tree until now.
+      - run: npx tsc --noEmit
+
+      - run: npm run lint
+
+      - run: npm run build
+
+      # jest's setupFiles asserts the build output exists, so this has to follow the
+      # build rather than run beside it.
+      - run: npm test

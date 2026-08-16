@@ -1,11 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 const useClickOutside = (onClickOutside: () => void) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         onClickOutside();
       }
     };
@@ -14,10 +17,10 @@ const useClickOutside = (onClickOutside: () => void) => {
       handleClickOutside(event);
     };
 
-    document.addEventListener("mousedown", handleDocumentClick);
+    document.addEventListener('mousedown', handleDocumentClick);
 
     return () => {
-      document.removeEventListener("mousedown", handleDocumentClick);
+      document.removeEventListener('mousedown', handleDocumentClick);
     };
   }, [onClickOutside]);
 

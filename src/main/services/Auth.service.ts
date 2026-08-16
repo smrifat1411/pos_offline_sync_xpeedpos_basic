@@ -42,8 +42,6 @@ export async function login(user: Auth): Promise<Result<User | null>> {
       return { success: false, error: 'Invalid username or password' };
     }
 
-
-
     return { success: true, data: result.data };
   } catch (error) {
     console.error('Error during login:', error);

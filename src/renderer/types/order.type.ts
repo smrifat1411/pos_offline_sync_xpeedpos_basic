@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { CartItem } from './product';
 
 export interface Order {

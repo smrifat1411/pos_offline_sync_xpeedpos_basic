@@ -48,7 +48,7 @@ const ORDER_CONTEXT = createContext<OrderContextType>({
 
 export const useOrders = () => useContext(ORDER_CONTEXT);
 
-const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
+function OrderContextProvider({ children }: { children: React.ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortField, setSortField] = useState<string>('orderTime');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -60,14 +60,14 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     page?: number,
     pageSize?: number,
     sortBy?: string,
-    sortOrder?: 'asc' | 'desc',
+    sortDirection?: 'asc' | 'desc',
   ) => {
     try {
       const result = await window.electron.getAllOrder(
         page,
         pageSize,
         sortBy,
-        sortOrder,
+        sortDirection,
       );
       if (result.success) {
         setOrders(result.data);
@@ -155,6 +155,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </ORDER_CONTEXT.Provider>
   );
-};
+}
 
 export default OrderContextProvider;

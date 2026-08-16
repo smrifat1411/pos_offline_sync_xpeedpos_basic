@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
+function AuthContextProvider({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
   const [userDetails, setUserDetails] = useState<User | undefined>(() => {
     // Retrieve user details from local storage on component mount
@@ -43,12 +43,11 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
           `${response?.data?.name} logged in as ${response?.data?.role}`,
         );
         return response.data;
-      } else {
-        CommonUtils().showToast(
-          TOAST_TYPE.ERROR,
-          response.error || 'Login failed. Please check your credentials.',
-        );
       }
+      CommonUtils().showToast(
+        TOAST_TYPE.ERROR,
+        response.error || 'Login failed. Please check your credentials.',
+      );
     } catch (error) {
       console.error('Signin failed:', error);
       CommonUtils().showToast(
@@ -87,7 +86,10 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     const userName = userDetails?.name || 'User';
-    CommonUtils().showToast(TOAST_TYPE.INFO, `${userName}, you are logged out.`);
+    CommonUtils().showToast(
+      TOAST_TYPE.INFO,
+      `${userName}, you are logged out.`,
+    );
 
     // Clear userDetails on logout
     setUserDetails(undefined);
@@ -106,6 +108,6 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const value = { authed, userDetails, signin, register, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
 export default AuthContextProvider;

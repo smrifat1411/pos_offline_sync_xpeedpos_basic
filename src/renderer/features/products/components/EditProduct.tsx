@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Product } from '../../../types/product';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import {
@@ -12,9 +11,10 @@ import {
 } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 
+import Modal from 'renderer/components/Modal';
 import { useSettings } from '../../../context/settingsContextProvider';
 import CategoryDropdown from './CategoryDropdown';
-import Modal from 'renderer/components/Modal';
+import { Product } from '../../../types/product';
 import ProductCreateForm from './ProductCreateForm';
 
 interface Option {
@@ -26,7 +26,7 @@ type Props = {
   product: Product;
 };
 
-const EditProduct = ({ product }: Props) => {
+function EditProduct({ product }: Props) {
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
 
   const { addToTrash } = useSettings();
@@ -60,7 +60,7 @@ const EditProduct = ({ product }: Props) => {
       discount: product.discount,
     },
 
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
       const data = {
         ...product,
@@ -98,13 +98,18 @@ const EditProduct = ({ product }: Props) => {
         }}
         aria-labelledby="add-inventory-item"
         aria-describedby="add-inventory-item"
-        content={<ProductCreateForm onSuccess={() => {
-          setIsOpenEditModal(false);
-          formik.resetForm();
-        }} product={product} />}
+        content={
+          <ProductCreateForm
+            onSuccess={() => {
+              setIsOpenEditModal(false);
+              formik.resetForm();
+            }}
+            product={product}
+          />
+        }
       />
     </>
   );
-};
+}
 
 export default EditProduct;

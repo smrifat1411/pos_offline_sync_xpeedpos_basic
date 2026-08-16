@@ -14,7 +14,7 @@ import {
 import { useOrders } from '../../../context/OrderContextProvider';
 import OrderTableRow from './OrderTableRow';
 
-const OrderList = () => {
+function OrderList() {
   const { orders, currentPage, setCurrentPage } = useOrders();
   const [totalOrderCount, setTotalOrderCount] = useState();
 
@@ -26,7 +26,8 @@ const OrderList = () => {
 
   const ordersPerPage = 8;
 
-  const totalPages = totalOrderCount && Math.ceil(totalOrderCount / ordersPerPage);
+  const totalPages =
+    totalOrderCount && Math.ceil(totalOrderCount / ordersPerPage);
 
   useEffect(() => {
     getTotalOrderCount();
@@ -76,6 +77,6 @@ const OrderList = () => {
       </div>
     </div>
   );
-};
+}
 
 export default OrderList;

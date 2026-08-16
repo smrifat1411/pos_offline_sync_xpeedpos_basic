@@ -1,10 +1,11 @@
 import { useProductContext } from 'renderer/context/ProductContext';
-import { useCart } from '../../../context/CartContext';
-import { Product } from '../../../types/product';
-import EditProduct from './EditProduct';
 import { useAuth } from 'renderer/context/AuthContextProvider';
 import { Badge } from '@mui/material';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import { useCart } from '../../../context/CartContext';
+import { Product } from '../../../types/product';
+import EditProduct from './EditProduct';
+
 interface Props {
   data: Product;
 }
@@ -57,6 +58,7 @@ const ProductItem: React.FC<Props> = ({ data }) => {
       </div>
       {data.stockAmount > 0 ? (
         <button
+          type="button"
           className="group mx-auto mb-2 flex h-10 w-10/12 items-stretch overflow-hidden shadow-sm shadow-green-950 rounded-md text-gray-600 hover:shadow-xl transition-all duration-300"
           onClick={() => handleAddToCart()}
         >
@@ -68,11 +70,9 @@ const ProductItem: React.FC<Props> = ({ data }) => {
         <span className="text-red-500 font-bold">Out of Stock</span>
       )}
       {userDetails?.role === 'admin' && (
-        <>
-          <div className="absolute top-2 right-2">
-            <EditProduct product={data} />
-          </div>
-        </>
+        <div className="absolute top-2 right-2">
+          <EditProduct product={data} />
+        </div>
       )}
       <div className="absolute top-2 left-2 p-1 hover:shadow-md rounded-lg hover:translate-x-1 transition-all duration-300">
         {data.stockAmount > 0 && (

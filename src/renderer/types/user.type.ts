@@ -5,7 +5,7 @@ export interface User {
   password?: string;
   status?: number;
   name: string;
-  role:string;
+  role: string;
 }
 
 export interface Auth {

@@ -6,12 +6,13 @@ import { Expense } from 'renderer/types/expense.type';
 import { useExpenseContext } from 'renderer/context/ExpenseContext';
 import { CommonUtils } from 'renderer/utils/CommonUtils';
 import { TOAST_TYPE } from 'renderer/constants/AppConstants';
+
 type Props = {
   setRows: any;
   closeModal: any;
 };
 
-const CreateExpForm = ({ setRows, closeModal }: Props) => {
+function CreateExpForm({ setRows, closeModal }: Props) {
   const { userDetails } = useAuth();
   const { createExpense } = useExpenseContext();
 
@@ -49,7 +50,7 @@ const CreateExpForm = ({ setRows, closeModal }: Props) => {
           name="amount"
           rules={[{ required: true, message: 'Please input the amount!' }]}
         >
-          <Input type='number' />
+          <Input type="number" />
         </Form.Item>
 
         <Form.Item
@@ -90,6 +91,6 @@ const CreateExpForm = ({ setRows, closeModal }: Props) => {
       </Form>
     </Card>
   );
-};
+}
 
 export default CreateExpForm;

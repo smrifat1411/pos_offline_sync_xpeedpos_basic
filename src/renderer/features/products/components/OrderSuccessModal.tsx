@@ -12,11 +12,7 @@ type Props = {
   newOrder: Order;
 };
 
-const OrderSuccessModal = ({
-  isOpenModal,
-  setIsOpenModal,
-  newOrder,
-}: Props) => {
+function OrderSuccessModal({ isOpenModal, setIsOpenModal, newOrder }: Props) {
   const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
 
   // HTML content to be printed
@@ -85,6 +81,6 @@ const OrderSuccessModal = ({
       />
     </div>
   );
-};
+}
 
 export default OrderSuccessModal;

@@ -69,9 +69,8 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({
         setAllExpenses((prev) => [...prev, result.data]);
 
         return result.data;
-      } else {
-        console.error('Error creating expense:', result.error);
       }
+      console.error('Error creating expense:', result.error);
     } catch (error) {
       console.error('Error creating expense:', error);
     }

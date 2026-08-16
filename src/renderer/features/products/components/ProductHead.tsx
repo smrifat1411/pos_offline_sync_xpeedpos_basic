@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import ProductCreateForm from './ProductCreateForm';
 import Button from 'renderer/components/Button';
 import Modal from 'renderer/components/Modal';
 import { Input } from 'antd';
 import { SearchProps } from 'antd/es/input';
 import { debounce } from '@mui/material';
 import { useProductContext } from 'renderer/context/ProductContext';
+import ProductCreateForm from './ProductCreateForm';
 
 type Props = {};
 
-const ProductHead = (props: Props) => {
+function ProductHead(props: Props) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults] = useState([]);
@@ -34,7 +34,7 @@ const ProductHead = (props: Props) => {
   };
 
   const onSearchChange: SearchProps['onChange'] = (e) => {
-    const value = e.target.value;
+    const { value } = e.target;
     setSearchValue(value);
     fetchSearchResults(value);
   };
@@ -71,6 +71,6 @@ const ProductHead = (props: Props) => {
       />
     </div>
   );
-};
+}
 
 export default ProductHead;

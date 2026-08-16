@@ -3,12 +3,12 @@ import ReportSection from 'renderer/features/report/components/ReportSection';
 
 type Props = {};
 
-const Report = (props: Props) => {
+function Report(props: Props) {
   return (
     <div>
       <ReportSection />
     </div>
   );
-};
+}
 
 export default Report;

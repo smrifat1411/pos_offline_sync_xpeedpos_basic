@@ -1,8 +1,8 @@
 /* eslint import/prefer-default-export: off */
 import { URL } from 'url';
 import path from 'path';
-const fs = require('fs');
 
+const fs = require('fs');
 
 export function resolveHtmlPath(htmlFileName: string) {
   if (process.env.NODE_ENV === 'development') {
@@ -14,8 +14,7 @@ export function resolveHtmlPath(htmlFileName: string) {
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
 }
 
-
-export function encodeImageToBase64(imagePath:any) {
+export function encodeImageToBase64(imagePath: any) {
   try {
     const imageBuffer = fs.readFileSync(imagePath);
     const base64Data = imageBuffer.toString('base64');

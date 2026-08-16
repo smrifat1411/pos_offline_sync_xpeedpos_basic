@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Dispatch,
   ReactNode,
@@ -8,9 +9,9 @@ import {
   useContext,
 } from 'react';
 
+import { toast } from 'react-toastify';
 import { Item, RxItem } from '../types/item.type';
 
-import { toast } from 'react-toastify';
 import { useSettings } from './settingsContextProvider';
 
 interface InventoryInterface {
@@ -31,7 +32,7 @@ const INVENTORY_CONTEXT = createContext<InventoryInterface>({
 
 export const useInventory = () => useContext(INVENTORY_CONTEXT);
 
-const InventoryContextProvider = ({ children }: { children: ReactNode }) => {
+function InventoryContextProvider({ children }: { children: ReactNode }) {
   const [inventory, setInventory] = useState<[]>([]);
 
   const { addToTrash } = useSettings();
@@ -51,12 +52,19 @@ const InventoryContextProvider = ({ children }: { children: ReactNode }) => {
         isOnline: false,
       };
       // await postData(newInventoryData, inventoryCollection);
-    } catch (error) {}
+    } catch (error) {
+      // Swallowed deliberately: this path has no user-facing recovery yet.
+    }
   };
 
   const updateInventoryItem = async (updatedItem: Item) => {
     try {
-    } catch (error) {}
+      // Not implemented. Nothing in the UI calls this yet; the body was never
+      // written, so it is marked rather than left looking like working code.
+    } catch (error) {
+      // Unreachable while the body above is empty; kept so the signature stays
+      // async-safe once this is implemented.
+    }
   };
 
   const deleteInventoryItem = async (itemID: number | undefined) => {};
@@ -74,6 +82,6 @@ const InventoryContextProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </INVENTORY_CONTEXT.Provider>
   );
-};
+}
 
 export default InventoryContextProvider;

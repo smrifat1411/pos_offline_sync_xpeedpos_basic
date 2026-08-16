@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
-import {
-  useExpenseContext
-} from 'renderer/context/ExpenseContext';
+import { useExpenseContext } from 'renderer/context/ExpenseContext';
 import ExpenseTable from 'renderer/features/expense/ExpenseTable';
 
-const Expense = () => {
+function Expense() {
   // const { getAllExpenses } = useExpenseContext();
 
   // useEffect(() => {
@@ -19,6 +17,6 @@ const Expense = () => {
     </div>
     // </ExpenseProvider>
   );
-};
+}
 
 export default Expense;

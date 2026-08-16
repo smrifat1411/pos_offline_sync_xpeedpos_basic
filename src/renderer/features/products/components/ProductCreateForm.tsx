@@ -2,13 +2,14 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import CategoryDropdown from './CategoryDropdown';
-
 import { Checkbox, FormControlLabel } from '@mui/material';
 import Button from 'renderer/components/Button';
 import { useProductContext } from 'renderer/context/ProductContext';
+import { CommonUtils } from 'renderer/utils/CommonUtils';
+import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 import { Product } from 'renderer/types/product';
 import { useAuth } from 'renderer/context/AuthContextProvider';
+import CategoryDropdown from './CategoryDropdown';
 
 interface Option {
   value: string;
@@ -20,7 +21,7 @@ interface Props {
   product?: Product;
 }
 
-const ProductCreateForm = ({ onSuccess, product }: Props) => {
+function ProductCreateForm({ onSuccess, product }: Props) {
   const { createProduct, updateProductById } = useProductContext();
   const { userDetails } = useAuth();
 
@@ -69,7 +70,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
       stockAmount: product?.stockAmount || 0,
       company: product?.company || '',
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
       const data: Product = {
         name: values.name,
@@ -91,7 +92,12 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         }
 
         onSuccess && onSuccess();
-      } catch (error) {}
+      } catch (error) {
+        // A failed save used to be swallowed here, so the form simply sat there
+        // and the user had no way to tell the product had not been created.
+        CommonUtils().showToast(TOAST_TYPE.ERROR, 'Could not save the product');
+        console.error('Product save failed:', error);
+      }
     },
   });
 
@@ -199,7 +205,7 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
             type="text"
             name="company"
             id="company"
-            className={`peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500`}
+            className="peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:focus:border-blue-500"
             placeholder=" "
             onChange={formik.handleChange}
             value={formik.values.company}
@@ -240,10 +246,12 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
         <div className="group relative z-0 mb-6 w-full">
           <FormControlLabel
             required
-            control={<Checkbox checked={formik.values.discountable != 0} />}
+            control={
+              <Checkbox checked={Number(formik.values.discountable) !== 0} />
+            }
             label="Discountable Product"
             onChange={(e) => handleDiscountableCheckbox(e)}
-            value={true}
+            value
           />
           {formik.errors.discountable && (
             <p className="text-red-500 text-sm mt-1">
@@ -283,6 +291,6 @@ const ProductCreateForm = ({ onSuccess, product }: Props) => {
       />
     </form>
   );
-};
+}
 
 export default ProductCreateForm;

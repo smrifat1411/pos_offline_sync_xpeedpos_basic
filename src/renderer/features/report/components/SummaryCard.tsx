@@ -5,7 +5,7 @@ interface Props {
   value: any;
 }
 
-export default function SummaryCard ({ title, value }:Props) {
+export default function SummaryCard({ title, value }: Props) {
   return (
     <Card>
       <CardContent>
@@ -16,4 +16,4 @@ export default function SummaryCard ({ title, value }:Props) {
       </CardContent>
     </Card>
   );
-};
+}

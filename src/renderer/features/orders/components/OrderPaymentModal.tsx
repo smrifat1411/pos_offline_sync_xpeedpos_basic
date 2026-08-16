@@ -1,5 +1,3 @@
-import { useOrders } from '../../../context/OrderContextProvider';
-
 import {
   Check,
   Close,
@@ -24,11 +22,12 @@ import {
 } from '@mui/material';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Order } from '../../../types/order.type';
 import { Form, Input } from 'antd';
 import { CommonUtils } from 'renderer/utils/CommonUtils';
 import { TOAST_TYPE } from 'renderer/constants/AppConstants';
 import { printContent } from 'renderer/utils/print.utils';
+import { Order } from '../../../types/order.type';
+import { useOrders } from '../../../context/OrderContextProvider';
 
 type Props = {
   isOpenPaymentModal: boolean;
@@ -36,11 +35,11 @@ type Props = {
   order: Order;
 };
 
-const OrderPaymentModal = ({
+function OrderPaymentModal({
   isOpenPaymentModal,
   setIsOpenPaymentModal,
   order: initialOrder,
-}: Props) => {
+}: Props) {
   const { updateOrderStatus } = useOrders();
   const [order, setOrder] = useState<Order>(initialOrder);
   const [paymentMethod, setPaymentMethod] = useState<string>('');
@@ -64,8 +63,8 @@ const OrderPaymentModal = ({
       if (!customerDetails) {
         const values = await form.validateFields();
 
-        const customerName = values.customerName;
-        const phoneNumber = values.phoneNumber;
+        const { customerName } = values;
+        const { phoneNumber } = values;
 
         const createCustomerResult = await window.electron.createCustomer({
           name: customerName,
@@ -85,7 +84,10 @@ const OrderPaymentModal = ({
           });
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      // validateFields rejects when the customer fields are incomplete and antd
+      // already renders the inline errors, so there is nothing further to report.
+    }
   };
 
   const handlePrint = async () => {
@@ -107,13 +109,18 @@ const OrderPaymentModal = ({
   };
 
   const handleDiscountPercentiageChanged = (value: string) => {
-    setDiscount(parseInt(value) || 0);
-    const newDiscountedAmount = (parseInt(value) * order.subTotal) / 100;
+    // Parsed once, and the `|| 0` guard applied before the amount is derived
+    // rather than after. Previously the second parseInt was unguarded, so
+    // clearing the field or typing anything non-numeric made the discounted
+    // amount NaN and rendered the payable total as "NaN".
+    const percent = parseInt(value, 10) || 0;
+    setDiscount(percent);
+    const newDiscountedAmount = (percent * order.subTotal) / 100;
     setDiscountedAmount(parseFloat(newDiscountedAmount.toFixed(0)));
   };
 
   const handleKeyPress = (e: any) => {
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       setIsEditingDiscount(false);
       // setIsEditingVat(false);
     }
@@ -129,8 +136,8 @@ const OrderPaymentModal = ({
       const values = await form.validateFields();
 
       // Collect customer name and phone number from the form
-      const customerName = values.customerName;
-      const phoneNumber = values.phoneNumber;
+      const { customerName } = values;
+      const { phoneNumber } = values;
 
       // Invoke the createCustomer function
       const createCustomerResult = await window.electron.createCustomer({
@@ -144,11 +151,11 @@ const OrderPaymentModal = ({
           ...order,
           customerId: createCustomerResult.data.id,
           paymentStatus: 'payment done',
-          changeAmount: changeAmount,
+          changeAmount,
           discountAmount: discountedAmount,
-          netPayable: netPayable,
-          discount: discount,
-          cashPaid: cashPaid,
+          netPayable,
+          discount,
+          cashPaid,
           paymentMethod: 'cash',
         };
         await setCustomerDetails({
@@ -165,19 +172,6 @@ const OrderPaymentModal = ({
     } catch (error) {
       // Handle validation error (display error message, etc.)
       console.error('Form validation failed:', error);
-    }
-  };
-
-  const fetchCustomerDetails = async (customerId: number) => {
-    try {
-      const customerResult = await window.electron.getCustomerById(customerId);
-      if (customerResult.success && customerResult.data) {
-        setCustomerDetails(customerResult.data);
-      } else {
-        console.error('Error fetching customer details:', customerResult.error);
-      }
-    } catch (error) {
-      console.error('Error fetching customer details:', error);
     }
   };
 
@@ -221,13 +215,14 @@ const OrderPaymentModal = ({
     >
       <Box className="rounded border-gray-300 w-11/12 sm:w-4/5 lg:w-3/4 h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center">
         <button
+          type="button"
           className="absolute top-0 right-0 p-1 bg-gray-300 rounded"
           onClick={() => setIsOpenPaymentModal(false)}
         >
           <Close />
         </button>
         <section className="grid grid-cols-12 flex-wrap border w-full">
-          {/*Left Section  */}
+          {/* Left Section  */}
 
           <section
             className="col-span-12 sm:col-span-7 p-1 border-r"
@@ -309,7 +304,7 @@ const OrderPaymentModal = ({
 
                   <TableBody>
                     {order?.items.map((item, index) => {
-                      const discountedAmount: number =
+                      const itemDiscountAmount: number =
                         item.discount !== undefined
                           ? (item.discount * item.sellingPrice) / 100
                           : 0;
@@ -326,24 +321,24 @@ const OrderPaymentModal = ({
 
                           <TableCell align="center">{item.quantity}</TableCell>
                           <TableCell align="right">
-                            {
-                              <>
-                                <span className="">{item.sellingPrice}</span>
-                              </>
-                            }
+                            <>
+                              <span className="">{item.sellingPrice}</span>
+                            </>
                           </TableCell>
                           <TableCell align="right">
                             {item.discount !== undefined &&
-                            item.discount != 0 ? (
+                            item.discount !== 0 ? (
                               <span>
-                                {(item?.discount * item.sellingPrice) / 100}
+                                {(item.discount * item.sellingPrice) / 100}
                               </span>
                             ) : (
                               <span>-</span>
                             )}
                           </TableCell>
                           <TableCell align="right">
-                            <span>{item.sellingPrice - discountedAmount}</span>
+                            <span>
+                              {item.sellingPrice - itemDiscountAmount}
+                            </span>
                           </TableCell>
                         </TableRow>
                       );
@@ -603,6 +598,6 @@ const OrderPaymentModal = ({
       </Box>
     </Modal>
   );
-};
+}
 
 export default OrderPaymentModal;

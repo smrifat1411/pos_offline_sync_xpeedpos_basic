@@ -5,6 +5,6 @@ export interface Table {
   isOnline?: boolean;
 }
 
-export interface RxDBTableDocument{
+export interface RxDBTableDocument {
   _data: Table;
 }

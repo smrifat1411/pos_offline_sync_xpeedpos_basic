@@ -1,4 +1,5 @@
 'use client';
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CartItem, Product } from '../types/product';
 
@@ -50,9 +51,8 @@ export const CartProvider: React.FC<Props> = ({
             ? { ...item, quantity: item.quantity + 1 }
             : item,
         );
-      } else {
-        return [...prevCart, { ...product, quantity: 1 }];
       }
+      return [...prevCart, { ...product, quantity: 1 }];
     });
   };
 
@@ -78,12 +78,10 @@ export const CartProvider: React.FC<Props> = ({
               if (newQuantity === 0) {
                 // If the new quantity is zero, remove the item from the cart
                 return null;
-              } else {
-                return { ...item, quantity: newQuantity };
               }
-            } else {
-              return item;
+              return { ...item, quantity: newQuantity };
             }
+            return item;
           })
           .filter(Boolean), // Remove null values (items with quantity === 0)
     );
@@ -105,9 +103,8 @@ export const CartProvider: React.FC<Props> = ({
       const discountedPrice =
         item.sellingPrice - (item.sellingPrice * item.discount) / 100;
       return discountedPrice * item.quantity;
-    } else {
-      return item.sellingPrice * item.quantity;
     }
+    return item.sellingPrice * item.quantity;
   };
 
   const clearCart = () => {

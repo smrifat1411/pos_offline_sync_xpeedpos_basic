@@ -5,14 +5,15 @@ import RegistrationForm from 'renderer/components/RegistrationForm';
 import ProductList from 'renderer/features/products/components/ProductList';
 import AuthGuard from 'renderer/guards/AuthGuards';
 import Expense from 'renderer/page/Expense';
-import Home from 'renderer/page/Home';
+import Home from 'renderer/page/home';
 import Inventory from 'renderer/page/Inventory';
 import Orders from 'renderer/page/Orders';
 import Report from 'renderer/page/Report';
 import Setting from 'renderer/page/Setting';
+
 type Props = {};
 
-const AppOutlet = (props: Props) => {
+function AppOutlet(props: Props) {
   return (
     <Routes>
       <Route path="/">
@@ -20,7 +21,10 @@ const AppOutlet = (props: Props) => {
         <Route path="orders" element={<AuthGuard component={<Orders />} />} />
         <Route path="report" element={<AuthGuard component={<Report />} />} />
         <Route path="expense" element={<AuthGuard component={<Expense />} />} />
-        <Route path="settings" element={<AuthGuard component={<Setting />} />} />
+        <Route
+          path="settings"
+          element={<AuthGuard component={<Setting />} />}
+        />
         <Route
           path="inventory"
           element={<AuthGuard component={<Inventory />} />}
@@ -30,6 +34,6 @@ const AppOutlet = (props: Props) => {
       </Route>
     </Routes>
   );
-};
+}
 
 export default AppOutlet;

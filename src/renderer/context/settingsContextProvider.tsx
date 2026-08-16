@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Dispatch,
   ReactNode,
@@ -35,7 +36,7 @@ const SETTINGSCONTEXT = createContext<SettingsContextInterface>({
 
 export const useSettings = () => useContext(SETTINGSCONTEXT);
 
-const SettingsContextProvider = ({ children }: Props) => {
+function SettingsContextProvider({ children }: Props) {
   const [settings, setSettings] = useState<RxSettings[]>([]);
 
   const getSettingsData = async (data: RxSettings[]) => {
@@ -44,6 +45,8 @@ const SettingsContextProvider = ({ children }: Props) => {
 
   const changeDiscountAmount = async (amount: number) => {
     try {
+      // Not implemented. Nothing in the UI calls this yet; the body was never
+      // written, so it is marked rather than left looking like working code.
     } catch (error) {
       console.log(error);
     }
@@ -51,6 +54,8 @@ const SettingsContextProvider = ({ children }: Props) => {
 
   const changeVATAmount = async (amount: number) => {
     try {
+      // Not implemented. Nothing in the UI calls this yet; the body was never
+      // written, so it is marked rather than left looking like working code.
     } catch (error) {
       console.log(error);
     }
@@ -81,6 +86,6 @@ const SettingsContextProvider = ({ children }: Props) => {
       {children}
     </SETTINGSCONTEXT.Provider>
   );
-};
+}
 
 export default SettingsContextProvider;

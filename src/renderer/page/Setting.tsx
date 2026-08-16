@@ -8,7 +8,7 @@ import ClosingForm from 'renderer/features/closing/components/ClosingForm';
 
 type Props = {};
 
-const Setting = (props: Props) => {
+function Setting(props: Props) {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const [isClosingModalOpen, setIsClosingModalOpen] = useState(false);
@@ -40,7 +40,7 @@ const Setting = (props: Props) => {
         </span>
       )}
 
-      <Button onclick={openClosingModal}  txt="Close Shop for today" />
+      <Button onclick={openClosingModal} txt="Close Shop for today" />
       <Modal
         open={isClosingModalOpen}
         onClose={closeClosingModal}
@@ -50,6 +50,6 @@ const Setting = (props: Props) => {
       </Modal>
     </div>
   );
-};
+}
 
 export default Setting;

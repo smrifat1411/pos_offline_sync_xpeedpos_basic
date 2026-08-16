@@ -44,6 +44,7 @@ import {
   getDailyCashEntryByDate,
   updateDailyCashEntry,
 } from './services/cash.service';
+
 const fs = require('fs');
 
 let mainWindow: BrowserWindow | null = null;
@@ -173,7 +174,7 @@ ipcMain.handle('printOrPreviewComponent', async (_, { url, isPreview }) => {
         .printToPDF(printOptions)
         .then((data) => {
           const base64Data = data.toString('base64');
-          const previewUrl = 'data:application/pdf;base64,' + base64Data;
+          const previewUrl = `data:application/pdf;base64,${base64Data}`;
 
           win?.once('ready-to-show', () => {
             if (win) {
@@ -251,7 +252,6 @@ app
       return await updateOrderById(orderId, updatedOrder);
     });
 
-  
     ipcMain.handle(
       'order:getAll',
       async (_, page, pageSize, sortBy, sortOrder) => {

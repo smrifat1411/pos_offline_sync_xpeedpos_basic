@@ -187,14 +187,14 @@ export default function InventoryTable() {
     setRowModesModel(newRowModesModel);
   };
 
-  const CustomSellingPriceCell = (params: any) => {
+  function CustomSellingPriceCell(params: any) {
     const { value } = params;
     const sellingPrice = value as unknown as number;
     const discount = params.row.discount as number;
     const discountedPrice = sellingPrice - (discount * sellingPrice) / 100;
 
     return <span>{discountedPrice}</span>;
-  };
+  }
 
   const buyingPriceColumn: GridColDef | boolean = {
     field: 'buyingPrice',
@@ -256,7 +256,6 @@ export default function InventoryTable() {
       },
     },
     ...(isBuyingPriceVisible ? [buyingPriceColumn] : []),
-    ,
     {
       field: 'stockAmount',
       headerName: 'Stock Amount',

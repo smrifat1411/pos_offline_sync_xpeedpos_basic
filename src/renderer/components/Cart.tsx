@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useCart } from '../context/CartContext';
-import CartItemPod from './CartItemPod';
 
 import { Order } from 'renderer/types/order.type';
 import { useOrders } from 'renderer/context/OrderContextProvider';
 import OrderSuccessModal from 'renderer/features/products/components/OrderSuccessModal';
 import { CommonUtils } from 'renderer/utils/CommonUtils';
 import { TOAST_TYPE } from 'renderer/constants/AppConstants';
+import CartItemPod from './CartItemPod';
+import { useCart } from '../context/CartContext';
 
 const Cart: React.FC = () => {
   const { cart, getTotalPrice, totalPriceWithoutDis, clearCart } = useCart();
@@ -61,17 +61,16 @@ const Cart: React.FC = () => {
           Please add at least one product to your cart.
         </p>
       );
-    } else {
-      return (
-        <button
-          type="button"
-          className="group inline-flex w-full items-center justify-center rounded-md bg-gray-900 px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800 hover:shadow-xl hover:text-slate-300"
-          onClick={handlePlaceOrder}
-        >
-          Place Order
-        </button>
-      );
     }
+    return (
+      <button
+        type="button"
+        className="group inline-flex w-full items-center justify-center rounded-md bg-gray-900 px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800 hover:shadow-xl hover:text-slate-300"
+        onClick={handlePlaceOrder}
+      >
+        Place Order
+      </button>
+    );
   };
 
   return (
@@ -87,7 +86,7 @@ const Cart: React.FC = () => {
                 <CartItemPod />
               </div>
             </div>
-            <div className="mt-6 border-t border-b py-2"></div>
+            <div className="mt-6 border-t border-b py-2" />
 
             {/* amount section */}
             <div className="w-full flex flex-col gap-2">

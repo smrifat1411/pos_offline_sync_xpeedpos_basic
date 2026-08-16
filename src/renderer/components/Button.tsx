@@ -5,7 +5,7 @@ type Props = {
   onclick: any;
 };
 
-const Button = ({ txt, onclick }: Props) => {
+function Button({ txt, onclick }: Props) {
   return (
     <button
       type="submit"
@@ -15,6 +15,6 @@ const Button = ({ txt, onclick }: Props) => {
       {txt}
     </button>
   );
-};
+}
 
 export default Button;

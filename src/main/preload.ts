@@ -1,12 +1,12 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { TODO } from './services/Database.service';
 import { Product } from 'renderer/types/product';
 import { CategoryDocumentType } from 'renderer/types/category.type';
 import { Order } from 'renderer/types/order.type';
 import { Expense } from 'renderer/types/expense.type';
 import { Customer } from 'renderer/types/customer.type';
+import { TODO } from './services/Database.service';
 
 export type Channels = 'ipc-example';
 

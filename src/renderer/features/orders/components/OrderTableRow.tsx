@@ -13,14 +13,14 @@ import {
   tableCellClasses,
 } from '@mui/material';
 import { useState } from 'react';
+import { useOrders } from 'renderer/context/OrderContextProvider';
 import { Order } from '../../../types/order.type';
 import OrderPaymentModal from './OrderPaymentModal';
 import OrderViewModal from './OrderViewModal';
-import { useOrders } from 'renderer/context/OrderContextProvider';
 
 type Props = { order: Order };
 
-const OrderTableRow = ({ order }: Props) => {
+function OrderTableRow({ order }: Props) {
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [isOpenPaymentModal, setIsOpenPaymentModal] = useState(false);
   const { getAllOrdersData, currentPage, sortField, sortOrder } = useOrders();
@@ -104,6 +104,7 @@ const OrderTableRow = ({ order }: Props) => {
       <StyledTableCell align="right">
         <div className="flex gap-2 justify-end items-center w-full h-full">
           <button
+            type="button"
             className="p-2 flex gap-1 justify-center items-center bg-lime-400 hover:bg-slate-600 hover:text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm"
             onClick={() => setIsOpenPaymentModal(true)}
           >
@@ -112,7 +113,8 @@ const OrderTableRow = ({ order }: Props) => {
           </button>
 
           <button
-            className={`p-2 flex gap-1 justify-center items-center bg-blue-950 hover:bg-blue-200 hover:text-black text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm`}
+            type="button"
+            className="p-2 flex gap-1 justify-center items-center bg-blue-950 hover:bg-blue-200 hover:text-black text-slate-50 hover:shadow hover:scale-110 transition-all shadow-sm rounded-sm"
             onClick={handleDeleteOrder}
           >
             <FontAwesomeIcon icon={faTrash} />
@@ -125,15 +127,13 @@ const OrderTableRow = ({ order }: Props) => {
         setIsOpenViewModal={setIsOpenViewModal}
         order={order}
       />
-      {
-        <OrderPaymentModal
-          isOpenPaymentModal={isOpenPaymentModal}
-          setIsOpenPaymentModal={setIsOpenPaymentModal}
-          order={order}
-        />
-      }
+      <OrderPaymentModal
+        isOpenPaymentModal={isOpenPaymentModal}
+        setIsOpenPaymentModal={setIsOpenPaymentModal}
+        order={order}
+      />
     </StyledTableRow>
   );
-};
+}
 
 export default OrderTableRow;

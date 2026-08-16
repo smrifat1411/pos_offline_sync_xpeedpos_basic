@@ -29,7 +29,7 @@ export default function RegistrationForm() {
       password: '',
       confirmPassword: '',
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: (values) => {
       // Check if password and confirm password match
       if (values.password !== values.confirmPassword) {
@@ -133,8 +133,8 @@ export default function RegistrationForm() {
           </Button>
           <Grid container>
             <Grid item>
-              <Link to={'/login'} className="text-blue-500">
-                {'Already have an account? Sign in'}
+              <Link to="/login" className="text-blue-500">
+                Already have an account? Sign in
               </Link>
             </Grid>
           </Grid>

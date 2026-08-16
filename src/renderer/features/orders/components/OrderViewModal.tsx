@@ -12,6 +12,8 @@ import {
   InputLabel,
   MenuItem,
   Modal,
+  Select as MuiSelect,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
   CSSProperties,
@@ -21,12 +23,10 @@ import {
   useState,
 } from 'react';
 import { ClearIndicatorProps } from 'react-select';
+import { useProductContext } from 'renderer/context/ProductContext';
 import { useOrders } from '../../../context/OrderContextProvider';
 import { Order } from '../../../types/order.type';
 import { CartItem } from '../../../types/product';
-
-import { Select as MuiSelect, SelectChangeEvent } from '@mui/material/';
-import { useProductContext } from 'renderer/context/ProductContext';
 
 type Props = {
   isOpenViewModal: boolean;
@@ -36,11 +36,7 @@ type Props = {
 
 type DropdownOption = { value: string; label: string };
 
-const OrderViewModal = ({
-  isOpenViewModal,
-  setIsOpenViewModal,
-  order,
-}: Props) => {
+function OrderViewModal({ isOpenViewModal, setIsOpenViewModal, order }: Props) {
   // const { settings } = useSettings();
   const { allProducts } = useProductContext();
 
@@ -53,6 +49,7 @@ const OrderViewModal = ({
     >
       <Box className="rounded border-gray-300 w-11/12 sm:w-3/4 lg:w-2/4 h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl p-4 text-center overflow-y-auto">
         <button
+          type="button"
           className="absolute top-0 right-0 p-1 bg-gray-300 rounded"
           onClick={() => setIsOpenViewModal(false)}
         >
@@ -101,18 +98,18 @@ const OrderViewModal = ({
                   <em>None</em>
                 </MenuItem>
                 {allProducts.map((p) => (
-                  <MenuItem key={p?.id} value={p?.name}>
-                    {p?.name} -
-                    {p?.discountable ? (
+                  <MenuItem key={p.id} value={p.name}>
+                    {p.name} -
+                    {p.discountable ? (
                       <>
                         <span className="line-through text-xs text-gray-400 mx-2">
-                          {p?.price}
+                          {p.sellingPrice}
                         </span>
                         {p.discount &&
-                          p?.price - (p?.price * p?.discount) / 100}
+                          p.sellingPrice - (p.sellingPrice * p.discount) / 100}
                       </>
                     ) : (
-                      p?.price
+                      p.sellingPrice
                     )}
                     TK
                   </MenuItem>
@@ -124,7 +121,7 @@ const OrderViewModal = ({
             </Button>
           </form>
 
-          <div></div>
+          <div />
         </div>
         <div className="w-full flex justify-center flex-wrap gap-2 mt-2">
           <Button
@@ -172,6 +169,6 @@ const OrderViewModal = ({
       </Box>
     </Modal>
   );
-};
+}
 
 export default OrderViewModal;

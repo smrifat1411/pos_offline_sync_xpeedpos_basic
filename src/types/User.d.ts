@@ -4,7 +4,7 @@ declare type User = {
   password_hash?: Buffer;
   status?: number;
   name: string;
-  role:string;
+  role: string;
 };
 
 declare type Auth = {

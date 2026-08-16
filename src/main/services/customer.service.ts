@@ -1,31 +1,37 @@
 import { Customer } from 'renderer/types/customer.type';
 import { connect } from './Database.service';
 
-
-
 interface Result<T> {
   success: boolean;
   data?: T;
   error?: string;
 }
 
-export async function createCustomer(customer: Partial<Customer>): Promise<Result<Customer | null>> {
+export async function createCustomer(
+  customer: Partial<Customer>,
+): Promise<Result<Customer | null>> {
   try {
     const db = connect();
 
     // Check if a customer with the same name and mobile number already exists
-    const existingCustomer: unknown = db.prepare(
-      'SELECT * FROM customers WHERE name = @name AND mobile = @mobile',
-    ).get({ name: customer.name, mobile: customer.mobile });
+    const existingCustomer: unknown = db
+      .prepare(
+        'SELECT * FROM customers WHERE name = @name AND mobile = @mobile',
+      )
+      .get({ name: customer.name, mobile: customer.mobile });
 
     if (existingCustomer) {
-      console.log('Customer already exists. Returning existing customer details.');
+      console.log(
+        'Customer already exists. Returning existing customer details.',
+      );
       const typedExistingCustomer = existingCustomer as Customer;
       return { success: true, data: typedExistingCustomer };
     }
 
     // Insert null if discount is not provided
-    const { discount = null, ...customerWithoutDiscount } = customer as Partial<Customer & { discount?: number }>;
+    const { discount = null, ...customerWithoutDiscount } = customer as Partial<
+      Customer & { discount?: number }
+    >;
 
     const insertCustomerStatement = db.prepare(`
       INSERT INTO customers (name, mobile, discount)
@@ -44,20 +50,18 @@ export async function createCustomer(customer: Partial<Customer>): Promise<Resul
     if (customerDetailsResult.success) {
       console.log('Customer created successfully.');
       return { success: true, data: customerDetailsResult.data };
-    } else {
-      console.error('Error creating customer:', customerDetailsResult.error);
-      return { success: false, error: 'Error creating customer.' };
     }
+    console.error('Error creating customer:', customerDetailsResult.error);
+    return { success: false, error: 'Error creating customer.' };
   } catch (error) {
     console.error('Error creating customer:', error);
     return { success: false, error: 'Error creating customer.' };
   }
 }
 
-
-
-
-export async function getCustomerDetails(customerId: number): Promise<Result<Customer>> {
+export async function getCustomerDetails(
+  customerId: number,
+): Promise<Result<Customer>> {
   try {
     const db = connect();
 
@@ -95,7 +99,11 @@ export async function updateCustomerById(
       return { success: false, error: 'Customer not found' };
     }
 
-    const updatedCustomerData = { ...existingCustomerData, ...updateData, id: customerId };
+    const updatedCustomerData = {
+      ...existingCustomerData,
+      ...updateData,
+      id: customerId,
+    };
 
     const updateCustomerStatement = db.prepare(`
       UPDATE customers
@@ -113,10 +121,12 @@ export async function updateCustomerById(
     if (updatedCustomerDetailsResult.success) {
       console.log('Customer updated successfully.');
       return { success: true, data: updatedCustomerDetailsResult.data };
-    } else {
-      console.error('Error updating customer:', updatedCustomerDetailsResult.error);
-      return { success: false, error: 'Error updating customer.' };
     }
+    console.error(
+      'Error updating customer:',
+      updatedCustomerDetailsResult.error,
+    );
+    return { success: false, error: 'Error updating customer.' };
   } catch (error) {
     console.error('Error updating customer:', error);
     return { success: false, error: 'Error updating customer.' };

@@ -27,10 +27,17 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
-const ReportChart = ({ title, labels, labelsData, chartLineTitle, borderColor, backgroundColor }: Props) => {
+function ReportChart({
+  title,
+  labels,
+  labelsData,
+  chartLineTitle,
+  borderColor,
+  backgroundColor,
+}: Props) {
   const options = {
     responsive: true,
     plugins: {
@@ -50,17 +57,17 @@ const ReportChart = ({ title, labels, labelsData, chartLineTitle, borderColor, b
       {
         label: chartLineTitle,
         data: labelsData,
-        borderColor: borderColor,
-        backgroundColor: backgroundColor,
+        borderColor,
+        backgroundColor,
       },
     ],
   };
 
   return (
-    <Card sx={{minWidth:"100%", m: 2}}>
-      <Line options={options} data={data} className='max-h-60' />
+    <Card sx={{ minWidth: '100%', m: 2 }}>
+      <Line options={options} data={data} className="max-h-60" />
     </Card>
-  )
+  );
 }
 
 export default ReportChart;

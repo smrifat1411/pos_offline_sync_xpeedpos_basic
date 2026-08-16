@@ -1,6 +1,6 @@
 import { Product } from 'renderer/types/product';
-import { connect } from './Database.service';
 import { CategoryDocumentType } from 'renderer/types/category.type';
+import { connect } from './Database.service';
 
 export async function createProduct(
   product: Product,
@@ -174,7 +174,7 @@ export async function updateProductById(
     );
 
     const updateProduct = {
-      id: id,
+      id,
       ...updatedProductData,
     };
 

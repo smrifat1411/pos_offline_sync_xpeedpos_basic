@@ -1,8 +1,8 @@
 import { Add, Clear, Remove } from '@mui/icons-material';
-import { useCart } from '../context/CartContext';
 import React from 'react';
 import { useProductContext } from 'renderer/context/ProductContext';
 import { Product } from 'renderer/types/product';
+import { useCart } from '../context/CartContext';
 
 const CartItemPod: React.FC = () => {
   const { allProducts, setAllProducts } = useProductContext();
@@ -37,7 +37,6 @@ const CartItemPod: React.FC = () => {
               {item.discountable !== 0 && (
                 <p className="text-sm text-gray-600">
                   <span className="line-through">{item.sellingPrice}</span> -{' '}
-                  {''}
                   {item.discount}% = {item.discountedPrice}
                   {/* <span className="font-thin">tk</span> */}
                 </p>
@@ -54,6 +53,7 @@ const CartItemPod: React.FC = () => {
           </div>
           <div className="flex justify-stretch items-stretch text-xl">
             <button
+              type="button"
               className="flex items-center justify-center grow rounded-l-md bg-gray-200 p-1 transition hover:bg-black hover:text-white"
               onClick={() => {
                 item.id && decreaseQuantity(item.id);
@@ -66,6 +66,7 @@ const CartItemPod: React.FC = () => {
               {item.quantity}
             </div>
             <button
+              type="button"
               className="flex items-center justify-center grow rounded-r-md bg-gray-200 p-1 transition hover:bg-black hover:text-white"
               disabled={item.quantity > item.stockAmount}
               onClick={() => {

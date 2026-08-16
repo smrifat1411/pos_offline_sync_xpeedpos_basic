@@ -1,5 +1,5 @@
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ToastComponent() {
   return (
@@ -11,7 +11,7 @@ function ToastComponent() {
       closeOnClick
       rtl={false}
       draggable
-      pauseOnHover={true}
+      pauseOnHover
       pauseOnFocusLoss={false}
     />
   );

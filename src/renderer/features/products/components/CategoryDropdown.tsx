@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { setOptions } from 'react-chartjs-2/dist/utils';
 import CategoryInputField from './CategoryInputField';
 
 import { CategoryDocumentType } from '../../../types/category.type';
-import { setOptions } from 'react-chartjs-2/dist/utils';
 
 interface Props {
   selectedCategory: string | any | null;

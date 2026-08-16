@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useOrders } from '../../../context/OrderContextProvider';
 import {
   FormControl,
   InputLabel,
@@ -7,8 +6,9 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
+import { useOrders } from '../../../context/OrderContextProvider';
 
-const OrderSortOptions = () => {
+function OrderSortOptions() {
   const {
     sortField,
     sortOrder,
@@ -42,9 +42,9 @@ const OrderSortOptions = () => {
             label="Sort By"
             onChange={handleSortFieldChange}
           >
-            <MenuItem value={'orderTime'}>Time</MenuItem>
-            <MenuItem value={'netPayable'}>Price</MenuItem>
-            <MenuItem value={'paymentStatus'}>Status</MenuItem>
+            <MenuItem value="orderTime">Time</MenuItem>
+            <MenuItem value="netPayable">Price</MenuItem>
+            <MenuItem value="paymentStatus">Status</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -58,13 +58,13 @@ const OrderSortOptions = () => {
             label="Sort Order"
             onChange={handleSortOrderChange}
           >
-            <MenuItem value={'asc'}>ASC</MenuItem>
-            <MenuItem value={'desc'}>DESC</MenuItem>
+            <MenuItem value="asc">ASC</MenuItem>
+            <MenuItem value="desc">DESC</MenuItem>
           </Select>
         </FormControl>
       </div>
     </div>
   );
-};
+}
 
 export default OrderSortOptions;

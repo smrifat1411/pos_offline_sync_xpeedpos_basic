@@ -23,7 +23,7 @@ import SummaryCard from 'renderer/features/report/components/SummaryCard';
 import { Order } from 'renderer/types/order.type';
 import { CartItem } from 'renderer/types/product';
 
-const ReportSection = () => {
+function ReportSection() {
   const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState('daily');
   const { totalAmount: totalExpense, getExpensesByPeriod } =
@@ -65,9 +65,8 @@ const ReportSection = () => {
         0,
       );
       return sum + orderBuyingPrice;
-    } else {
-      return sum;
     }
+    return sum;
   }, 0);
 
   const totalProfit = totalRevenue - totalBuyingPrice;
@@ -110,14 +109,12 @@ const ReportSection = () => {
             <SummaryCard title="Total Expense" value={totalExpense} />
           </Grid>
           {chartType === 'daily' && (
-            <>
-              <Grid item sm={4}>
-                <SummaryCard
-                  title="In Cash"
-                  value={totalRevenue - totalExpense}
-                />
-              </Grid>
-            </>
+            <Grid item sm={4}>
+              <SummaryCard
+                title="In Cash"
+                value={totalRevenue - totalExpense}
+              />
+            </Grid>
           )}
 
           <Grid item sm={4}>
@@ -158,6 +155,6 @@ const ReportSection = () => {
       </Grid>
     </section>
   );
-};
+}
 
 export default ReportSection;

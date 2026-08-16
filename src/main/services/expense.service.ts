@@ -90,9 +90,9 @@ export async function getExpensesByPeriod(
 
     // Apply filtering if filterField and filterValue are provided
     if (filterField && filterValue) {
-      query +=
-        (period ? ' AND' : ' WHERE') +
-        ` ${filterField} LIKE '%${filterValue}%'`;
+      query += `${
+        period ? ' AND' : ' WHERE'
+      } ${filterField} LIKE '%${filterValue}%'`;
     }
 
     // Apply sorting

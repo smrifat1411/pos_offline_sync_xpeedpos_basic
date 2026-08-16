@@ -1,6 +1,6 @@
 export const filterProductsNotInLocals = (
   remoteProducts: any[],
-  LocalProductNames: any[]
+  LocalProductNames: any[],
 ) => {
   const susPecious = remoteProducts.filter((product: any) => {
     return !LocalProductNames.includes(product.name);
@@ -17,13 +17,13 @@ export const filterProductsNotInLocals = (
 
 export const filterProductsNotInApi = (
   localProducts: any[],
-  remoteProducts: any[]
+  remoteProducts: any[],
 ) => {
   const susPecious = localProducts.filter(
     (localItem: any) =>
       !remoteProducts.some(
-        (remoteItem: any) => remoteItem.name === localItem._data.name
-      )
+        (remoteItem: any) => remoteItem.name === localItem._data.name,
+      ),
   );
   const modifiedSuspecious = susPecious.map((product: any) => {
     const { name, category, description, price } = product._data;
@@ -50,8 +50,6 @@ export const generateSequentialId = () => {
   }
   return `${initialTimestamp}${counter++}${uniqueId}`;
 };
-
-
 
 export const debounce = (fn: any, delay: any) => {
   let timeoutId: any = null;
