@@ -1,6 +1,22 @@
 import { User } from 'renderer/types/user.type';
 import { connect } from './Database.service';
-import { decryptText, hashText } from '../utils/encrypt';
+import {
+  hashPassword,
+  isLegacyPlaintext,
+  verifyPassword,
+} from '../utils/encrypt';
+
+/** True while the users table is still empty, i.e. during first-run setup. */
+function isFirstUser(): boolean {
+  try {
+    const db = connect();
+    const row: any = db.prepare('SELECT COUNT(*) AS count FROM users').get();
+    return (row?.count ?? 0) === 0;
+  } catch (error) {
+    console.error('Could not count users:', error);
+    return false;
+  }
+}
 
 export interface Auth {
   username: string;
@@ -42,7 +58,34 @@ export async function login(user: Auth): Promise<Result<User | null>> {
       return { success: false, error: 'Invalid username or password' };
     }
 
-    return { success: true, data: result.data };
+    const record = result.data as User & { password_hash?: string };
+
+    // This check did not exist. Finding the username was treated as a
+    // successful login, so any password - including an empty one - signed in as
+    // any user that happened to exist.
+    if (!verifyPassword(user.password, record.password_hash ?? '')) {
+      return { success: false, error: 'Invalid username or password' };
+    }
+
+    // An account that predates hashing has just proved its password, so this is
+    // the one moment it can be upgraded without asking anyone to reset it.
+    if (isLegacyPlaintext(record.password_hash ?? '')) {
+      try {
+        const db = connect();
+        db.prepare(
+          'UPDATE users SET password_hash = @hash WHERE username = @username',
+        ).run({ hash: hashPassword(user.password), username: user.username });
+      } catch (error) {
+        // The sign-in itself succeeded; failing to re-hash must not block it.
+        console.error('Could not upgrade stored password:', error);
+      }
+    }
+
+    // The renderer never needs the credential, and it used to receive it on
+    // every login and keep it in localStorage.
+    const { password_hash: _omit, ...safeUser } = record;
+
+    return { success: true, data: safeUser as User };
   } catch (error) {
     console.error('Error during login:', error);
     return { success: false, error: 'Error during login' };
@@ -59,12 +102,17 @@ export async function register(user: User): Promise<Result<boolean>> {
 
     const db = connect();
 
+    // The column is called password_hash and used to be handed the password
+    // itself, so every account was stored in plain text.
     const registerUser = user.password
       ? {
           username: user.username,
-          password_hash: user?.password,
+          password_hash: hashPassword(user.password),
           status: 1,
-          role: 'manager',
+          // The first account to exist becomes the admin - the role gates the
+          // settings and reporting sections, and hardcoding 'manager' meant an
+          // admin could never be created through the app at all.
+          role: isFirstUser() ? 'admin' : 'manager',
           name: user.name,
         }
       : undefined;

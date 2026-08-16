@@ -3,7 +3,6 @@ import { useAuth } from 'renderer/context/AuthContextProvider';
 import navData from '../lib/navitem.json';
 import SideNavItem from './SideNavItem';
 
-import logo from '../assets/images/logo.png';
 // Import SVG paths dynamically
 import homeSvgPath from '../assets/icon/home.svg';
 import ordersSvgPath from '../assets/icon/orders.svg';
@@ -50,8 +49,12 @@ function SideNav(props: Props) {
 
   return (
     <div className="flex flex-col gap-3 p-2 bg-gray-50 min-h-full h-fit sticky left-0 top-0">
-      <div id="imageWrapper" className="w-36 mx-auto">
-        <img src={logo} alt="Brand Logo" className=" rounded" />
+      {/* A wordmark rather than an image. The logo file that shipped here was
+          another company's mark, left over from an earlier build of this app. */}
+      <div className="mx-auto px-3 py-2 text-center">
+        <span className="text-xl font-bold tracking-tight text-slate-900">
+          Xpeed<span className="text-emerald-600">POS</span>
+        </span>
       </div>
       <Divider />
       {navData.map((item: Item, i) => verifyUserRoute(item, i, 'public'))}
